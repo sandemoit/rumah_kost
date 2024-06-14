@@ -1,0 +1,81 @@
+.colored-toast.swal2-icon-success {
+    background-color: #a5dc86 !important;
+}
+
+.colored-toast.swal2-icon-error {
+    background-color: #f27474 !important;
+}
+
+.colored-toast.swal2-icon-warning {
+    background-color: #f8bb86 !important;
+}
+
+.colored-toast.swal2-icon-info {
+    background-color: #3fc3ee !important;
+}
+
+.colored-toast.swal2-icon-question {
+    background-color: #87adbd !important;
+}
+
+.colored-toast .swal2-title {
+    color: white;
+}
+
+.colored-toast .swal2-close {
+    color: white;
+}
+
+.colored-toast .swal2-html-container {
+    color: white;
+}
+
+.katnamebox {
+    margin: 0 0 8px;
+    padding: 0 0 4px;
+    border-bottom: 1px dotted #ccc;
+    position: relative;
+}
+
+.katname {
+    margin: 4px 0 0;
+    display: inline-block;
+}
+
+.kapital {
+    text-transform: capitalize !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.katedit {
+    float: right;
+    width: 52px;
+    text-align: right;
+    padding: 0 16px 0 0;
+}
+
+.delete_button {
+    color: #dc3545;
+    cursor: pointer;
+}
+
+.edit_button {
+    color: #00bb80;
+    cursor: pointer;
+}
+
+/* Style untuk animasi */
+.slide {
+    transition: max-height 0.5s ease-in-out, opacity 0.5s ease-in-out;
+    overflow: hidden;
+    opacity: 0;
+    max-height: 0;
+}
+
+.show {
+    opacity: 1;
+    max-height: 100px; /* Sesuaikan dengan tinggi maksimum konten */
+}
