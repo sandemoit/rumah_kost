@@ -16,6 +16,18 @@
                     </a>
                 </li>
                 <li class="nav-header">Data Master</li>
+                <li class="nav-item"> <a href="{{ route('kontrakan') }}"
+                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'kontrakan' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-houses"></i>
+                        <p>Kontrakan</p>
+                    </a>
+                </li>
+                <li class="nav-item"> <a href="{{ route('kamar') }}"
+                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'kamar' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-house-heart"></i>
+                        <p>Kamar</p>
+                    </a>
+                </li>
                 <li class="nav-item"> <a href="{{ route('cashcategory') }}"
                         class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'cashcategory' ? 'active' : '' }}">
                         <i class="nav-icon bi-card-list"></i>

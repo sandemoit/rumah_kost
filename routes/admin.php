@@ -3,6 +3,8 @@
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\KamarController;
+use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\ProfileController;
 
@@ -18,7 +20,18 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/cashcategory', [CategoryController::class, 'index'])->name('cashcategory');
     Route::post('/cashcategory', [CategoryController::class, 'store'])->name('cashcategory.store');
-    Route::put('/cashcategory/{id}', [CategoryController::class, 'update'])->name('cashcategory.update');
+    Route::patch('/cashcategory/{id}', [CategoryController::class, 'update'])->name('cashcategory.update');
+    Route::delete('/cashcategory/{id}', [CategoryController::class, 'destroy'])->name('cashcategory.destroy');
+
+    Route::get('/kontrakan', [KontrakanController::class, 'index'])->name('kontrakan');
+    Route::post('/kontrakan', [KontrakanController::class, 'store'])->name('kontrakan.store');
+    Route::put('/kontrakan/{id}', [KontrakanController::class, 'update'])->name('kontrakan.update');
+    Route::delete('/kontrakan/{id}', [KontrakanController::class, 'destroy'])->name('kontrakan.destroy');
+
+    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar');
+    Route::post('/kamar', [KamarController::class, 'store'])->name('kamar.store');
+    Route::put('/kamar/{id}', [KamarController::class, 'update'])->name('kamar.update');
+    Route::delete('/kamar/{id}', [KamarController::class, 'destroy'])->name('kamar.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

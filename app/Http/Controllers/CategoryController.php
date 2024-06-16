@@ -74,16 +74,46 @@ class CategoryController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Category $category)
+    public function update(Request $request, $id)
     {
-        //
+        // Validasi data
+        $validatedData = $request->validate([
+            'category_name' => 'required|string|max:255',
+        ]);
+
+        // Temukan kategori berdasarkan ID
+        $category = Category::findOrFail($id);
+
+        // Update kategori dengan data yang divalidasi
+        $category->category_name = $validatedData['category_name'];
+
+        try {
+            // Simpan perubahan
+            $category->save();
+            // Return response success
+            return response()->json([
+                'success' => true,
+                'message' => 'Kategori berhasil diperbarui.',
+            ]);
+        } catch (\Exception $e) {
+            // Return response error
+            return response()->json([
+                'success' => false,
+                'message' => 'Terjadi kesalahan saat memperbarui kategori: ' . $e->getMessage(),
+            ]);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Category $category)
+    public function destroy(Category $category, $id)
     {
-        //
+        try {
+            Category::where('id', $id)->delete();
+            return response()->json(['success' => 'User berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['failed' => 'Terjadi kesalahan saat menghapus kategori: ' . $e->getMessage()], 500);
+        }
     }
 }
