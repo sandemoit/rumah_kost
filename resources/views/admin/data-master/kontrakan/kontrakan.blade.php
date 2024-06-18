@@ -13,60 +13,39 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
-                    <div class="col-12">
-                        <div class="card mb-4">
-                            <div class="card-header">
-                                <h3 class="card-title">User Table</h3>
-                            </div> <!-- /.card-header -->
-                            <div class="card-body">
-                                <table class="table table-bordered">
-                                    <thead>
-                                        <tr>
-                                            <th style="width: 10px">No</th>
-                                            <th>Nama Kontrakan</th>
-                                            <th>Alamat Kontrakan</th>
-                                            <th>Aksi</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @if (count($kontrakan) > 0)
-                                            @foreach ($kontrakan as $key)
-                                                <tr class="align-middle">
-                                                    <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ $key->nama_kontrakan }}</td>
-                                                    <td>{{ $key->alamat_kontrakan }}</td>
-                                                    <td>
-                                                        <a href="javascript:void(0)" class="btn btn-primary"
-                                                            data-bs-toggle="modal"
-                                                            data-bs-target="#editKontrakan_{{ $key->id }}"><i
-                                                                class="bi bi-pencil-square"></i>
-                                                            Edit</a>
-                                                        <a href="{{ route('kontrakan.destroy', $key->id) }}"
-                                                            class="btn btn-danger" onclick="confirmDelete(event, this)"><i
-                                                                class="bi bi-trash"></i>
-                                                            Hapus</a>
-                                                    </td>
-                                                </tr>
-                                            @endforeach
-                                        @else
-                                            <tr>
-                                                <td colspan="4" class="text-center">Tidak ada data kontrakan</td>
-                                            </tr>
-                                        @endif
-                                    </tbody>
-                                </table>
-                            </div> <!-- /.card-body -->
-                            <div class="card-footer clearfix">
-                                <ul class="pagination pagination-sm m-0 float-end">
-                                    <li class="page-item"> <a class="page-link" href="#">&laquo;</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">1</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">2</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">3</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">&raquo;</a> </li>
-                                </ul>
+                    @foreach ($kontrakan as $key)
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box text-bg-primary">
+                                <div class="inner">
+                                    <h3>{{ $key->nama_kontrakan }}</h3>
+                                    <p>{{ $key->count_kamar }} Pintu</p>
+                                </div>
+                                <div class="icon">
+                                    <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                        <path
+                                            d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13zm7 7v-5h4v5h-4zm2-15.586 6 6V15l.001 5H16v-5c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v5H6v-9.586l6-6z">
+                                        </path>
+                                    </svg>
+                                </div>
+                                <div class="small-box-footer">
+                                    <a href="{{ route('kontrakan.detail', Str::slug($key->nama_kontrakan)) }}"
+                                        class="btn btn-sm btn-primary me-2">
+                                        Detail <i class="bi bi-arrow-right"></i>
+                                    </a>
+                                    <a href="javascript:void(0)"data-bs-toggle="modal"
+                                        data-bs-target="#editKontrakan_{{ $key->id }}"
+                                        class="btn btn-sm btn-warning me-2">
+                                        Edit <i class="bi bi-pencil-square"></i>
+                                    </a>
+                                    <button type="button" class="btn btn-sm btn-danger"
+                                        onclick="confirmDelete('{{ route('kontrakan.destroy', Str::slug($key->nama_kontrakan)) }}')">
+                                        Delete <i class="bi bi-trash"></i>
+                                    </button>
+                                </div>
                             </div>
-                        </div> <!-- /.card -->
-                    </div> <!-- /.col -->
+                        </div>
+                    @endforeach
                 </div> <!--end::Row-->
             </div> <!--end::Container-->
         </div>

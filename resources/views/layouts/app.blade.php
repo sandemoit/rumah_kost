@@ -17,8 +17,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.min.css"
         integrity="sha256-Qsx5lrStHZyR9REqhUF8iQt73X06c8LGIUPzpOhwRrI=" crossorigin="anonymous">
     <!--end::Third Party Plugin(Bootstrap Icons)--><!--begin::Required Plugin(AdminLTE)-->
-    <link rel="stylesheet" href="{{ url('assets') }}/css/adminlte.css">
-    <link rel="stylesheet" href="{{ url('assets') }}/css/custom.css">
+    <link rel="stylesheet" href="{{ asset('assets/css/adminlte.min.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
     @stack('load-css')
 </head> <!--end::Head--> <!--begin::Body-->
 
@@ -34,13 +34,13 @@
                 </ul>
                 <ul class="navbar-nav ms-auto"> <!--begin::Navbar Search-->
                     <li class="nav-item dropdown user-menu"> <a href="#" class="nav-link dropdown-toggle"
-                            data-bs-toggle="dropdown"> <img src="{{ url('assets') }}/assets/img/user2-160x160.jpg"
+                            data-bs-toggle="dropdown"> <img src="{{ asset('assets/assets/img/user2-160x160.jpg') }}"
                                 class="user-image rounded-circle shadow" alt="User Image"> <span
                                 class="d-none d-md-inline">{{ Auth::user()->name }}</span> </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end"> <!--begin::User Image-->
                             <li class="user-header text-bg-primary"> <img
-                                    src="{{ url('assets') }}/assets/img/user2-160x160.jpg" class="rounded-circle shadow"
-                                    alt="User Image">
+                                    src="{{ asset('assets/assets/img/user2-160x160.jpg') }}"
+                                    class="rounded-circle shadow" alt="User Image">
                                 <p>
                                     {{ Auth::user()->name }} - {{ Auth::user()->role }}
                                     <small>Member since Nov. 2023</small>
@@ -74,10 +74,10 @@
         integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
         integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script>
-    <script src="{{ url('assets') }}/js/adminlte.js"></script> <!--end::Required Plugin(AdminLTE)--><!--begin::OverlayScrollbars Configure-->
+    <script src="{{ asset('assets/js/adminlte.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="{{ url('assets') }}/js/modal-confirm.js"></script>
-    <script src="{{ url('assets') }}/js/message-alert.js"></script>
+    <script src="{{ asset('assets/js/modal-confirm.js') }}"></script>
+    <script src="{{ asset('assets/js/message-alert.js') }}"></script>
     <script>
         @if (Session::has('failed'))
             var failed = "{{ Session::get('failed') }}";

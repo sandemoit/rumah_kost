@@ -1,0 +1,39 @@
+.katnamebox {
+    margin: 0 0 8px;
+    padding: 0 0 4px;
+    border-bottom: 1px dotted #ccc;
+    position: relative;
+}
+.katnamebox span {
+    font-weight: bold;
+}
+
+.katname {
+    margin: 4px 0 0;
+    display: inline-block;
+}
+
+.kapital {
+    text-transform: capitalize !important;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.katedit {
+    float: right;
+    width: 52px;
+    text-align: right;
+    padding: 0 16px 0 0;
+}
+
+.delete_button {
+    color: #dc3545;
+    cursor: pointer;
+}
+
+.edit_button {
+    color: #00bb80;
+    cursor: pointer;
+}

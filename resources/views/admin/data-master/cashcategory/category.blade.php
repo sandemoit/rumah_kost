@@ -1,3 +1,6 @@
+@push('load-css')
+    <link rel="stylesheet" href="{{ asset('/assets/css/cashcategory.css') }}">
+@endpush
 @extends('layouts.app')
 @section('content')
     <main class="app-main"> <!--begin::App Content Header-->

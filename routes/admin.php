@@ -24,14 +24,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cashcategory/{id}', [CategoryController::class, 'destroy'])->name('cashcategory.destroy');
 
     Route::get('/kontrakan', [KontrakanController::class, 'index'])->name('kontrakan');
+    Route::get('/kontrakan/{nama_kontrakan}', [KontrakanController::class, 'detail'])->name('kontrakan.detail');
     Route::post('/kontrakan', [KontrakanController::class, 'store'])->name('kontrakan.store');
+    Route::post('/kontrakan/{nama_kontrakan}', [KontrakanController::class, 'store_kamar'])->name('kontrakan.store_kamar');
     Route::put('/kontrakan/{id}', [KontrakanController::class, 'update'])->name('kontrakan.update');
+    Route::put('/kontrakan/{nama_kontrakan}/{id}', [KontrakanController::class, 'update_kamar'])->name('kontrakan.update_kamar');
     Route::delete('/kontrakan/{id}', [KontrakanController::class, 'destroy'])->name('kontrakan.destroy');
-
-    Route::get('/kamar', [KamarController::class, 'index'])->name('kamar');
-    Route::post('/kamar', [KamarController::class, 'store'])->name('kamar.store');
-    Route::put('/kamar/{id}', [KamarController::class, 'update'])->name('kamar.update');
-    Route::delete('/kamar/{id}', [KamarController::class, 'destroy'])->name('kamar.destroy');
+    Route::delete('/kontrakan/{nama_kontrakan}/{id}', [KontrakanController::class, 'destroy_kamar'])->name('kontrakan.destroy_kamar');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
