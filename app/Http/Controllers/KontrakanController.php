@@ -28,29 +28,27 @@ class KontrakanController extends Controller
         return view('admin.data-master.kontrakan.kontrakan', $data);
     }
 
-    public function detail($nama_kontrakan)
+    public function detail(Request $request, string $nama_kontrakan)
     {
-        // Temukan kontrakan berdasarkan nama_kontrakan
+        $keyword = $request->query('search');
+
         $kontrakan = Kontrakan::where('nama_kontrakan', $nama_kontrakan)->firstOrFail();
 
-        // Temukan kamar yang terkait dengan id_kontrakan yang ditemukan
-        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->get();
+        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)
+            ->when($keyword, function ($query, $keyword) {
+                $query->where(function ($query) use ($keyword) {
+                    $query->where('nama_kamar', 'LIKE', "%$keyword%")
+                        ->orWhere('harga_kamar', 'LIKE', "%$keyword%")
+                        ->orWhere('keterangan', 'LIKE', "%$keyword%");
+                });
+            })
+            ->paginate(10);
 
-        $data = [
+        return view('admin.data-master.kontrakan.detail', [
             'kamar' => $kamar,
-            'kontrakan' => $kontrakan, // Menggunakan variabel $kontrakan langsung
-            'pageTitle' => "Detail Kontrakan: " . $kontrakan->nama_kontrakan,
-        ];
-
-        return view('admin.data-master.kontrakan.detail', $data);
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
+            'kontrakan' => $kontrakan,
+            'pageTitle' => "Kontrakan: $kontrakan->nama_kontrakan"
+        ]);
     }
 
     /**
@@ -64,10 +62,14 @@ class KontrakanController extends Controller
         ]);
 
         try {
+            // Generate 4 digit random code
+            $codeKontrakan = random_int(100000, 999999);
+
             // Buat kontrakan baru
             Kontrakan::create([
                 'nama_kontrakan' => $request->namaKontrakan,
                 'alamat_kontrakan' => $request->alamatKontrakan,
+                'code_kontrakan' => $codeKontrakan
             ]);
 
             // Redirect dengan pesan sukses
@@ -83,6 +85,7 @@ class KontrakanController extends Controller
         $request->validate([
             'nama_kamar' => 'required|string|max:255',
             'id_kontrakan' => 'required',
+            'harga_kamar' => 'required',
         ]);
 
         try {
@@ -90,6 +93,7 @@ class KontrakanController extends Controller
             Kamar::create([
                 'nama_kamar' => $request->nama_kamar,
                 'id_kontrakan' => $request->id_kontrakan,
+                'harga_kamar' => $request->harga_kamar,
                 'keterangan' => $request->keterangan
             ]);
 
@@ -99,22 +103,6 @@ class KontrakanController extends Controller
             // Tangani kesalahan
             return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Kontrakan $kontrakan)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(Kontrakan $kontrakan)
-    {
-        //
     }
 
     /**
@@ -163,6 +151,7 @@ class KontrakanController extends Controller
             // Update data kamar
             $kamar->nama_kamar = $request->nama_kamar;
             $kamar->keterangan = $request->keterangan;
+            $kamar->harga_kamar = $request->harga_kamar;
             $kamar->save();
 
             // Redirect dengan pesan sukses

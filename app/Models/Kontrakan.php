@@ -11,7 +11,8 @@ class Kontrakan extends Model
 
     protected $fillable = [
         'nama_kontrakan',
-        'alamat_kontrakan'
+        'alamat_kontrakan',
+        'code_kontrakan',
     ];
 
     protected $table = 'kontrakan';

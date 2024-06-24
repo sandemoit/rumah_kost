@@ -1,8 +1,8 @@
 @push('custom-button')
     <div class="col-sm-6">
         <div class="float-end">
-            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahKontrakan"><i
-                    class="bi bi-person-plus-fill"></i> {{ __('Tambah Kontrakan') }}</button>
+            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahKamar"><i
+                    class="bi bi-person-plus-fill"></i> {{ __('Tambah Kamar') }}</button>
         </div>
     </div>
 @endpush
@@ -17,13 +17,27 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h3 class="card-title">Kamar Table</h3>
+                                <div class="card-tools">
+                                    <form action="{{ route('kontrakan.detail', Str::slug($kontrakan->nama_kontrakan)) }}"
+                                        method="GET">
+                                        <div class="input-group input-group-sm" style="width: 150px;">
+                                            <input type="text" name="search" id="search"
+                                                value="{{ request('search') }}" class="form-control float-right"
+                                                placeholder="Search" autocomplete="off" autofocus>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div> <!-- /.card-header -->
-                            <div class="card-body">
+                            <div class="table-responsive card-body">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
                                             <th style="width: 10px">No</th>
                                             <th>Nama Kamar</th>
+                                            <th>Harga Kamar</th>
                                             <th>Keterangan</th>
                                             <th>Aksi</th>
                                         </tr>
@@ -34,6 +48,7 @@
                                                 <tr class="align-middle">
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $key->nama_kamar }}</td>
+                                                    <td>{{ rupiah($key->harga_kamar) }}</td>
                                                     <td>{{ $key->keterangan }}</td>
                                                     <td>
                                                         <a href="javascript:void(0)" class="btn btn-primary"
@@ -50,21 +65,18 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="4" class="text-center">Tidak ada data kontrakan</td>
+                                                <td colspan="5" class="text-center">Tidak ada data kamar</td>
                                             </tr>
                                         @endif
                                     </tbody>
                                 </table>
                             </div> <!-- /.card-body -->
+
+                            <!-- Pagination Links -->
                             <div class="card-footer clearfix">
-                                <ul class="pagination pagination-sm m-0 float-end">
-                                    <li class="page-item"> <a class="page-link" href="#">&laquo;</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">1</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">2</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">3</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">&raquo;</a> </li>
-                                </ul>
+                                {{ $kamar->links() }}
                             </div>
+
                         </div> <!-- /.card -->
                     </div> <!-- /.col -->
                 </div> <!--end::Row-->
@@ -96,6 +108,14 @@
                                     <div class="text-danger">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="form-group mb-3">
+                                <label for="harga_kamar">Harga Kamar</label>
+                                <input type="text" class="form-control" id="harga_kamar" name="harga_kamar"
+                                    value="{{ old('harga_kamar', $key->harga_kamar) }}">
+                                @error('harga_kamar')
+                                    <div class="text-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
 
                             <div class="form-group mb-3">
                                 <label for="keterangan">Keterangan</label>
@@ -116,7 +136,7 @@
         </div>
     @endforeach
     <!-- Modal -->
-    <div class="modal fade" id="tambahKontrakan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="tambahKamar" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header">
@@ -133,6 +153,14 @@
                             <input type="text" id="nama_kamar" name="nama_kamar" class="form-control"
                                 aria-describedby="kontrakanHelpBlock" value="{{ old('nama_kamar') }}">
                             @error('nama_kamar')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="harga_kamar" class="form-label">Harga Kamar</label>
+                            <input type="text" id="harga_kamar" name="harga_kamar" class="form-control"
+                                aria-describedby="kontrakanHelpBlock" value="{{ old('harga_kamar') }}">
+                            @error('harga_kamar')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
                         </div>

@@ -18,8 +18,20 @@
                         <div class="card mb-4">
                             <div class="card-header">
                                 <h3 class="card-title">User Table</h3>
+                                <div class="card-tools">
+                                    <form action="{{ route('usermanajemen') }}" method="GET">
+                                        <div class="input-group input-group-sm" style="width: 150px;">
+                                            <input type="text" name="search" id="search"
+                                                value="{{ request('search') }}" class="form-control float-right"
+                                                placeholder="Search" autocomplete="off" autofocus>
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-search"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
                             </div> <!-- /.card-header -->
-                            <div class="card-body">
+                            <div class="table-responsive card-body">
                                 <table class="table table-bordered">
                                     <thead>
                                         <tr>
@@ -31,38 +43,41 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        @foreach ($users as $key)
-                                            <tr class="align-middle">
-                                                <td>{{ $loop->iteration }}</td>
-                                                <td>{{ $key->name }}</td>
-                                                <td>{{ $key->email }}</td>
-                                                <td>
-                                                    @if ($key->role == 'admin')
-                                                        <span class="badge bg-success">Admin</span>
-                                                    @elseif ($key->role == 'karyawan')
-                                                        <span class="badge bg-primary">Karyawan</span>
-                                                    @endif
-                                                </td>
-                                                <td>
-                                                    <a href="{{ route('usermanajemen.edit', $key->id) }}"
-                                                        class="btn btn-primary"><i class="bi bi-pencil-square"></i> Edit</a>
-                                                    <a href="{{ route('usermanajemen.destroy', $key->id) }}"
-                                                        class="btn btn-danger" onclick="confirmDelete(event, this)"><i
-                                                            class="bi bi-trash"></i> Hapus</a>
-                                                </td>
+                                        @if (count($users) > 0)
+                                            @foreach ($users as $key)
+                                                <tr class="align-middle">
+                                                    <td>{{ $loop->iteration }}</td>
+                                                    <td>{{ $key->name }}</td>
+                                                    <td>{{ $key->email }}</td>
+                                                    <td>
+                                                        @if ($key->role == 'admin')
+                                                            <span class="badge bg-success">Admin</span>
+                                                        @elseif ($key->role == 'karyawan')
+                                                            <span class="badge bg-primary">Karyawan</span>
+                                                        @endif
+                                                    </td>
+                                                    <td>
+                                                        <a href="{{ route('usermanajemen.edit', $key->id) }}"
+                                                            class="btn btn-primary"><i class="bi bi-pencil-square"></i>
+                                                            Ubah</a>
+                                                        <a href="{{ route('usermanajemen.destroy', $key->id) }}"
+                                                            class="btn btn-danger" onclick="confirmDelete(event, this)"><i
+                                                                class="bi bi-trash"></i> Hapus</a>
+                                                    </td>
+                                                </tr>
+                                            @endforeach
+                                        @else
+                                            <tr>
+                                                <td colspan="5" class="text-center">Tidak ada data kamar</td>
                                             </tr>
-                                        @endforeach
+                                        @endif
                                     </tbody>
                                 </table>
                             </div> <!-- /.card-body -->
+
+                            <!-- Pagination Links -->
                             <div class="card-footer clearfix">
-                                <ul class="pagination pagination-sm m-0 float-end">
-                                    <li class="page-item"> <a class="page-link" href="#">&laquo;</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">1</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">2</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">3</a> </li>
-                                    <li class="page-item"> <a class="page-link" href="#">&raquo;</a> </li>
-                                </ul>
+                                {{ $users->links() }}
                             </div>
                         </div> <!-- /.card -->
                     </div> <!-- /.col -->

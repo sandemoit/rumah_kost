@@ -34,54 +34,31 @@
                         <p>User Manajemen</p>
                     </a>
                 </li>
-                <li class="nav-item"> <a href="#" class="nav-link"> <i
-                            class="nav-icon bi bi-box-arrow-in-right"></i>
+                <li class="nav-header">Transaksi Main</li>
+                <li class="nav-item"> <a href="{{ route('penyewa') }}"
+                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'penyewa' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-person"></i>
+                        <p>Penyewa</p>
+                    </a>
+                </li>
+                <li class="nav-item {{ request()->segment(1) == 'transaksi' ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->segment(1) == 'transaksi' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-journal-text"></i>
                         <p>
-                            Auth
+                            Kontrakan
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>
                     <ul class="nav nav-treeview">
-                        <li class="nav-item"> <a href="#" class="nav-link"> <i
-                                    class="nav-icon bi bi-box-arrow-in-right"></i>
-                                <p>
-                                    Version 1
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item"> <a href="./examples/login.html" class="nav-link"> <i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>Login</p>
-                                    </a> </li>
-                                <li class="nav-item"> <a href="./examples/register.html" class="nav-link"> <i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>Register</p>
-                                    </a> </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item"> <a href="#" class="nav-link"> <i
-                                    class="nav-icon bi bi-box-arrow-in-right"></i>
-                                <p>
-                                    Version 2
-                                    <i class="nav-arrow bi bi-chevron-right"></i>
-                                </p>
-                            </a>
-                            <ul class="nav nav-treeview">
-                                <li class="nav-item"> <a href="./examples/login-v2.html" class="nav-link"> <i
-                                            class="nav-icon bi bi-circle"></i>
-                                        <p>Login</p>
-                                    </a> </li>
-                                <li class="nav-item"> <a href="./examples/register-v2.html" class="nav-link">
-                                        <i class="nav-icon bi bi-circle"></i>
-                                        <p>Register</p>
-                                    </a> </li>
-                            </ul>
-                        </li>
-                        <li class="nav-item"> <a href="./examples/lockscreen.html" class="nav-link"> <i
-                                    class="nav-icon bi bi-circle"></i>
-                                <p>Lockscreen</p>
-                            </a> </li>
+                        @foreach (getAllKontrakan() as $kontrakan)
+                            <li class="nav-item">
+                                <a href="{{ route('transaksi.kontrakan', $kontrakan->code_kontrakan) }}"
+                                    class="nav-link {{ request()->segment(2) == $kontrakan->code_kontrakan ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle"></i>
+                                    <p>{{ $kontrakan->nama_kontrakan }}</p>
+                                </a>
+                            </li>
+                        @endforeach
                     </ul>
                 </li>
             </ul> <!--end::Sidebar Menu-->

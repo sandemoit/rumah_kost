@@ -6,9 +6,12 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KamarController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\ManajemenController;
+use App\Http\Controllers\PenyewaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\TransaksiController;
 
 Route::middleware('auth')->group(function () {
+    Route::get('transaksi/{code_kontrakan}', [TransaksiController::class, 'show'])->name('transaksi.kontrakan');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/usermanajemen', [ManajemenController::class, 'index'])->name('usermanajemen');
@@ -31,6 +34,12 @@ Route::middleware('auth')->group(function () {
     Route::put('/kontrakan/{nama_kontrakan}/{id}', [KontrakanController::class, 'update_kamar'])->name('kontrakan.update_kamar');
     Route::delete('/kontrakan/{id}', [KontrakanController::class, 'destroy'])->name('kontrakan.destroy');
     Route::delete('/kontrakan/{nama_kontrakan}/{id}', [KontrakanController::class, 'destroy_kamar'])->name('kontrakan.destroy_kamar');
+
+    Route::get('/penyewa', [PenyewaController::class, 'index'])->name('penyewa');
+    Route::get('/get-kamar/{id}', [PenyewaController::class, 'getKamarByKontrakan'])->name('get-kamar');
+    Route::post('/penyewa', [PenyewaController::class, 'store'])->name('penyewa.store');
+    Route::put('/penyewa/{id}', [PenyewaController::class, 'update'])->name('penyewa.update');
+    Route::delete('/penyewa/{id}', [PenyewaController::class, 'destroy'])->name('penyewa.destroy');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

@@ -11,12 +11,22 @@ class ManajemenController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $data  = [
-            'users' => User::all(),
+        $keyword = $request->input('search');
+
+        $users = User::when($keyword, function ($query, $keyword) {
+            return $query->where(function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', "%$keyword%")
+                    ->orWhere('email', 'LIKE', "%$keyword%");
+            });
+        })->paginate(10);
+
+        $data = [
+            'users' => $users,
             'pageTitle' => 'Manajemen User',
         ];
+
         return view('admin.data-master.user.manajemen', $data);
     }
 

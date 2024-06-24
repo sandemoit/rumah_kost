@@ -31,17 +31,17 @@
                                 <div class="small-box-footer">
                                     <a href="{{ route('kontrakan.detail', Str::slug($key->nama_kontrakan)) }}"
                                         class="btn btn-sm btn-primary me-2">
-                                        Detail <i class="bi bi-arrow-right"></i>
+                                        kamar <i class="bi bi-arrow-right"></i>
                                     </a>
-                                    <a href="javascript:void(0)"data-bs-toggle="modal"
+                                    <a href="javascript:void(0)" data-bs-toggle="modal"
                                         data-bs-target="#editKontrakan_{{ $key->id }}"
                                         class="btn btn-sm btn-warning me-2">
-                                        Edit <i class="bi bi-pencil-square"></i>
+                                        Ubah <i class="bi bi-pencil-square"></i>
                                     </a>
-                                    <button type="button" class="btn btn-sm btn-danger"
-                                        onclick="confirmDelete('{{ route('kontrakan.destroy', Str::slug($key->nama_kontrakan)) }}')">
-                                        Delete <i class="bi bi-trash"></i>
-                                    </button>
+                                    <a href="{{ route('kontrakan.destroy', $key->id) }}" class="btn btn-sm btn-danger"
+                                        onclick="confirmDelete(event, this)">
+                                        Hapus <i class="bi bi-trash"></i>
+                                    </a>
                                 </div>
                             </div>
                         </div>

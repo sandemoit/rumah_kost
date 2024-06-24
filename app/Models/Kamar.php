@@ -9,11 +9,17 @@ class Kamar extends Model
 {
     use HasFactory;
 
+    protected $table = 'kamar';
+
     protected $fillable = [
         'nama_kamar',
         'id_kontrakan',
+        'harga_kamar',
         'keterangan'
     ];
 
-    protected $table = 'kamar';
+    public function penyewa()
+    {
+        return $this->hasMany(Penyewa::class, 'id_kamar');
+    }
 }
