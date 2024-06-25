@@ -76,7 +76,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kontrakan berhasil dibuat.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -101,7 +101,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kamar berhasil dibuat.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -158,7 +158,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kamar berhasil diubah.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 

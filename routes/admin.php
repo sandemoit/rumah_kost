@@ -40,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penyewa', [PenyewaController::class, 'store'])->name('penyewa.store');
     Route::put('/penyewa/{id}', [PenyewaController::class, 'update'])->name('penyewa.update');
     Route::delete('/penyewa/{id}', [PenyewaController::class, 'destroy'])->name('penyewa.destroy');
+    Route::get('/penyewa/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

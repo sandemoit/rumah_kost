@@ -16,11 +16,15 @@ class PenyewaController extends Controller
     public function index(Request $request)
     {
         $kontrakans = Kontrakan::select('id', 'nama_kontrakan')->get();
-        $kamar = Kamar::select('id', 'nama_kamar')->get();
-        $penyewa = Penyewa::with(['kamar:id,nama_kamar'])->select('nama_penyewa', 'status', 'nomor_wa', 'id_kamar')->get();
+        $kamar = Kamar::select('id', 'nama_kamar', 'id_kontrakan')->get();
+        $penyewa = Penyewa::with(['kamar:id,nama_kamar,id_kontrakan'])
+            ->select('id', 'nama_penyewa', 'status', 'nomor_wa', 'id_kamar', 'id_kontrakan', 'tanggal_masuk')
+            ->get();
+
+        // Check which rooms are full
+        $kamarTerisi = Penyewa::where('status', 'aktif')->pluck('id_kamar')->toArray();
 
         $keyword = $request->input('search');
-
         $penyewa = Penyewa::when($keyword, function ($query, $keyword) {
             return $query->where(function ($query) use ($keyword) {
                 $query->where('nama_penyewa', 'LIKE', "%$keyword%")
@@ -29,10 +33,11 @@ class PenyewaController extends Controller
         })->paginate(10);
 
         $data = [
-            'pageTitle' => 'Manajemen Penyewa',
+            'pageTitle' => 'Penyewa',
             'kontrakan' => $kontrakans,
             'penyewa' => $penyewa,
-            'kamar' => $kamar
+            'kamar' => $kamar,
+            'kamarTerisi' => $kamarTerisi,
         ];
 
         return view('admin.transaksi.penyewa', $data);
@@ -40,7 +45,17 @@ class PenyewaController extends Controller
 
     public function getKamarByKontrakan($kontrakanId)
     {
-        $kamar = Kamar::select('id', 'nama_kamar')->where('id_kontrakan', $kontrakanId)->get();
+        $kamar = Kamar::select('id', 'nama_kamar')
+            ->where('id_kontrakan', $kontrakanId)
+            ->withCount(['penyewa' => function ($query) {
+                $query->where('status', 'aktif');
+            }])
+            ->get()
+            ->map(function ($item) {
+                $item->is_full = $item->penyewa_count > 0;
+                return $item;
+            });
+
         return response()->json($kamar);
     }
 
@@ -60,6 +75,16 @@ class PenyewaController extends Controller
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
         $status = $tanggal_masuk->isToday() ? 'aktif' : 'tidak_aktif';
 
+        // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
+        $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
+            ->where('id_kamar', $request->id_kamar)
+            ->where('status', 'aktif')
+            ->exists();
+
+        if ($penyewaAktif) {
+            return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+        }
+
         try {
             Penyewa::create([
                 'nama_penyewa' => $request->nama_penyewa,
@@ -70,11 +95,9 @@ class PenyewaController extends Controller
                 'id_kamar' => $request->id_kamar,
             ]);
 
-            // Redirect dengan pesan sukses
             return redirect()->back()->with('success', 'Penyewa berhasil ditambahkan.');
         } catch (\Exception $e) {
-            // Tangani kesalahan
-            return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -96,6 +119,17 @@ class PenyewaController extends Controller
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
         $status = $tanggal_masuk->isToday() ? 'aktif' : 'tidak_aktif';
 
+        // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
+        $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
+            ->where('id_kamar', $request->id_kamar)
+            ->where('status', 'aktif')
+            ->where('id', '!=', $id)
+            ->exists();
+
+        if ($penyewaAktif) {
+            return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+        }
+
         try {
             $penyewa->update([
                 'nama_penyewa' => $request->nama_penyewa,
@@ -110,7 +144,21 @@ class PenyewaController extends Controller
             return redirect()->back()->with('success', 'Penyewa berhasil diubah.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->withErrors(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+        }
+    }
+
+    public function putus_kontrak($id)
+    {
+        $penyewa = Penyewa::findOrFail($id);
+        try {
+            $penyewa->update([
+                'status' => 'putus_kontrak',
+            ]);
+
+            return redirect()->back()->with('success', 'Penyewa berhasil diubah.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 

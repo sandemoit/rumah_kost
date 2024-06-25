@@ -29,3 +29,62 @@
 .colored-toast .swal2-html-container {
     color: white;
 }
+
+/* Hide buttons on mobile by default */
+.action-buttons,
+.aksi-button-pc {
+    display: none;
+}
+
+/* Style for action-toggle and action-buttons on mobile */
+@media (max-width: 767px) {
+    .action-toggle {
+        position: relative;
+        display: inline-block;
+    }
+
+    .action-buttons {
+        position: absolute;
+        top: -30px; /* Jarak dari atas */
+        background-color: white;
+        border: 1px solid #ccc;
+        padding: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        z-index: 1000; /* Pastikan lebih tinggi dari elemen lain */
+        display: none; /* Sembunyikan secara default */
+        width: 140px;
+        border-radius: 5px;
+    }
+
+    .action-toggle.active .action-buttons {
+        right: 60px; /* Posisi saat ditampilkan */
+        display: block; /* Tampilkan action buttons saat active */
+        display: inline-flex;
+        flex-direction: column;
+        transition: all 1s ease;
+    }
+
+    .action-button {
+        margin-bottom: 10px; /* Jarak antar tombol */
+    }
+}
+
+/* Show action-buttons on larger screens */
+@media (min-width: 768px) {
+    .aksi-button-pc {
+        display: inline-block;
+    }
+
+    .toggle-button {
+        display: none;
+    }
+}
+
+.btn-mobile {
+    color: grey;
+    text-decoration: none;
+}
+.btn-mobile:hover {
+    color: black;
+    transition: all 0.3s ease;
+}

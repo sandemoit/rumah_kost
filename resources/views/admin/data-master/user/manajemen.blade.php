@@ -57,12 +57,34 @@
                                                         @endif
                                                     </td>
                                                     <td>
-                                                        <a href="{{ route('usermanajemen.edit', $key->id) }}"
-                                                            class="btn btn-primary"><i class="bi bi-pencil-square"></i>
-                                                            Ubah</a>
-                                                        <a href="{{ route('usermanajemen.destroy', $key->id) }}"
-                                                            class="btn btn-danger" onclick="confirmDelete(event, this)"><i
-                                                                class="bi bi-trash"></i> Hapus</a>
+                                                        <div class="action-toggle">
+                                                            <button class="toggle-button btn btn-primary"
+                                                                onclick="toggleActions({{ $key->id }})"><i
+                                                                    class="bi bi-layers"></i></button>
+
+                                                            <!-- Action Buttons Container -->
+                                                            <div class="action-buttons"
+                                                                id="action-buttons-{{ $key->id }}">
+                                                                <a href="{{ route('usermanajemen.edit', $key->id) }}"
+                                                                    class="btn-mobile">
+                                                                    <i class="bi bi-pencil-square"></i> Ubah
+                                                                </a>
+                                                                <a href="{{ route('usermanajemen.destroy', $key->id) }}"
+                                                                    class="btn-mobile" onclick="confirmDelete(event, this)">
+                                                                    <i class="bi bi-trash"></i> Hapus
+                                                                </a>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="aksi-button-pc">
+                                                            <a href="{{ route('usermanajemen.edit', $key->id) }}"
+                                                                class="btn btn-primary"><i class="bi bi-pencil-square"></i>
+                                                                Ubah</a>
+                                                            <a href="{{ route('usermanajemen.destroy', $key->id) }}"
+                                                                class="btn btn-danger"
+                                                                onclick="confirmDelete(event, this)"><i
+                                                                    class="bi bi-trash"></i> Hapus</a>
+                                                        </div>
                                                     </td>
                                                 </tr>
                                             @endforeach

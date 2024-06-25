@@ -65,6 +65,7 @@
             <!--end::Copyright-->
         </footer> <!--end::Footer-->
     </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/overlayscrollbars@2.3.0/browser/overlayscrollbars.browser.es6.min.js"
         integrity="sha256-H2VM7BKda+v2Z4+DRy69uknwxjyDRhszjXFhsL4gD3w=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
@@ -74,6 +75,7 @@
     <script src="{{ asset('assets/js/adminlte.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="{{ asset('assets/js/modal-confirm.js') }}"></script>
+    <script src="{{ asset('assets/js/aksi.js') }}"></script>
     <script src="{{ asset('assets/js/message-alert.js') }}"></script>
     <script>
         @if (Session::has('failed'))
