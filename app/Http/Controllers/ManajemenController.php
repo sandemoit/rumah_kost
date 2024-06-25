@@ -100,30 +100,28 @@ class ManajemenController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, User $user, $id)
+    public function update(Request $request, $id)
     {
         $request->validate([
             'name' => 'required|string|max:255',
-            'old_password' => $request->filled('old_password') ? 'required' : '',
-            'new_password' => $request->filled('new_password') ? 'required' : '',
             'role' => 'required|string|in:admin,karyawan',
+            'new_password' => 'nullable|string|min:8|confirmed',
         ]);
 
+        $user = User::findOrFail($id);
         $user->name = $request->name;
         $user->role = $request->role;
 
-        if ($request->filled('old_password')) {
-            if (!Hash::check($request->old_password, auth()->user()->password)) {
-                return redirect()->back()->with('failed', 'Old password is incorrect');
-            }
+        // Cek apakah password diubah
+        if (!empty($request->new_password)) {
             $user->password = Hash::make($request->new_password);
         }
 
         try {
-            User::where('id', $id)->update($user);
-            return redirect()->route('usermanajemen.index')->with('success', 'User berhasil diperbarui.');
+            $user->save();
+            return redirect()->route('usermanajemen')->with('success', 'User berhasil diperbarui.');
         } catch (\Exception $e) {
-            return redirect()->back()->with('failed', 'Terjadi kesalahan saat memperbarui user: ' . $e->getMessage());
+            return redirect()->back()->with('failed', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 

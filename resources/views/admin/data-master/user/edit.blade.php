@@ -46,19 +46,19 @@
                                             value="{{ old('email', $user->email) }}">
                                     </div>
                                     <div class="mb-3">
-                                        <label class="form-label">Password</label>
-                                        <input type="password" name="old_password" id="old_password"
-                                            class="form-control @error('old_password') is-invalid @enderror">
-                                        @error('old_password')
+                                        <label class="form-label">New Password</label>
+                                        <input type="password" name="new_password" id="new_password"
+                                            class="form-control @error('new_password') is-invalid @enderror">
+                                        @error('new_password')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                         <p class="text-danger">Kosongkan jika tidak ingin mengganti password</p>
                                     </div>
                                     <div class="mb-3">
                                         <label class="form-label">Konfirmasi Password</label>
-                                        <input type="password" name="new_password" id="new_password"
-                                            class="form-control @error('new_password') is-invalid @enderror">
-                                        @error('new_password')
+                                        <input type="password" name="new_password_confirmation" id="confirm_password"
+                                            class="form-control @error('new_password_confirmation') is-invalid @enderror">
+                                        @error('new_password_confirmation')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
                                     </div>

@@ -14,7 +14,6 @@ return new class extends Migration
         Schema::create('penyewa', function (Blueprint $table) {
             $table->id();
             $table->string('nama_penyewa');
-            $table->text('alamat_penyewa');
             $table->string('nomor_wa', 15);
             $table->enum('status', ['aktif', 'tidak_aktif'])->default('aktif');
             $table->date('tanggal_masuk');

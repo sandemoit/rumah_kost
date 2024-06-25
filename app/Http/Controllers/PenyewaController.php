@@ -24,7 +24,6 @@ class PenyewaController extends Controller
         $penyewa = Penyewa::when($keyword, function ($query, $keyword) {
             return $query->where(function ($query) use ($keyword) {
                 $query->where('nama_penyewa', 'LIKE', "%$keyword%")
-                    ->orWhere('alamat_penyewa', 'LIKE', "%$keyword%")
                     ->orWhere('nomor_wa', 'LIKE', "%$keyword%");
             });
         })->paginate(10);
@@ -52,10 +51,9 @@ class PenyewaController extends Controller
     {
         $request->validate([
             'nama_penyewa' => 'required|string|max:255',
-            'alamat_penyewa' => 'required|string|max:255',
             'nomor_wa' => 'required|string|max:15',
             'tanggal_masuk' => 'required|date',
-            'id_kontrakans' => 'required|exists:kontrakan,id',
+            'id_kontrakan' => 'required|exists:kontrakan,id',
             'id_kamar' => 'required|exists:kamar,id',
         ]);
 
@@ -65,7 +63,6 @@ class PenyewaController extends Controller
         try {
             Penyewa::create([
                 'nama_penyewa' => $request->nama_penyewa,
-                'alamat_penyewa' => $request->alamat_penyewa,
                 'nomor_wa' => $request->nomor_wa,
                 'status' => $status,
                 'tanggal_masuk' => $tanggal_masuk,
@@ -88,10 +85,9 @@ class PenyewaController extends Controller
     {
         $request->validate([
             'nama_penyewa' => 'required|string|max:255',
-            'alamat_penyewa' => 'required|string|max:255',
             'nomor_wa' => 'required|string|max:15',
             'tanggal_masuk' => 'required|date',
-            'id_kontrakans' => 'required|exists:kontrakan,id',
+            'id_kontrakan' => 'required|exists:kontrakan,id',
             'id_kamar' => 'required|exists:kamar,id',
         ]);
 
@@ -103,7 +99,6 @@ class PenyewaController extends Controller
         try {
             $penyewa->update([
                 'nama_penyewa' => $request->nama_penyewa,
-                'alamat_penyewa' => $request->alamat_penyewa,
                 'nomor_wa' => $request->nomor_wa,
                 'status' => $status,
                 'tanggal_masuk' => $request->tanggal_masuk,

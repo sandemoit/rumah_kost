@@ -76,7 +76,7 @@
                                             @endforeach
                                         @else
                                             <tr>
-                                                <td colspan="5" class="text-center">Tidak ada data</td>
+                                                <td colspan="7" class="text-center">Tidak ada data</td>
                                             </tr>
                                         @endif
                                     </tbody>
@@ -119,15 +119,6 @@
                             @enderror
 
                             <div class="form-group mb-3">
-                                <label for="alamat_penyewa" class="form-label">Alamat Penyewa</label>
-                                <input type="text" class="form-control @error('alamat_penyewa') is-invalid @enderror"
-                                    id="alamat_penyewa" name="alamat_penyewa" value="{{ $key->alamat_penyewa }}" required">
-                            </div>
-                            @error('alamat_penyewa')
-                                <div class="invalid-feedback">{{ $message }}</div>
-                            @enderror
-
-                            <div class="form-group mb-3">
                                 <label for="nomor_wa" class="form-label">Nomor Telepon</label>
                                 <input type="text" class="form-control @error('nomor_wa') is-invalid @enderror"
                                     id="nomor_wa" name="nomor_wa" value="{{ $key->nomor_wa }}" required>
@@ -144,7 +135,7 @@
 
                             <div class="form-group mb-3">
                                 <label for="id_kontrakan" class="form-label">Kontrakan</label>
-                                <select class="form-select @error('id_kontrakan') is-invalid @enderror" id="id_kontrakans"
+                                <select class="form-select @error('id_kontrakans') is-invalid @enderror" id="id_kontrakans"
                                     name="id_kontrakan" required>
                                     <option disabled {{ $key->id ? '' : 'selected' }}>Pilih Kontrakan</option>
                                     @foreach ($kontrakan as $item)
@@ -154,7 +145,7 @@
                                         </option>
                                     @endforeach
                                 </select>
-                                @error('id_kontrakan')
+                                @error('id_kontrakans')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
@@ -206,15 +197,6 @@
                                 id="nama_penyewa" name="nama_penyewa" value="{{ old('nama_penyewa') }}" required>
                         </div>
                         @error('nama_penyewa')
-                            <div class="invalid-feedback">{{ $message }}</div>
-                        @enderror
-
-                        <div class="form-group mb-3">
-                            <label for="alamat_penyewa" class="form-label">Alamat Penyewa</label>
-                            <input type="text" class="form-control @error('alamat_penyewa') is-invalid @enderror"
-                                id="alamat_penyewa" name="alamat_penyewa" value="{{ old('alamat_penyewa') }}" required>
-                        </div>
-                        @error('alamat_penyewa')
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
 
