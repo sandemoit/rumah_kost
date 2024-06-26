@@ -3,7 +3,6 @@
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\KamarController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\PenyewaController;
@@ -41,6 +40,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/penyewa/{id}', [PenyewaController::class, 'update'])->name('penyewa.update');
     Route::delete('/penyewa/{id}', [PenyewaController::class, 'destroy'])->name('penyewa.destroy');
     Route::get('/penyewa/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
+    Route::get('/penyewa/send_wa/{id}', [PenyewaController::class, 'wa_tagihan'])->name('penyewa.wa_tagihan');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

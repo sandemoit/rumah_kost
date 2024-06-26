@@ -71,17 +71,14 @@
                                                             <!-- Action Buttons Container -->
                                                             <div class="action-buttons"
                                                                 id="action-buttons-{{ $key->id }}">
-                                                                <a href="{{ route('penyewa.destroy', $key->id) }}"
-                                                                    class="btn-mobile" onclick="confirmDelete(event, this)">
-                                                                    <i class="bi bi-trash"></i> Hapus
-                                                                </a>
                                                                 @if ($key->status != 'putus_kontrak')
                                                                     <a href="javascript:void(0)" class="btn-mobile"
                                                                         data-bs-toggle="modal"
                                                                         data-bs-target="#editPenyewa_{{ $key->id }}">
                                                                         <i class="bi bi-pencil-square"></i> Ubah
                                                                     </a>
-                                                                    <a href="#" class="btn-mobile" target="_blank">
+                                                                    <a href="{{ route('penyewa.wa_tagihan', $key->id) }}"
+                                                                        class="btn-mobile">
                                                                         <i class="bi bi-whatsapp"></i> Kirim Tagihan
                                                                     </a>
                                                                     <a href="{{ route('penyewa.putus_kontrak', $key->id) }}"
@@ -90,30 +87,35 @@
                                                                         <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                     </a>
                                                                 @endif
+                                                                <a href="{{ route('penyewa.destroy', $key->id) }}"
+                                                                    class="btn-mobile" onclick="confirmDelete(event, this)">
+                                                                    <i class="bi bi-trash"></i> Hapus
+                                                                </a>
                                                             </div>
                                                         </div>
 
                                                         <!-- Action Buttons for PC -->
                                                         <div class="aksi-button-pc">
-                                                            <a href="{{ route('penyewa.destroy', $key->id) }}"
-                                                                class="btn btn-danger" onclick="confirmDelete(event, this)">
-                                                                <i class="bi bi-trash"></i> Hapus
-                                                            </a>
                                                             @if ($key->status != 'putus_kontrak')
                                                                 <a href="javascript:void(0)" class="btn btn-primary"
                                                                     data-bs-toggle="modal"
                                                                     data-bs-target="#editPenyewa_{{ $key->id }}">
                                                                     <i class="bi bi-pencil-square"></i> Edit
                                                                 </a>
-                                                                <a href="#" class="btn btn-success" target="_blank">
+                                                                <a href="{{ route('penyewa.wa_tagihan', $key->id) }}"
+                                                                    class="btn btn-success">
                                                                     <i class="bi bi-whatsapp"></i> Kirim Tagihan
                                                                 </a>
                                                                 <a href="{{ route('penyewa.putus_kontrak', $key->id) }}"
                                                                     class="btn btn-dark"
                                                                     onclick="return confirm('Apakah anda yakin ingin putus kontrak?')">
-                                                                    <i class="bi bi-whatsapp"></i> Putus Kontrak
+                                                                    <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                 </a>
                                                             @endif
+                                                            <a href="{{ route('penyewa.destroy', $key->id) }}"
+                                                                class="btn btn-danger" onclick="confirmDelete(event, this)">
+                                                                <i class="bi bi-trash"></i> Hapus
+                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>

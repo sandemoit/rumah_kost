@@ -7,6 +7,9 @@ use App\Models\Kamar;
 use App\Models\Kontrakan;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use App\Helpers\WhatsAppHelper;
+use Illuminate\Support\Str;
+use Exception;
 
 class PenyewaController extends Controller
 {
@@ -73,7 +76,7 @@ class PenyewaController extends Controller
         ]);
 
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
-        $status = $tanggal_masuk->isToday() ? 'aktif' : 'tidak_aktif';
+        $status = $tanggal_masuk->isFuture() ? 'tidak_aktif' : 'aktif';
 
         // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
         $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
@@ -83,6 +86,12 @@ class PenyewaController extends Controller
 
         if ($penyewaAktif) {
             return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+        }
+        // Cek validitas nomor WhatsApp
+        $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($request->nomor_wa);
+
+        if (!$isWhatsAppValid) {
+            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
         }
 
         try {
@@ -117,7 +126,7 @@ class PenyewaController extends Controller
         $penyewa = Penyewa::findOrFail($id);
 
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
-        $status = $tanggal_masuk->isToday() ? 'aktif' : 'tidak_aktif';
+        $status = $tanggal_masuk->isFuture() ? 'tidak_aktif' : 'aktif';
 
         // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
         $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
@@ -128,6 +137,13 @@ class PenyewaController extends Controller
 
         if ($penyewaAktif) {
             return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+        }
+
+        // Cek validitas nomor WhatsApp
+        $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($request->nomor_wa);
+
+        if (!$isWhatsAppValid) {
+            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
         }
 
         try {
@@ -172,6 +188,31 @@ class PenyewaController extends Controller
             return response()->json(['success' => 'Data berhasil dihapus.']);
         } catch (\Exception $e) {
             return response()->json(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
+
+    public function wa_tagihan($id)
+    {
+        $penyewa = Penyewa::findOrFail($id);
+
+        // Cek validitas nomor WhatsApp
+        $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($penyewa->nomor_wa);
+
+        if (!$isWhatsAppValid) {
+            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
+        }
+
+        try {
+            $response = WhatsAppHelper::sendWhatsApp($penyewa->nomor_wa, 'Tagihan');
+            $decodedResponse = json_decode($response, true);
+
+            if (isset($decodedResponse['status']) && $decodedResponse['status'] == 'true') {
+                return redirect()->back()->with('success', 'Tagihan telah dikirim.');
+            } else {
+                return redirect()->back()->with('failed', $decodedResponse['reason']);
+            }
+        } catch (\Exception $e) {
+            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 }
