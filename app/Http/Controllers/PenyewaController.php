@@ -87,12 +87,6 @@ class PenyewaController extends Controller
         if ($penyewaAktif) {
             return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
         }
-        // Cek validitas nomor WhatsApp
-        $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($request->nomor_wa);
-
-        if (!$isWhatsAppValid) {
-            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
-        }
 
         try {
             Penyewa::create([
@@ -137,13 +131,6 @@ class PenyewaController extends Controller
 
         if ($penyewaAktif) {
             return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
-        }
-
-        // Cek validitas nomor WhatsApp
-        $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($request->nomor_wa);
-
-        if (!$isWhatsAppValid) {
-            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
         }
 
         try {
