@@ -42,6 +42,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/penyewa/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
     Route::get('/penyewa/send_wa/{id}', [PenyewaController::class, 'wa_tagihan'])->name('penyewa.wa_tagihan');
 
+    Route::get('/getKamarData/{id}', [TransaksiController::class, 'getKamarData'])->name('getKamarData');
+    Route::post('/transaksi-masuk', [TransaksiController::class, 'store_masuk'])->name('getKamarData.store_masuk');
+    Route::post('/transaksi-keluar', [TransaksiController::class, 'store_keluar'])->name('getKamarData.store_keluar');
+    Route::get('/api/get-transaction/{type}/{id}', [TransaksiController::class, 'getTransaction'])->name('get-transaction');
+    Route::delete('/transaksi-masuk/delete/{id}', [TransaksiController::class, 'deleteMasuk'])->name('transaksi-masuk.delete');
+    Route::delete('/transaksi-keluar/delete/{id}', [TransaksiController::class, 'deleteKeluar'])->name('transaksi-keluar.delete');
+    Route::get('/getSaldoKontrakan/{code_kontrakan}', [TransaksiController::class, 'getSaldoKontrakan'])->name('getSaldoKontrakan');
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

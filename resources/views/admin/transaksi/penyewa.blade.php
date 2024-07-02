@@ -46,7 +46,7 @@
                                     <tbody>
                                         @if (count($penyewa) > 0)
                                             @foreach ($penyewa as $key)
-                                                <tr class="align-middle">
+                                                <tr class="align-middle bg-black">
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $key->nama_penyewa }}</td>
                                                     <td>{{ tanggal($key->tanggal_masuk) }}</td>
@@ -100,7 +100,7 @@
                                                                 <a href="javascript:void(0)" class="btn btn-primary"
                                                                     data-bs-toggle="modal"
                                                                     data-bs-target="#editPenyewa_{{ $key->id }}">
-                                                                    <i class="bi bi-pencil-square"></i> Edit
+                                                                    <i class="bi bi-pencil-square"></i> Ubah
                                                                 </a>
                                                                 <a href="{{ route('penyewa.wa_tagihan', $key->id) }}"
                                                                     class="btn btn-success">

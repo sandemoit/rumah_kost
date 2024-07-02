@@ -16,4 +16,9 @@ class Kontrakan extends Model
     ];
 
     protected $table = 'kontrakan';
+
+    public function kamar()
+    {
+        return $this->hasMany(Kamar::class, 'id_kontrakan');
+    }
 }

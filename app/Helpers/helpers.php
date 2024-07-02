@@ -14,19 +14,6 @@ if (!function_exists('getAllKontrakan')) {
     }
 }
 
-if (!function_exists('rupiah')) {
-    /**
-     * Format angka menjadi format Rupiah.
-     *
-     * @param  float|int  $angka
-     * @return string
-     */
-    function rupiah($angka)
-    {
-        return 'Rp ' . number_format($angka, 0, ',', '.');
-    }
-}
-
 if (!function_exists('tanggal')) {
     /**
      * Format tanggal ke dalam format Indonesia
@@ -48,18 +35,18 @@ if (!function_exists('tanggal')) {
         );
 
         $nama_bulan = array(
-            1 => 'Januari',
-            'Februari',
-            'Maret',
-            'April',
-            'Mei',
-            'Juni',
-            'Juli',
-            'Agustus',
-            'September',
-            'Oktober',
-            'November',
-            'Desember'
+            1 => 'JAN',
+            'FEB',
+            'MAR',
+            'APR',
+            'MEI',
+            'JUN',
+            'JUL',
+            'AGU',
+            'SEP',
+            'OKT',
+            'NOV',
+            'DES'
         );
 
         $tahun = substr($tanggal, 0, 4);
@@ -72,9 +59,36 @@ if (!function_exists('tanggal')) {
             $hari = $nama_hari[$urutan_hari];
             $text .= "$hari, $tanggal $bulan $tahun";
         } else {
-            $text .= "$tanggal $bulan $tahun";
+            $text .= "$tanggal-$bulan-$tahun";
         }
 
         return $text;
+    }
+}
+
+
+if (!function_exists('hari')) {
+    /**
+     * Format tanggal ke dalam format Indonesia hanya menampilkan hari
+     *
+     * @param string $tanggal
+     * @return string
+     */
+    function hari($tanggal)
+    {
+        return date('d', strtotime($tanggal));
+    }
+}
+
+if (!function_exists('rupiah')) {
+    /**
+     * Format angka menjadi format Rupiah.
+     *
+     * @param  float|int  $angka
+     * @return string
+     */
+    function rupiah($angka)
+    {
+        return number_format($angka, 2, ',', '.');
     }
 }

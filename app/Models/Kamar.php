@@ -22,4 +22,9 @@ class Kamar extends Model
     {
         return $this->hasMany(Penyewa::class, 'id_kamar');
     }
+
+    public function transaksi()
+    {
+        return $this->hasMany(TransaksiList::class, 'id_kamar');
+    }
 }

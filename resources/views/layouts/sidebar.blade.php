@@ -15,37 +15,12 @@
                         <p>Dashboard</p>
                     </a>
                 </li>
-                <li class="nav-header">Data Master</li>
-                <li class="nav-item"> <a href="{{ route('kontrakan') }}"
-                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'kontrakan' ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-houses"></i>
-                        <p>Kontrakan</p>
-                    </a>
-                </li>
-                <li class="nav-item"> <a href="{{ route('cashcategory') }}"
-                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'cashcategory' ? 'active' : '' }}">
-                        <i class="nav-icon bi-card-list"></i>
-                        <p>Kategori</p>
-                    </a>
-                </li>
-                <li class="nav-item"> <a href="{{ route('usermanajemen') }}"
-                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'usermanajemen' ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-people"></i>
-                        <p>User Manajemen</p>
-                    </a>
-                </li>
-                <li class="nav-header">Transaksi Main</li>
-                <li class="nav-item"> <a href="{{ route('penyewa') }}"
-                        class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'penyewa' ? 'active' : '' }}">
-                        <i class="nav-icon bi bi-person"></i>
-                        <p>Penyewa</p>
-                    </a>
-                </li>
+                {{-- buku kas --}}
                 <li class="nav-item {{ request()->segment(1) == 'transaksi' ? 'menu-open' : '' }}">
                     <a href="#" class="nav-link {{ request()->segment(1) == 'transaksi' ? 'active' : '' }}">
                         <i class="nav-icon bi bi-journal-text"></i>
                         <p>
-                            Kontrakan
+                            Buku KAS
                             <i class="nav-arrow bi bi-chevron-right"></i>
                         </p>
                     </a>
@@ -54,12 +29,88 @@
                             <li class="nav-item">
                                 <a href="{{ route('transaksi.kontrakan', $kontrakan->code_kontrakan) }}"
                                     class="nav-link {{ request()->segment(2) == $kontrakan->code_kontrakan ? 'active' : '' }}">
-                                    <i class="nav-icon bi bi-circle"></i>
+                                    <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>{{ $kontrakan->nama_kontrakan }}</p>
                                 </a>
                             </li>
                         @endforeach
                     </ul>
+                </li>
+
+                {{-- laporan --}}
+                <li class="nav-item {{ request()->segment(1) == 'laporan' ? 'menu-open' : '' }}">
+                    <a href="#" class="nav-link {{ request()->segment(1) == 'laporan' ? 'active' : '' }}">
+                        <i class="nav-icon bi bi-file-earmark-bar-graph"></i>
+                        <p>
+                            Laporan
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{ request()->segment(2) == 'harian' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Harian</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#"
+                                class="nav-link {{ request()->segment(2) == 'bulanan' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Bulanan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#"
+                                class="nav-link {{ request()->segment(2) == 'tahunan' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Tahunan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link {{ request()->segment(2) == 'custom' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Custom</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- pengaturan --}}
+                <li class="nav-item @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen'])) menu-open @endif">
+                    <a href="#" class="nav-link @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen'])) active @endif">
+                        <i class="nav-icon bi bi-gear"></i>
+                        <p>
+                            Pengaturan
+                            <i class="nav-arrow bi bi-chevron-right"></i>
+                        </p>
+                    </a>
+                    <ul class="nav nav-treeview">
+                        <li class="nav-item"> <a href="{{ route('kontrakan') }}"
+                                class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'kontrakan' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Kontrakan</p>
+                            </a>
+                        </li>
+                        <li class="nav-item"> <a href="{{ route('penyewa') }}"
+                                class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'penyewa' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>Penyewa</p>
+                            </a>
+                        </li>
+                        {{-- <li class="nav-item"> <a href="{{ route('cashcategory') }}"
+                                class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'cashcategory' ? 'active' : '' }}">
+                                <i class="nav-icon bi-card-list"></i>
+                                <p>Kategori</p>
+                            </a>
+                        </li> --}}
+                        <li class="nav-item"> <a href="{{ route('usermanajemen') }}"
+                                class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'usermanajemen' ? 'active' : '' }}">
+                                <i class="nav-icon bi bi-circle-fill"></i>
+                                <p>User Manajemen</p>
+                            </a>
+                        </li>
+                    </ul> <!--end::Sidebar Menu-->
                 </li>
             </ul> <!--end::Sidebar Menu-->
         </nav>
