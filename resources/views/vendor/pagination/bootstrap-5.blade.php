@@ -3,13 +3,13 @@
     <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
         <div>
             <p class="small text-muted">
-                {!! __('Showing') !!}
+                {!! __('Menampilkan') !!}
                 <span class="fw-semibold">{{ $paginator->firstItem() }}</span>
-                {!! __('to') !!}
+                {!! __('hingga') !!}
                 <span class="fw-semibold">{{ $paginator->lastItem() }}</span>
-                {!! __('of') !!}
+                {!! __('dari') !!}
                 <span class="fw-semibold">{{ $paginator->total() }}</span>
-                {!! __('results') !!}
+                {!! __('hasil') !!}
             </p>
         </div>
 
@@ -41,8 +41,13 @@
                             <li class="page-item active" aria-current="page"><span
                                     class="page-link">{{ $page }}</span></li>
                         @else
+                            @php
+                                $cleanUrl = Str::contains($url, '?page=1')
+                                    ? Str::replaceFirst('?page=1', '', $url)
+                                    : $url;
+                            @endphp
                             <li class="page-item"><a class="page-link"
-                                    href="{{ $url }}">{{ $page }}</a></li>
+                                    href="{{ $cleanUrl }}">{{ $page }}</a></li>
                         @endif
                     @endforeach
                 @endif

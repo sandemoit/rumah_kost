@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -21,15 +22,18 @@ class TransaksiController extends Controller
      */
     public function show(Request $request, $code_kontrakan)
     {
+        // Ambil data kontrakan berdasarkan code_kontrakan
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
+
+        // Ambil semua kamar yang terkait dengan kontrakan tersebut
         $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->get();
-        $countPintu = $kamar->count();
+        $countKontrakan = $kamar->count();
 
         // Mengambil bulan dan tahun dari URL
         $month = $request->input('month', now()->month);
         $year = $request->input('year', now()->year);
 
-        // Mengambil transaksi masuk dan keluar
+        // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = $request->input('search');
         $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->when($keyword, function (Builder $query, $keyword) {
@@ -39,23 +43,25 @@ class TransaksiController extends Controller
             })
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
-            ->orderBy('created_at', 'desc')
+            ->orderBy('created_at', 'asc')
             ->paginate(10);
 
         // Uraikan JSON id_kamar dan dapatkan nama kamar
         foreach ($transaksiList as $transaksi) {
             $idKamarArray = json_decode($transaksi->id_kamar);
             if (is_array($idKamarArray)) {
-                $transaksi->nama_kamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
+                $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->toArray();
+                $transaksi->nama_kamar = implode(', ', $namaKamar);
+                $transaksi->kamar_nama_list = $namaKamar;
             } else {
-                $transaksi->nama_kamar = 'Tidak diketahui';
+                $transaksi->nama_kamar = null;
             }
         }
 
         // Menyiapkan data untuk dikirim ke view
         $data = [
             'pageTitle' => $kontrakan->nama_kontrakan,
-            'keterangan' => "Kontrakan $kontrakan->nama_kontrakan $countPintu Pintu",
+            'keterangan' => "Kontrakan $kontrakan->nama_kontrakan $countKontrakan Pintu",
             'kamar' => $kamar,
             'transaksiList' => $transaksiList,
             'code_kontrakan' => $code_kontrakan

@@ -1,8 +1,9 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark"> <!--begin::Sidebar Brand-->
-    <div class="sidebar-brand"> <!--begin::Brand Link--> <a href="./index.html" class="brand-link">
-            <!--begin::Brand Image--> <img src="{{ url('assets') }}/assets/img/AdminLTELogo.png" alt="AdminLTE Logo"
-                class="brand-image opacity-75 shadow"> <!--end::Brand Image-->
-            <!--begin::Brand Text--> <span class="brand-text fw-light">AdminLTE 4</span> <!--end::Brand Text-->
+    <div class="sidebar-brand"> <!--begin::Brand Link--> <a href="{{ route('dashboard') }}" class="brand-link">
+            <!--begin::Brand Image--> <img src="{{ asset('storage/logo/AdminLTELogo.png') }}"
+                alt="{{ config('app.name') }}" class="brand-image opacity-75 shadow"> <!--end::Brand Image-->
+            <!--begin::Brand Text--> <span class="brand-text fw-light">{{ config('app.name') }}</span>
+            <!--end::Brand Text-->
         </a>
         <!--end::Brand Link-->
     </div> <!--end::Sidebar Brand--> <!--begin::Sidebar Wrapper-->

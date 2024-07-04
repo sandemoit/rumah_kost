@@ -35,7 +35,6 @@
                                         style="max-width: 115px;">
                                         @php
                                             $nowMonth = request()->input('month', date('m'));
-                                            $nowYear = request()->input('year', date('Y'));
                                         @endphp
                                         <option value="1" {{ $nowMonth == '01' ? 'selected' : '' }}>Januari</option>
                                         <option value="2" {{ $nowMonth == '02' ? 'selected' : '' }}>Februari</option>

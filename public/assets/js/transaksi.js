@@ -3,6 +3,7 @@ function submitFilter() {
     form.submit();
 }
 
+// slide down and up form input trx
 $(document).ready(function() {
     function resetForm() {
         // Reset form pemasukan
@@ -45,7 +46,7 @@ $(document).ready(function() {
     window.catat_in = catat_in;
 });
 
-
+// form pemasukan dan pengeluaran
 $(document).ready(function() {
     $( '.multiple' ).select2( {
         theme: "bootstrap-5",

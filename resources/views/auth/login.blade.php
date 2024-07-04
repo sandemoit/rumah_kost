@@ -20,8 +20,7 @@
                     @enderror
 
                     <div class="input-group mb-3"> <input id="password" class="form-control" type="password"
-                            name="password" required autocomplete="current-password"
-                            placeholder="Masukan password Anda">
+                            name="password" required autocomplete="password" placeholder="Masukan password Anda">
                         <div class="input-group-text"> <span class="bi bi-lock-fill"></span> </div>
                     </div>
                     @error('password')
