@@ -85,7 +85,7 @@ class PenyewaController extends Controller
             ->exists();
 
         if ($penyewaAktif) {
-            return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+            return redirect()->back()->with(['error' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
         }
 
         try {
@@ -100,7 +100,7 @@ class PenyewaController extends Controller
 
             return redirect()->back()->with('success', 'Penyewa berhasil ditambahkan.');
         } catch (\Exception $e) {
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -130,7 +130,7 @@ class PenyewaController extends Controller
             ->exists();
 
         if ($penyewaAktif) {
-            return redirect()->back()->with(['failed' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
+            return redirect()->back()->with(['error' => 'Kamar sudah diisi oleh penyewa lain yang aktif.'])->withInput();
         }
 
         try {
@@ -147,7 +147,7 @@ class PenyewaController extends Controller
             return redirect()->back()->with('success', 'Penyewa berhasil diubah.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -161,7 +161,7 @@ class PenyewaController extends Controller
 
             return redirect()->back()->with('success', 'Penyewa berhasil diubah.');
         } catch (\Exception $e) {
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -186,7 +186,7 @@ class PenyewaController extends Controller
         $isWhatsAppValid = WhatsAppHelper::checkWhatsApp($penyewa->nomor_wa);
 
         if (!$isWhatsAppValid) {
-            return redirect()->back()->with(['failed' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
+            return redirect()->back()->with(['error' => 'Waduh, Nomor WhatsApp tidak valid.'])->withInput();
         }
 
         try {
@@ -199,7 +199,7 @@ class PenyewaController extends Controller
                 return redirect()->back()->with('failed', $decodedResponse['reason']);
             }
         } catch (\Exception $e) {
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 }

@@ -63,7 +63,7 @@ class KontrakanController extends Controller
 
         try {
             // Generate 4 digit random code
-            $codeKontrakan = random_int(100000, 999999);
+            $codeKontrakan = random_int(1000, 9999);
 
             // Buat kontrakan baru
             Kontrakan::create([
@@ -76,7 +76,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kontrakan berhasil dibuat.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -101,7 +101,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kamar berhasil dibuat.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 
@@ -130,7 +130,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kontrakan berhasil diubah.');
         } catch (\Exception $e) {
             // Return response error
-            return redirect()->back()->with('success', 'Terjadi kesalahan: ' . $e->getMessage());
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 
@@ -158,7 +158,7 @@ class KontrakanController extends Controller
             return redirect()->back()->with('success', 'Kamar berhasil diubah.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan: ' . $e->getMessage()])->withInput();
         }
     }
 

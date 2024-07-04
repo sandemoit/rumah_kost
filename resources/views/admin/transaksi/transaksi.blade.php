@@ -1,5 +1,7 @@
 @push('load-css')
     <link rel="stylesheet" href="{{ asset('assets/css/transaksi.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/css/select2.min.css" />
+    <link rel="stylesheet" href="{{ asset('assets/css/select2-bootstrap-5-theme.min.css') }}" />
 @endpush
 @extends('layouts.app')
 @section('content')
@@ -26,35 +28,42 @@
                         <div class="bulannav">
                             <a href="#" class="bulan_nav_left" title="Bulan sebelumnya">&nbsp;</a>
                             <a href="#" class="bulan_nav_right" title="Bulan selanjutnya">&nbsp;</a>
-                            <div class="bulankas">
-                                <select class="selectfilter" name="month" id="nav_month"
-                                    onchange="change_monthyear_link()" style="max-width: 115px;">
-                                    <?php $now = date('m'); ?>
-                                    <option value="1" {{ $now == '01' ? 'selected' : '' }}>Januari</option>
-                                    <option value="2" {{ $now == '02' ? 'selected' : '' }}>Februari</option>
-                                    <option value="3" {{ $now == '03' ? 'selected' : '' }}>Maret</option>
-                                    <option value="4" {{ $now == '04' ? 'selected' : '' }}>April</option>
-                                    <option value="5" {{ $now == '05' ? 'selected' : '' }}>Mei</option>
-                                    <option value="6" {{ $now == '06' ? 'selected' : '' }}>Juni</option>
-                                    <option value="7" {{ $now == '07' ? 'selected' : '' }}>Juli</option>
-                                    <option value="8" {{ $now == '08' ? 'selected' : '' }}>Agustus</option>
-                                    <option value="9" {{ $now == '09' ? 'selected' : '' }}>September</option>
-                                    <option value="10" {{ $now == '10' ? 'selected' : '' }}>Oktober</option>
-                                    <option value="11" {{ $now == '11' ? 'selected' : '' }}>November</option>
-                                    <option value="12" {{ $now == '12' ? 'selected' : '' }}>Desember</option>
-                                </select>
-                                &nbsp;
-                                <select class="selectfilter" name="year" id="nav_year"
-                                    onchange="change_monthyear_link()" style="max-width: 72px;">
-                                    <?php
-                                    $now = date('Y');
-                                    for ($i = $now - 5; $i <= $now; $i++) {
-                                        echo '<option value="' . $i . '" ' . ($i == $now ? 'selected' : '') . '>' . $i . '</option>';
-                                    }
-                                    ?>
-                                </select>
-                                &nbsp;
-                            </div>
+                            <form action="{{ route('transaksi.kontrakan', $code_kontrakan) }}" method="GET"
+                                id="filterForm">
+                                <div class="bulankas">
+                                    <select class="selectfilter" name="month" id="nav_month" onchange="submitFilter()"
+                                        style="max-width: 115px;">
+                                        @php
+                                            $nowMonth = request()->input('month', date('m'));
+                                            $nowYear = request()->input('year', date('Y'));
+                                        @endphp
+                                        <option value="1" {{ $nowMonth == '01' ? 'selected' : '' }}>Januari</option>
+                                        <option value="2" {{ $nowMonth == '02' ? 'selected' : '' }}>Februari</option>
+                                        <option value="3" {{ $nowMonth == '03' ? 'selected' : '' }}>Maret</option>
+                                        <option value="4" {{ $nowMonth == '04' ? 'selected' : '' }}>April</option>
+                                        <option value="5" {{ $nowMonth == '05' ? 'selected' : '' }}>Mei</option>
+                                        <option value="6" {{ $nowMonth == '06' ? 'selected' : '' }}>Juni</option>
+                                        <option value="7" {{ $nowMonth == '07' ? 'selected' : '' }}>Juli</option>
+                                        <option value="8" {{ $nowMonth == '08' ? 'selected' : '' }}>Agustus</option>
+                                        <option value="9" {{ $nowMonth == '09' ? 'selected' : '' }}>September</option>
+                                        <option value="10" {{ $nowMonth == '10' ? 'selected' : '' }}>Oktober</option>
+                                        <option value="11" {{ $nowMonth == '11' ? 'selected' : '' }}>November</option>
+                                        <option value="12" {{ $nowMonth == '12' ? 'selected' : '' }}>Desember</option>
+                                    </select>
+                                    &nbsp;
+                                    <select class="selectfilter" name="year" id="nav_year" onchange="submitFilter()"
+                                        style="max-width: 72px;">
+                                        <?php
+                                        $nowYear = request()->input('year', date('Y'));
+                                        $currentYear = date('Y');
+                                        for ($i = $currentYear - 5; $i <= $currentYear; $i++) {
+                                            echo '<option value="' . $i . '" ' . ($i == $nowYear ? 'selected' : '') . '>' . $i . '</option>';
+                                        }
+                                        ?>
+                                    </select>
+                                    &nbsp;
+                                </div>
+                            </form>
                         </div>
                     </div>
                     <div class="col-sm-6 text-end kastool" id="catatkas">
@@ -64,9 +73,11 @@
                 </div>
 
                 <div id="formContainer">
-                    <form id="formPemasukan" style="display: none;">
+                    <form id="formPemasukan">
                         @csrf
-                        <h3>Pemasukan</h3>
+                        <input type="hidden" id="transaksiId" name="transaksiId">
+                        <input type="hidden" id="saldo" name="saldo">
+                        <h3 class="text-success">Pemasukan</h3>
                         <div class="form-group">
                             <label for="tanggalTerima">Tanggal Terima:</label>
                             <input type="date" class="form-control" id="tanggalTerima" name="tanggalTerima"
@@ -99,13 +110,16 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="#" class="btn btn-danger d-none" id="deleteButton">Hapus</a>
+                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPemasukan">Hapus</a>
                         </div>
                     </form>
 
-
-                    <form id="formPengeluaran" style="display: none;">
-                        <h3>Pengeluaran</h3>
+                    <form id="formPengeluaran">
+                        @csrf
+                        <input type="hidden" id="transaksiId" name="transaksiId">
+                        <input type="hidden" id="saldo" name="saldo">
+                        <h3 class="text-danger">Pengeluaran</h3>
                         <div class="form-group">
                             <label for="tanggalPengeluaran">Tanggal Pengeluaran:</label>
                             <input type="date" class="form-control" id="tanggalPengeluaran" name="tanggalPengeluaran"
@@ -113,7 +127,8 @@
                         </div>
                         <div class="form-group">
                             <label for="kamarPengeluaran">Kamar:</label>
-                            <select class="form-select" id="kamarPengeluaran" name="kamarPengeluaran">
+                            <select class="form-select multiple" multiple id="kamarPengeluaran" name="kamarPengeluaran"
+                                data-placeholder="Pilih kamar...">
                                 <option value="all">All</option>
                                 @foreach ($kamar as $key)
                                     <option value="{{ $key->id }}">{{ $key->nama_kamar }}</option>
@@ -134,16 +149,18 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="#" class="btn btn-danger d-none" id="deleteButton">Hapus</a>
+                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPengeluaran">Hapus</a>
                         </div>
                     </form>
                 </div>
+
                 <div class="row">
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="card mb-4">
                             <div class="card-header">
                                 <div class="card-tools">
-                                    <form action="{{ route('penyewa') }}" method="GET">
+                                    <form action="{{ route('transaksi.kontrakan', $code_kontrakan) }}" method="GET">
                                         <div class="input-group input-group-sm" style="width: 150px;">
                                             <input type="text" name="search" id="search"
                                                 value="{{ request('search') }}" class="form-control float-right"
@@ -197,7 +214,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="kamarkas" data-label="Kamar">
-                                                    {{ $transaksi->kamar->nama_kamar }}</td>
+                                                    {{ $transaksi->nama_kamar }}</td>
                                                 <td class="deskripsikas" data-label="Deskripsi">
                                                     @if ($transaksi->tipe == 'masuk' && $transaksi->transaksiMasuk)
                                                         {{ $transaksi->transaksiMasuk->deskripsi }}
@@ -211,9 +228,9 @@
                                                 <td class="nominalkas right saldo-column" data-label="Saldo">
                                                     {{ rupiah($transaksi->saldo) }}</td>
                                                 <td class="center editkas">
-                                                    <input type="hidden" class="transaksi-id"
+                                                    <input type="hidden" id="transaksi-id"
                                                         value="{{ $transaksi->id }}">
-                                                    <span class="editkas" title="Edit atau hapus" alt="Edit"
+                                                    <span class="btn-editkas" title="Edit atau hapus" alt="Edit"
                                                         data-transaksi-id="{{ $transaksi->id }}"
                                                         data-tipe="{{ $transaksi->tipe }}"
                                                         data-tanggal="{{ $transaksi->transaksiMasuk ? $transaksi->transaksiMasuk->tanggal_transaksi : $transaksi->transaksiKeluar->tanggal_transaksi }}"
@@ -232,7 +249,10 @@
                                     </tbody>
                                 </table>
                             </div>
-
+                            <!-- Pagination Links -->
+                            <div class="card-footer clearfix">
+                                {{ $transaksiList->links() }}
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -242,4 +262,5 @@
 @endsection
 @push('custom-js')
     <script src=" {{ asset('assets/js/transaksi.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
 @endpush

@@ -73,7 +73,7 @@ class ManajemenController extends Controller
             return redirect()->route('usermanajemen')->with('success', 'User berhasil dibuat.');
         } catch (\Exception $e) {
             // Tangani kesalahan
-            return redirect()->back()->with(['failed' => 'Terjadi kesalahan saat membuat user: ' . $e->getMessage()])->withInput();
+            return redirect()->back()->with(['error' => 'Terjadi kesalahan saat membuat user: ' . $e->getMessage()])->withInput();
         }
     }
 

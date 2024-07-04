@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transaksi_list', function (Blueprint $table) {
             $table->id();
             $table->integer('code_transaksi');
-            $table->integer('id_kamar');
+            $table->json('id_kamar');
             $table->integer('id_tipe');
             $table->enum('jenis', ['masuk', 'keluar']);
             $table->integer('nominal');

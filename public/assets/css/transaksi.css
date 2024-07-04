@@ -2,6 +2,10 @@
     font-size: 13px;
     color: #3e4751;
 }
+#formPengeluaran,
+#formPemasukan {
+    display: none;
+}
 
 /* General table styles */
 .table-container {
@@ -28,7 +32,7 @@
 }
 
 .transaksi-table td {
-    border: 1px solid #fff;
+    border-bottom: 1px solid #fff;
 }
 
 .transaksi-table th,
@@ -238,7 +242,7 @@ small {
 #formContainer {
     display: none;
     position: absolute;
-    top: 192px;
+    top: 190px;
     right: 50px;
     background: #f9f9f9;
     padding: 20px;
@@ -252,11 +256,11 @@ small {
     margin-bottom: 15px;
 }
 
-.editkas {
+.btn-editkas {
     cursor: pointer;
     padding: 3px;
 }
-.editkas:hover {
+.btn-editkas:hover {
     border-radius: 3px;
     box-shadow: 0 0 4px #575757;
     background: #fff;

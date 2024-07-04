@@ -13,32 +13,52 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function show($code_kontrakan)
+    public function show(Request $request, $code_kontrakan)
     {
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
-        $countPintu = Kamar::where('id_kontrakan', $kontrakan->id)->count();
         $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->get();
+        $countPintu = $kamar->count();
+
+        // Mengambil bulan dan tahun dari URL
+        $month = $request->input('month', now()->month);
+        $year = $request->input('year', now()->year);
 
         // Mengambil transaksi masuk dan keluar
+        $keyword = $request->input('search');
         $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->whereIn('id_kamar', $kamar->pluck('id'))
-            ->whereMonth('created_at', now()->month)
+            ->when($keyword, function (Builder $query, $keyword) {
+                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
+                    $query->where('nama_kamar', 'LIKE', "%$keyword%");
+                });
+            })
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
             ->orderBy('created_at', 'desc')
-            ->get();
+            ->paginate(10);
+
+        // Uraikan JSON id_kamar dan dapatkan nama kamar
+        foreach ($transaksiList as $transaksi) {
+            $idKamarArray = json_decode($transaksi->id_kamar);
+            if (is_array($idKamarArray)) {
+                $transaksi->nama_kamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
+            } else {
+                $transaksi->nama_kamar = 'Tidak diketahui';
+            }
+        }
 
         // Menyiapkan data untuk dikirim ke view
         $data = [
             'pageTitle' => $kontrakan->nama_kontrakan,
             'keterangan' => "Kontrakan $kontrakan->nama_kontrakan $countPintu Pintu",
             'kamar' => $kamar,
-            'transaksiList' => $transaksiList
+            'transaksiList' => $transaksiList,
+            'code_kontrakan' => $code_kontrakan
         ];
 
         // Mengembalikan view dengan data yang sudah diparsing
@@ -103,6 +123,30 @@ class TransaksiController extends Controller
         ]);
     }
 
+    public function getSaldoKontrakan($code_kontrakan)
+    {
+        // Ambil kontrakan berdasarkan code_kontrakan
+        $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
+
+        // Ambil semua kamar yang terkait dengan kontrakan tersebut
+        $kamarIds = Kamar::where('id_kontrakan', $kontrakan->id)->pluck('id');
+
+        // Ambil semua transaksi
+        $transaksiList = TransaksiList::all();
+
+        $transaksiFiltered = $transaksiList->filter(function ($transaksi) use ($kamarIds) {
+            $transaksiKamarIds = json_decode($transaksi->id_kamar);
+            return !array_diff($transaksiKamarIds, $kamarIds->toArray());
+        });
+
+        // Ambil saldo terakhir dari transaksi tersebut
+        $saldo = $transaksiFiltered->isEmpty() ? 0 : $transaksiFiltered->sortByDesc('created_at')->first()->saldo;
+
+        return response()->json([
+            'saldo' => $saldo
+        ]);
+    }
+
     public function store_masuk(Request $request)
     {
         $validatedData = $request->validate([
@@ -114,7 +158,6 @@ class TransaksiController extends Controller
             'deskripsi' => 'nullable|string',
         ]);
 
-        // Check if a transaction with the same id_kamar, bulan, and tahun already exists (for the current month and year)
         $existingTransaction = TransaksiList::where('id_kamar', $validatedData['kamarPemasukan'])
             ->whereHas('TransaksiMasuk', function (Builder $query) use ($validatedData) {
                 $query->where(function (Builder $query) use ($validatedData) {
@@ -137,7 +180,7 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($validatedData) {
             // Buat transaksi masuk baru
-            $code_masuk = random_int(100000, 999999);
+            $code_masuk = random_int(1000, 9999);
 
             $transaksiMasuk = TransaksiMasuk::create([
                 'code_masuk' => $code_masuk,
@@ -151,11 +194,11 @@ class TransaksiController extends Controller
             $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
             $saldo = (int) $saldoTerakhir + (int) $validatedData['nilaiSewa'];
 
-            $code_transaksi = random_int(100000, 999999);
+            $code_transaksi = random_int(1000, 9999);
 
             TransaksiList::create([
                 'code_transaksi' => $code_transaksi,
-                'id_kamar' => $validatedData['kamarPemasukan'],
+                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_tipe' => $transaksiMasuk->id,
                 'tipe' => 'masuk',
                 'nominal' => $validatedData['nilaiSewa'],
@@ -166,7 +209,7 @@ class TransaksiController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => 'Data berhasil disimpan.'
+            'message' => 'Transaksi berhasil disimpan.'
         ]);
     }
 
@@ -174,14 +217,25 @@ class TransaksiController extends Controller
     {
         $validatedData = $request->validate([
             'tanggalPengeluaran' => 'required|date',
-            'kamarPengeluaran' => 'required|string',
+            'kamarPengeluaran' => 'required|array',
+            'kamarPengeluaran.*' => 'integer|exists:kamar,id',
             'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'required|string',
         ]);
 
         try {
             DB::transaction(function () use ($validatedData) {
-                $code_keluar = random_int(100000, 999999);
+                // Mengambil semua ID kamar jika 'All' dipilih
+                if ($validatedData['kamarPengeluaran'] === 'all') {
+                    $id_kamar = Kamar::pluck('id')->toArray();
+                } else {
+                    $id_kamar = $validatedData['kamarPengeluaran'];
+                }
+
+                // Mengubah array ID kamar menjadi JSON string
+                $id_kamar_json = json_encode($id_kamar);
+
+                $code_keluar = random_int(1000, 9999);
 
                 $transaksiKeluar = TransaksiKeluar::create([
                     'code_keluar' => $code_keluar,  // Sesuaikan sesuai kebutuhan
@@ -192,11 +246,11 @@ class TransaksiController extends Controller
                 $transaksiTerakhir = TransaksiList::latest()->first();
                 $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
                 $saldo = (int) $saldoTerakhir - (int) $validatedData['nominalPengeluaran'];
-                $code_transaksi = random_int(100000, 999999);
+                $code_transaksi = random_int(1000, 9999);
 
                 TransaksiList::create([
                     'code_transaksi' => $code_transaksi,  // Sesuaikan sesuai kebutuhan
-                    'id_kamar' => $validatedData['kamarPengeluaran'],
+                    'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
                     'tipe' => 'keluar',
                     'nominal' => $validatedData['nominalPengeluaran'],
@@ -218,51 +272,99 @@ class TransaksiController extends Controller
         }
     }
 
-    public function getTransaction($type, $id)
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update_masuk(Request $request, $idTrx)
     {
-        if ($type === 'masuk') {
-            $transaksiMasuk = TransaksiMasuk::findOrFail($id);
-            return response()->json($transaksiMasuk);
-        } else if ($type === 'keluar') {
-            $transaksiKeluar = TransaksiKeluar::findOrFail($id);
-            return response()->json($transaksiKeluar);
-        }
-
-        return response()->json(['error' => 'Invalid type'], 400);
-    }
-
-    public function getSaldoKontrakan($code_kontrakan)
-    {
-        // Debugging: Log atau echo code_kontrakan
-        Log::info('Code Kontrakan: ' . $code_kontrakan);
-
-        // Ambil kontrakan berdasarkan code_kontrakan
-        $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
-
-        // Debugging: Log kontrakan
-        Log::info('Kontrakan: ' . $kontrakan);
-
-        // Ambil semua kamar yang terkait dengan kontrakan tersebut
-        $kamarIds = Kamar::where('id_kontrakan', $kontrakan->id)->pluck('id');
-
-        // Ambil semua transaksi berdasarkan id_kamar
-        $transaksiList = TransaksiList::whereIn('id_kamar', $kamarIds)->get();
-
-        // Ambil saldo terakhir dari transaksi tersebut
-        $saldo = $transaksiList->sortByDesc('created_at')->first()->saldo;
-
-        return response()->json([
-            'saldo' => $saldo
+        $validatedData = $request->validate([
+            'tanggalTerima' => 'required|date',
+            'kamarPemasukan' => 'required|integer',
+            'periodeSewa' => 'required|integer',
+            'tahunSewa' => 'required|integer',
+            'nilaiSewa' => 'required|integer',
+            'deskripsi' => 'nullable|string',
         ]);
-    }
 
+        try {
+            $transaksi = TransaksiList::findOrFail($idTrx);
+
+            $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_tipe);
+            $transaksiMasuk->update([
+                'tanggal_transaksi' => $validatedData['tanggalTerima'],
+                'bulan' => $validatedData['periodeSewa'],
+                'tahun' => $validatedData['tahunSewa'],
+                'deskripsi' => $validatedData['deskripsi'],
+                'updated_at' => now(),
+            ]);
+
+            // Hitung saldo baru
+            $saldoSebelum = $transaksi->saldo;
+            $saldoBaru = $saldoSebelum - $transaksi->nominal + $validatedData['nilaiSewa'];
+
+            $transaksi->update([
+                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
+                'nominal' => $validatedData['nilaiSewa'],
+                'saldo' => $saldoBaru,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Transaksi berhasil diupdate.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
+    }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, TransaksiList $transaksi)
+    public function update_keluar(Request $request, $idTrx)
     {
-        //
+        $validatedData = $request->validate([
+            'tanggalPengeluaran' => 'required|date',
+            'kamarPengeluaran' => 'required|array',
+            'kamarPengeluaran.*' => 'integer|exists:kamar,id',
+            'nominalPengeluaran' => 'required|integer',
+            'deskripsiPengeluaran' => 'nullable|string',
+        ]);
+
+        try {
+            $transaksi = TransaksiList::findOrFail($idTrx);
+
+            $transaksiKeluar = TransaksiKeluar::findOrFail($transaksi->id_tipe);
+            $transaksiKeluar->update([
+                'tanggal_transaksi' => $validatedData['tanggalPengeluaran'],
+                'deskripsi' => $validatedData['deskripsiPengeluaran'],
+                'updated_at' => now(),
+            ]);
+
+            // Hitung saldo baru
+            $saldoSebelum = $transaksi->saldo;
+            $saldoBaru = $saldoSebelum + $transaksi->nominal - $validatedData['nominalPengeluaran'];
+
+            // Mengambil semua ID kamar jika 'All' dipilih
+            if ($validatedData['kamarPengeluaran'] === 'all') {
+                $id_kamar = Kamar::pluck('id')->toArray();
+            } else {
+                $id_kamar = $validatedData['kamarPengeluaran'];
+            }
+
+            // Mengubah array ID kamar menjadi JSON string
+            $id_kamar_json = json_encode($id_kamar);
+
+            $transaksi->update([
+                'id_kamar' => $id_kamar_json,
+                'nominal' => $validatedData['nominalPengeluaran'],
+                'saldo' => $saldoBaru,
+                'created_by' => Auth::user()->id,
+                'updated_at' => now(),
+            ]);
+
+            return response()->json(['status' => 'success', 'message' => 'Transaksi berhasil diupdate.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Terjadi kesalahan: ' . $e->getMessage()], 500);
+        }
     }
 
     /**
@@ -270,21 +372,29 @@ class TransaksiController extends Controller
      */
     public function deleteMasuk($id)
     {
-        $transaksiMasuk = TransaksiMasuk::findOrFail($id);
-        $transaksiMasuk->delete();
+        try {
+            $transaksi = TransaksiList::where('id', $id)->firstOrFail();
 
-        TransaksiList::where('id_tipe', $transaksiMasuk->id)->delete();
+            TransaksiList::where('id', $id)->delete();
+            TransaksiMasuk::findOrFail($transaksi->id_tipe)->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'Transaksi masuk berhasil dihapus.']);
+            return response()->json(['status' => 'success', 'message' => 'Transaksi masuk berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Terjadi kesalahan saat menghapus data'], 500);
+        }
     }
 
     public function deleteKeluar($id)
     {
-        $transaksiKeluar = TransaksiKeluar::findOrFail($id);
-        $transaksiKeluar->delete();
+        try {
+            $transaksi = TransaksiList::where('id', $id)->firstOrFail();
 
-        TransaksiList::where('id_tipe', $transaksiKeluar->id)->delete();
+            TransaksiList::where('id', $id)->delete();
+            TransaksiKeluar::findOrFail($transaksi->id_tipe)->delete();
 
-        return response()->json(['status' => 'success', 'message' => 'Transaksi keluar berhasil dihapus.']);
+            return response()->json(['status' => 'success', 'message' => 'Transaksi keluar berhasil dihapus.']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => 'Terjadi kesalahan saat menghapus data'], 500);
+        }
     }
 }

@@ -10,7 +10,6 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
 
 Route::middleware('auth')->group(function () {
-    Route::get('transaksi/{code_kontrakan}', [TransaksiController::class, 'show'])->name('transaksi.kontrakan');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/usermanajemen', [ManajemenController::class, 'index'])->name('usermanajemen');
@@ -42,6 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/penyewa/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
     Route::get('/penyewa/send_wa/{id}', [PenyewaController::class, 'wa_tagihan'])->name('penyewa.wa_tagihan');
 
+    Route::get('/transaksi/{code_kontrakan}', [TransaksiController::class, 'show'])->name('transaksi.kontrakan');
     Route::get('/getKamarData/{id}', [TransaksiController::class, 'getKamarData'])->name('getKamarData');
     Route::post('/transaksi-masuk', [TransaksiController::class, 'store_masuk'])->name('getKamarData.store_masuk');
     Route::post('/transaksi-keluar', [TransaksiController::class, 'store_keluar'])->name('getKamarData.store_keluar');
@@ -49,6 +49,8 @@ Route::middleware('auth')->group(function () {
     Route::delete('/transaksi-masuk/delete/{id}', [TransaksiController::class, 'deleteMasuk'])->name('transaksi-masuk.delete');
     Route::delete('/transaksi-keluar/delete/{id}', [TransaksiController::class, 'deleteKeluar'])->name('transaksi-keluar.delete');
     Route::get('/getSaldoKontrakan/{code_kontrakan}', [TransaksiController::class, 'getSaldoKontrakan'])->name('getSaldoKontrakan');
+    Route::put('/transaksi-masuk/update/{id}', [TransaksiController::class, 'update_masuk']);
+    Route::put('/transaksi-keluar/update/{id}', [TransaksiController::class, 'update_keluar']);
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
