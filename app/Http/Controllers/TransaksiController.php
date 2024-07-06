@@ -34,12 +34,18 @@ class TransaksiController extends Controller
 
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = $request->input('search');
-        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
-            ->whereHas('kamar', function (Builder $query) use ($kontrakan, $keyword) {
-                $query->where('id_kontrakan', $kontrakan->id)
-                    ->when($keyword, function (Builder $query, $keyword) {
-                        $query->where('nama_kamar', 'LIKE', "%$keyword%");
-                    });
+        // $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
+        //     ->whereHas('kamar', function (Builder $query) use ($kontrakan, $keyword) {
+        //         $query->where('id_kontrakan', $kontrakan->id)
+        //             ->when($keyword, function (Builder $query, $keyword) {
+        //                 $query->where('nama_kamar', 'LIKE', "%$keyword%");
+        //             });
+        //     })
+        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->when($keyword, function (Builder $query, $keyword) use ($kamar) {
+                return $query->whereHas('kamar', function (Builder $query) use ($kamar, $keyword) {
+                    $query->whereIn('id', $kamar->pluck('id'))->where('nama_kamar', 'LIKE', "%$keyword%");
+                });
             })
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
