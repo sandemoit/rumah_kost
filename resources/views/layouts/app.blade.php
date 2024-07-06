@@ -9,10 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Favicons -->
-    <link rel="shortcut icon" href="{{ Storage::url('favicon/favicon.ico') }}">
-    <link rel="icon" href="{{ Storage::url('favicon/favicon-32x32.png') }}" sizes="32x32" />
-    <link rel="icon" href="{{ Storage::url('favicon/favicon-192x1922.png') }}" sizes="192x192" />
-    <link rel="apple-touch-icon" href="{{ Storage::url('favicon/apple-touch-icon.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('storage/favicon/favicon.ico') }}">
+    <link rel="icon" href="{{ asset('storage/favicon/favicon-32x32.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ asset('storage/favicon/favicon-192x1922.png') }}" sizes="192x192" />
+    <link rel="apple-touch-icon" href="{{ asset('storage/favicon/apple-touch-icon.png') }}" />
 
     <!--end::Primary Meta Tags--><!--begin::Fonts-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
