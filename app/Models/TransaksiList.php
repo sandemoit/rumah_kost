@@ -32,12 +32,12 @@ class TransaksiList extends Model
         return $this->hasOne(TransaksiKeluar::class, 'id', 'id_tipe');
     }
 
-    public function kamar()
+    public function kamar(): BelongsTo
     {
         return $this->belongsTo(Kamar::class, 'id_kamar');
     }
 
-    public function user()
+    public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
     }

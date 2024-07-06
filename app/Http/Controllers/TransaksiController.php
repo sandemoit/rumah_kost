@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -35,11 +34,12 @@ class TransaksiController extends Controller
 
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = $request->input('search');
-        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->when($keyword, function (Builder $query, $keyword) {
-                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
-                    $query->where('nama_kamar', 'LIKE', "%$keyword%");
-                });
+        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
+            ->whereHas('kamar', function (Builder $query) use ($kontrakan, $keyword) {
+                $query->where('id_kontrakan', $kontrakan->id)
+                    ->when($keyword, function (Builder $query, $keyword) {
+                        $query->where('nama_kamar', 'LIKE', "%$keyword%");
+                    });
             })
             ->whereMonth('created_at', $month)
             ->whereYear('created_at', $year)
@@ -48,7 +48,7 @@ class TransaksiController extends Controller
 
         // Uraikan JSON id_kamar dan dapatkan nama kamar
         foreach ($transaksiList as $transaksi) {
-            $idKamarArray = json_decode($transaksi->id_kamar);
+            $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];
             if (is_array($idKamarArray)) {
                 $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->toArray();
                 $transaksi->nama_kamar = implode(', ', $namaKamar);
@@ -74,7 +74,7 @@ class TransaksiController extends Controller
     public function getKamarData($id)
     {
         // Cari transaksi terkait kamar
-        $transaksi = TransaksiList::where('id_kamar', $id)->first();
+        $transaksi = TransaksiList::whereJsonContains('id_kamar', $id)->first();
 
         // Jika tidak ada transaksi, periksa apakah ada penyewa aktif di kamar tersebut
         if (!$transaksi || !$transaksi->id_tipe) {
@@ -108,7 +108,7 @@ class TransaksiController extends Controller
 
         // Jika ada transaksi terakhir, hitung bulan berikutnya
         $penyewaAktif = Penyewa::where('id', $transaksi->id_tipe)
-            ->where('id_kamar', $id)
+            ->whereJsonContains('id_kamar', $id)
             ->where('id_kontrakan', $transaksi->id_kontrakan)
             ->where('status', 'aktif')
             ->exists();

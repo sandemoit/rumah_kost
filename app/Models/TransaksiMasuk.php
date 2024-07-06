@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class TransaksiMasuk extends Model
 {
@@ -20,7 +21,7 @@ class TransaksiMasuk extends Model
         'tahun'
     ];
 
-    public function transaksiList()
+    public function transaksiList(): BelongsTo
     {
         return $this->belongsTo(TransaksiList::class, 'id', 'id_tipe');
     }

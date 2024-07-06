@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Kamar extends Model
 {
@@ -23,8 +24,13 @@ class Kamar extends Model
         return $this->hasMany(Penyewa::class, 'id_kamar');
     }
 
-    public function transaksi()
+    public function transaksiList()
     {
         return $this->hasMany(TransaksiList::class, 'id_kamar');
+    }
+
+    public function kontrakan(): BelongsTo
+    {
+        return $this->belongsTo(Kontrakan::class, 'id_kontrakan');
     }
 }
