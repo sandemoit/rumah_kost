@@ -37,10 +37,9 @@
                                             <th style="width: 10px">No</th>
                                             <th>Nama</th>
                                             <th>Tanggal Masuk</th>
-                                            <th>Tanggal Putus Kontrak</th>
                                             <th>Nomor WA</th>
                                             <th>Kamar</th>
-                                            <th>Status</th>
+                                            <th class="text-center">Status</th>
                                             <th>Aksi</th>
                                         </tr>
                                     </thead>
@@ -51,17 +50,16 @@
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ $key->nama_penyewa }}</td>
                                                     <td>{{ tanggal($key->tanggal_masuk) }}</td>
-                                                    <td>{{ $key->status == 'putus_kontrak' ? tanggal($key->updated_at) : '' }}
-                                                    </td>
                                                     <td><a href="tel:{{ $key->nomor_wa }}">{{ $key->nomor_wa }}</a></td>
                                                     <td>{{ $key->kamar['nama_kamar'] }}</td>
-                                                    <td>
+                                                    <td class="text-center">
                                                         @if ($key->status == 'aktif')
                                                             <span class="badge bg-success">Aktif</span>
                                                         @elseif ($key->status == 'tidak_aktif')
                                                             <span class="badge bg-danger">Nonaktif</span>
                                                         @elseif ($key->status == 'putus_kontrak')
-                                                            <span class="badge bg-dark">Putus Kontrak</span>
+                                                            <span class="badge bg-dark">Putus Kontrak</span><br>
+                                                            <span>{{ tanggal($key->updated_at) }}</span>
                                                         @endif
                                                     </td>
                                                     <td>
