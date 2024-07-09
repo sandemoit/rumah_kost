@@ -141,6 +141,13 @@ small {
     }
 }
 
+/* button tunggakan */
+.kastool #tunggakan:hover {
+    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #494e53;
+}
+.kastool #tunggakan {
+    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #343a40;
+}
 /* button pemasukan */
 .kastool #pemasukan:hover {
     background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #00a651;
@@ -243,7 +250,7 @@ small {
     display: none;
     position: absolute;
     top: 190px;
-    right: 50px;
+    right: 140px;
     background: #f9f9f9;
     padding: 20px;
     border: 1px solid #ccc;

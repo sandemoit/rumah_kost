@@ -17,8 +17,7 @@ class TransaksiMasuk extends Model
         'code_masuk',
         'deskripsi',
         'tanggal_transaksi',
-        'bulan',
-        'tahun'
+        'periode_sewa',
     ];
 
     public function transaksiList(): BelongsTo

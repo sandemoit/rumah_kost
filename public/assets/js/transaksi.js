@@ -27,9 +27,17 @@ $(document).ready(function() {
         $('#deleteButtonPengeluaran').addClass('d-none').attr('href', '#');
     }
 
+    function catat_tunggakan() {
+        $('#formTunggakan').slideDown();
+        $('#formPengeluaran').slideUp();
+        $('#formPemasukan').slideUp();
+        $('#formContainer').slideDown();
+    }
+
     function catat_out() {
         resetForm();
         $('#formPemasukan').slideUp();
+        $('#formTunggakan').slideUp();
         $('#formPengeluaran').slideDown();
         $('#formContainer').slideDown();
     }
@@ -37,6 +45,7 @@ $(document).ready(function() {
     function catat_in() {
         resetForm();
         $('#formPengeluaran').slideUp();
+        $('#formTunggakan').slideUp();
         $('#formPemasukan').slideDown();
         $('#formContainer').slideDown();
     }
@@ -44,6 +53,7 @@ $(document).ready(function() {
     // Attach functions to window so they can be called from HTML
     window.catat_out = catat_out;
     window.catat_in = catat_in;
+    window.catat_tunggakan = catat_tunggakan;
 });
 
 // form pemasukan dan pengeluaran
@@ -77,6 +87,21 @@ $(document).ready(function() {
         }
     })
 
+    $('#kamarTunggakan').change(function() {
+        var kamarId = $(this).val();
+        if (kamarId) {
+            $.ajax({
+                url: '/getTunggakan/' + kamarId,
+                type: 'GET',
+                success: function(data) {
+                    $('#periodeTunggakanDeskripsi').val(data.periodeTunggakanDeskripsi);
+                    $('#nilaiTunggakan').val(data.nilaiTunggakan);
+                    $('#periodeTunggakan').val(data.periodeTunggakan);
+                }
+            });
+        }
+    });
+
     $('#kamarPemasukan').change(function() {
         var kamarId = $(this).val();
         if (kamarId) {
@@ -86,9 +111,45 @@ $(document).ready(function() {
                 success: function(data) {
                     $('#periodeSewa').val(data.periodeSewa);
                     $('#nilaiSewa').val(data.nilaiSewa);
+                    $('#periodeDeskripsi').val(data.periodeDeskripsi);
                 }
             });
         }
+    });
+
+    $('#formTunggakan').submit(function(event) {
+        event.preventDefault();
+
+        var data = {
+            tanggalTerima: $('#tanggalTerima').val(),
+            kamarPemasukan: $('#kamarTunggakan').val(),
+            periodeSewa: $('#periodeTunggakan').val(),
+            deskripsi: $('#periodeTunggakanDeskripsi').val(),
+            nilaiSewa: $('#nilaiTunggakan').val(),
+        };
+
+        $.ajax({
+            url: '/transaksi-masuk',
+            type: 'POST',
+            data: data,
+            success: function(response) {
+                // Panggil Toast.fire() untuk menampilkan pesan toast
+                Toast.fire({
+                    icon: response.status,
+                    title: response.message,
+                })
+
+                // Setelah 3 detik, reload halaman jika status bukan error
+                if (response.status !== 'error') {
+                    setTimeout(function() {
+                        window.location.reload();
+                    }, 3000)
+                }
+            },
+            error: function(response) {
+                alert('Terjadi kesalahan. Silakan coba lagi.');
+            }
+        });
     });
 
     $('#formPemasukan').submit(function(event) {
@@ -98,10 +159,9 @@ $(document).ready(function() {
             transaksiId: $('#transaksiId').val(),
             tanggalTerima: $('#tanggalTerima').val(),
             kamarPemasukan: $('#kamarPemasukan').val(),
-            periodeSewa: $('#periodeSewa').val().replace(/[^0-9]/g, ''),
-            tahunSewa: $('#tahunSewa').val(),
+            periodeSewa: $('#periodeSewa').val(),
+            deskripsi: $('#periodeDeskripsi').val(),
             nilaiSewa: $('#nilaiSewa').val(),
-            deskripsi: $('#deskripsi').val()
         };
 
         $.ajax({
@@ -198,17 +258,17 @@ function edit_exin(element) {
 
     if (tipe === 'masuk') {
         $('#formPengeluaran').slideUp();
+        $('#formTunggakan').slideUp();
         $('#formPemasukan').slideDown();
         $('#formContainer').slideDown();
 
         $('#transaksiId').val(transaksiId);
         $('#saldo').val(saldo);
         $('#tanggalTerima').val(tanggal);
-        $('#kamarPemasukan').val(kamarId).change();
-        $('#periodeSewa').val(new Date(tanggal).getMonth() + 1);
-        $('#tahunSewa').val(new Date(tanggal).getFullYear());
+        $('#kamarPemasukan').val(kamarId);
+        $('#periodeSewa').val(periodeSewa);
+        $('#periodeDeskripsi').val(deskripsi);
         $('#nilaiSewa').val(nominal);
-        $('#deskripsi').val(deskripsi);
 
         $('#deleteButtonPemasukan')
             .removeClass('d-none')
@@ -216,6 +276,7 @@ function edit_exin(element) {
             .attr('onclick', 'confirmDelete(event, this)');
     } else {
         $('#formPemasukan').slideUp();
+        $('#formTunggakan').slideUp();
         $('#formPengeluaran').slideDown();
         $('#formContainer').slideDown();
 

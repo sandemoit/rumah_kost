@@ -68,10 +68,46 @@
                     <div class="col-sm-6 text-end kastool" id="catatkas">
                         <span class="kasbutton" id="pengeluaran" onclick="catat_out()">Catat Pengeluaran</span>
                         <span class="kasbutton" id="pemasukan" onclick="catat_in()">Catat Pemasukan</span>
+                        <span class="kasbutton" id="tunggakan" onclick="catat_tunggakan()">Catat Tunggakan</span>
                     </div>
                 </div>
 
                 <div id="formContainer">
+                    <form id="formTunggakan">
+                        @csrf
+                        <h3 class="text-dark">Tunggakan</h3>
+                        <div class="form-group">
+                            <label for="tanggalTerima">Tanggal Terima:</label>
+                            <input type="date" class="form-control" id="tanggalTerima" name="tanggalTerima"
+                                value="{{ date('Y-m-d') }}">
+                        </div>
+                        <div class="form-group">
+                            <label for="kamarTunggakan">Kamar:</label>
+                            <select class="form-select" id="kamarTunggakan" name="kamarTunggakan">
+                                <option selected disabled>Pilih kamar...</option>
+                                @foreach ($kamarTunggakan as $room)
+                                    <option value="{{ $room->id }}">{{ $room->nama_kamar }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="periodeTunggakanDeskripsi">Periode Sewa:</label>
+                            <input type="text" class="form-control" id="periodeTunggakanDeskripsi"
+                                name="periodeTunggakanDeskripsi" disabled readonly>
+                            <input type="hidden" id="periodeTunggakan" name="periodeTunggakan">
+                        </div>
+                        <div class="form-group">
+                            <label for="nilaiTunggakan">Nilai Sewa:</label>
+                            <input type="text" class="form-control" id="nilaiTunggakan" name="nilaiTunggakan" disabled
+                                readonly>
+                        </div>
+                        <div class="form-buttons">
+                            <button type="button" class="btn btn-secondary"
+                                onclick="$('#formContainer').slideUp()">Batal</button>
+                            <button type="submit" class="btn btn-success">Simpan</button>
+                        </div>
+                    </form>
+
                     <form id="formPemasukan">
                         @csrf
                         <input type="hidden" id="transaksiId" name="transaksiId">
@@ -92,18 +128,15 @@
                             </select>
                         </div>
                         <div class="form-group">
-                            <label for="periodeSewa">Periode Sewa:</label>
-                            <input type="text" class="form-control" id="periodeSewa" name="periodeSewa" disabled
-                                readonly>
-                            <input type="hidden" id="tahunSewa" name="tahunSewa" value="{{ date('Y') }}">
+                            <label for="periodeDeskripsi">Periode Sewa:</label>
+                            <input type="text" class="form-control" id="periodeDeskripsi" name="periodeDeskripsi"
+                                disabled readonly>
+                            <input type="hidden" class="form-control" id="periodeSewa" name="periodeSewa">
                         </div>
                         <div class="form-group">
                             <label for="nilaiSewa">Nilai Sewa:</label>
-                            <input type="text" class="form-control" id="nilaiSewa" name="nilaiSewa" disabled readonly>
-                        </div>
-                        <div class="form-group">
-                            <label for="deskripsi">Deskripsi:</label>
-                            <input type="text" class="form-control" id="deskripsi" name="deskripsi" required>
+                            <input type="text" class="form-control" id="nilaiSewa" name="nilaiSewa" disabled
+                                readonly>
                         </div>
                         <div class="form-buttons">
                             <button type="button" class="btn btn-secondary"

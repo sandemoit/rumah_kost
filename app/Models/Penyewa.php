@@ -17,6 +17,7 @@ class Penyewa extends Model
         'nomor_wa',
         'status',
         'tanggal_masuk',
+        'tanggal_putus_kontrak',
         'id_kontrakan',
         'id_kamar'
     ];

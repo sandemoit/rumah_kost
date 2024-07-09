@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -25,8 +26,58 @@ class TransaksiController extends Controller
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
 
         // Ambil semua kamar yang terkait dengan kontrakan tersebut
-        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->get();
+        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->select('id', 'nama_kamar')->get();
         $countKontrakan = $kamar->count();
+
+        // Ambil data penyewa yang memiliki status putus_kontrak dan terkait dengan kamar yang terkait dengan kontrakan tersebut
+        $penyewa = Penyewa::whereHas('kamar', function (Builder $query) use ($kontrakan) {
+            $query->select('id', 'nama_kamar')->where('id_kontrakan', $kontrakan->id);
+        })->where('status', 'putus_kontrak')->with('kamar:id,nama_kamar')->get();
+
+        // Menyaring kamar dengan penyewa yang menunggak
+        $kamarTunggakan = $penyewa->filter(function ($penyewa) {
+            // Ambil semua transaksi masuk yang terkait dengan kamar penyewa ini
+            $transaksiList = TransaksiList::whereJsonContains('id_kamar', $penyewa->id_kamar)
+                ->where('tipe', 'masuk')
+                ->get();
+
+            // Jika tidak ada transaksi, tampilkan kamar tersebut
+            if ($transaksiList->isEmpty()) {
+                return true;
+            }
+
+            // Ambil periode saat ini dan tanggal putus kontrak
+            $periodeSaatIni = Carbon::now()->startOfMonth();
+            $tanggalPutusKontrak = Carbon::parse($penyewa->tanggal_putus_kontrak)->startOfMonth();
+
+            // Periksa setiap transaksi untuk menentukan apakah periode sewa telah mencapai tanggal putus kontrak
+            $periodeSewaTerakhir = null;
+            foreach ($transaksiList as $transaksi) {
+                $transaksiMasuk = TransaksiMasuk::where('id', $transaksi->id_tipe)->latest('periode_sewa')->first();
+                if ($transaksiMasuk) {
+                    $periodeSewa = Carbon::parse($transaksiMasuk->periode_sewa)->startOfMonth();
+                    $periodeSewaTerakhir = $periodeSewa;
+
+                    // Jika periode sewa terakhir sama dengan atau setelah tanggal putus kontrak, jangan tampilkan
+                    if ($periodeSewa->eq($tanggalPutusKontrak) || $periodeSewa->gt($tanggalPutusKontrak)) {
+                        return false;
+                    }
+                }
+            }
+
+            // Jika periode sewa terakhir belum terpenuhi hingga periode saat ini, tampilkan
+            if ($periodeSewaTerakhir && $periodeSewaTerakhir->lt($periodeSaatIni)) {
+                return true;
+            }
+
+            // Jika tidak ada transaksi yang memenuhi syarat di atas, tampilkan kamar tersebut
+            return true;
+        })->map(function ($penyewa) {
+            return $penyewa->kamar;
+        })->filter()->flatten()->unique('id');
+
+        return response()->json($kamarTunggakan);
+        die;
 
         // Mengambil bulan dan tahun dari URL
         $month = $request->input('month', now()->month);
@@ -69,6 +120,7 @@ class TransaksiController extends Controller
             'pageTitle' => $kontrakan->nama_kontrakan,
             'keterangan' => "Kontrakan $kontrakan->nama_kontrakan $countKontrakan Pintu",
             'kamar' => $kamar,
+            'kamarTunggakan' => $kamarTunggakan,
             'transaksiList' => $transaksiList,
             'code_kontrakan' => $code_kontrakan
         ];
@@ -82,6 +134,12 @@ class TransaksiController extends Controller
         // Cari transaksi terkait kamar
         $transaksi = TransaksiList::whereJsonContains('id_kamar', $id)->first();
 
+        // Cari kontrakan berdasarkan id_kamar tersebut
+        $kontrakan = Kamar::find($id)->kontrakan;
+
+        // Cari harga kamar
+        $hargaKamar = Kamar::find($id)->harga_kamar;
+
         // Jika tidak ada transaksi, periksa apakah ada penyewa aktif di kamar tersebut
         if (!$transaksi || !$transaksi->id_tipe) {
             $penyewa = Penyewa::where('id_kamar', $id)->where('status', 'aktif')->first();
@@ -89,50 +147,119 @@ class TransaksiController extends Controller
             if ($penyewa) {
                 // Jika ada penyewa aktif, gunakan tanggal masuk untuk menentukan bulan sewa pertama
                 $tanggalMasuk = Carbon::parse($penyewa->tanggal_masuk);
-                $bulanDepan = $tanggalMasuk->month;
-                $nilaiSewa = Kamar::find($id)->harga_kamar;
+                $periodeSewa = $tanggalMasuk->format('Y-m-d');
 
                 return response()->json([
-                    'periodeSewa' => "Bulan $bulanDepan",
-                    'nilaiSewa' => $nilaiSewa
+                    'periodeDeskripsi' => periodeSewa($tanggalMasuk),
+                    'periodeSewa' => $periodeSewa,
+                    'nilaiSewa' => nominal($hargaKamar),
                 ]);
             } else {
                 // Jika tidak ada penyewa aktif, set periodeSewa dan nilaiSewa ke 'N/A'
                 return response()->json([
-                    'periodeSewa' => 'Bulan N/A',
+                    'periodeDeskripsi' => 'N/A',
                     'nilaiSewa' => 'N/A'
                 ]);
             }
         }
 
-        // Cari transaksi masuk terakhir berdasarkan tahun dan bulan
+        // Cari transaksi masuk terakhir berdasarkan periode_sewa
         $transaksiTerakhir = TransaksiMasuk::where('id', $transaksi->id_tipe)
-            ->select('tahun', 'bulan')
-            ->orderBy('tahun', 'desc')
-            ->orderBy('bulan', 'desc')
+            ->select('periode_sewa')
+            ->latest('periode_sewa')
             ->first();
 
-        // Jika ada transaksi terakhir, hitung bulan berikutnya
-        $penyewaAktif = Penyewa::where('id', $transaksi->id_tipe)
-            ->whereJsonContains('id_kamar', $id)
-            ->where('id_kontrakan', $transaksi->id_kontrakan)
+        // Cek apakah ada penyewa aktif di kamar tersebut
+        $penyewaAktif = Penyewa::where('id_kamar', $id)
+            ->where('id_kontrakan', $kontrakan->id)
             ->where('status', 'aktif')
             ->exists();
 
+        // Jika ada transaksi terakhir dan penyewa aktif di kamar tersebut
         if ($transaksiTerakhir && $penyewaAktif) {
-            $bulanTerakhir = $transaksiTerakhir->bulan;
-            $bulanDepan = $bulanTerakhir == 12 ? 1 : $bulanTerakhir + 1;
+            // Hitung bulan berikutnya menggunakan Carbon
+            $bulanDepan = Carbon::parse($transaksiTerakhir->periode_sewa);
+            // Format periode sewa untuk dimasukkan ke database
+            $periodeSewa = $bulanDepan->addMonth()->format('Y-m-d');
+
+            return response()->json([
+                'periodeDeskripsi' => periodeSewa($bulanDepan),
+                'nilaiSewa' => nominal($hargaKamar),
+                'periodeSewa' => $periodeSewa,
+            ]);
         } else {
-            $bulanDepan = $transaksiTerakhir ? $transaksiTerakhir->bulan + 1 : 1;
+            // Jika tidak ada transaksi terakhir atau tidak ada penyewa aktif, set periodeSewa dan nilaiSewa ke 'N/A'
+            return response()->json([
+                'periodeDeskripsi' => 'N/A',
+                'nilaiSewa' => 'N/A'
+            ]);
+        }
+    }
+
+    public function getTunggakan($id)
+    {
+        // Cari kontrakan dan harga kamar berdasarkan id_kamar tersebut
+        $kamar = Kamar::findOrFail($id);
+        $kontrakan = $kamar->kontrakan;
+        $nilaiTunggakan = $kamar->harga_kamar;
+
+        // Cari penyewa yang putus kontrak terkait dengan kamar tersebut
+        $penyewaPutusKontrak = Penyewa::where('id_kamar', $id)
+            ->where('id_kontrakan', $kontrakan->id)
+            ->where('status', 'putus_kontrak')
+            ->first();
+
+        // Cari transaksi terkait kamar
+        $transaksi = TransaksiList::whereJsonContains('id_kamar', $id)->first();
+
+        // Jika tidak ada transaksi atau tidak ada id_tipe, tentukan bulan tunggakan pertama
+        if (!$transaksi || !$transaksi->id_tipe) {
+            if ($penyewaPutusKontrak) {
+                $bulanTunggakan = Carbon::parse($penyewaPutusKontrak->tanggal_masuk);
+                $periodeSewa = $bulanTunggakan->format('Y-m-d');
+                return response()->json([
+                    'periodeTunggakanDeskripsi' => periodeSewa($bulanTunggakan),
+                    'periodeTunggakan' => $periodeSewa,
+                    'nilaiTunggakan' => nominal($nilaiTunggakan),
+                ]);
+            } else {
+                return response()->json([
+                    'periodeTunggakanDeskripsi' => 'N/A',
+                    'nilaiTunggakan' => 'N/A'
+                ]);
+            }
         }
 
-        // Cari harga kamar
-        $kamar = Kamar::find($id);
+        // Cari transaksi masuk terakhir berdasarkan periode_sewa
+        $transaksiTerakhir = TransaksiMasuk::where('id', $transaksi->id_tipe)
+            ->latest('periode_sewa')
+            ->first();
 
-        return response()->json([
-            'periodeSewa' => "Bulan $bulanDepan",
-            'nilaiSewa' => $kamar->harga_kamar,
-        ]);
+        if ($transaksiTerakhir) {
+            // Jika transaksi terakhir sama dengan tanggal putus kontrak, maka berhenti
+            $periodeSewaTerakhir = Carbon::parse($transaksiTerakhir->periode_sewa)->startOfMonth();
+            if ($penyewaPutusKontrak && $periodeSewaTerakhir->isSameMonth(Carbon::parse($penyewaPutusKontrak->tanggal_putus_kontrak))) {
+                return response()->json([
+                    'periodeTunggakanDeskripsi' => 'N/A',
+                    'nilaiTunggakan' => 'N/A'
+                ]);
+            }
+
+            // Hitung bulan berikutnya berdasarkan akhir bulan periode sewa terakhir
+            $bulanTunggakan = Carbon::parse($transaksiTerakhir->periode_sewa);
+            $periodeSewa = $bulanTunggakan->addMonth()->format('Y-m-d');
+
+            return response()->json([
+                'periodeTunggakan' => $periodeSewa,
+                'periodeTunggakanDeskripsi' => periodeSewa($bulanTunggakan),
+                'nilaiTunggakan' => nominal($nilaiTunggakan),
+            ]);
+        } else {
+            return response()->json([
+                'periodeTunggakanDeskripsi' => 'N/A',
+                'nilaiTunggakan' => 'N/A'
+            ]);
+        }
     }
 
     public function getSaldoKontrakan($code_kontrakan)
@@ -164,22 +291,15 @@ class TransaksiController extends Controller
         $validatedData = $request->validate([
             'tanggalTerima' => 'required|date',
             'kamarPemasukan' => 'required|integer',
-            'periodeSewa' => 'required|integer',
-            'tahunSewa' => 'required|integer',
-            'nilaiSewa' => 'required|integer',
-            'deskripsi' => 'nullable|string',
+            'periodeSewa' => 'required',
+            'deskripsi' => 'required',
+            'nilaiSewa' => 'required|string',
         ]);
 
-        $existingTransaction = TransaksiList::where('id_kamar', $validatedData['kamarPemasukan'])
-            ->whereHas('TransaksiMasuk', function (Builder $query) use ($validatedData) {
-                $query->where(function (Builder $query) use ($validatedData) {
-                    $query->where('bulan', now()->month)
-                        ->where('tahun', now()->year);
-                })
-                    ->orWhere(function (Builder $query) use ($validatedData) {
-                        $query->where('bulan', $validatedData['periodeSewa'])
-                            ->where('tahun', $validatedData['tahunSewa']);
-                    });
+        // Cek apakah sudah ada transaksi untuk periode ini di kamar ini
+        $existingTransaction = TransaksiList::whereJsonContains('id_kamar', $validatedData['kamarPemasukan'])
+            ->whereHas('transaksiMasuk', function (Builder $query) use ($validatedData) {
+                $query->where('periode_sewa', $validatedData['periodeSewa']);
             })
             ->first();
 
@@ -198,13 +318,16 @@ class TransaksiController extends Controller
                 'code_masuk' => $code_masuk,
                 'deskripsi' => $validatedData['deskripsi'],
                 'tanggal_transaksi' => $validatedData['tanggalTerima'],
-                'bulan' => $validatedData['periodeSewa'],
-                'tahun' => $validatedData['tahunSewa'],
+                'periode_sewa' => $validatedData['periodeSewa'],
             ]);
 
+            // Ambil saldo terakhir
             $transaksiTerakhir = TransaksiList::latest()->first();
             $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
-            $saldo = (int) $saldoTerakhir + (int) $validatedData['nilaiSewa'];
+
+            // Bersihkan nilaiSewa dari karakter non-digit
+            $nilaiSewaBersih = preg_replace('/\D/', '', $validatedData['nilaiSewa']);
+            $saldo = (int) $saldoTerakhir + (int) $nilaiSewaBersih;
 
             $code_transaksi = random_int(1000, 9999);
 
@@ -213,7 +336,7 @@ class TransaksiController extends Controller
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_tipe' => $transaksiMasuk->id,
                 'tipe' => 'masuk',
-                'nominal' => $validatedData['nilaiSewa'],
+                'nominal' => preg_replace('/\D/', '', $validatedData['nilaiSewa']),
                 'saldo' => $saldo,
                 'created_by' => Auth::user()->id,
             ]);

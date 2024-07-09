@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Kontrakan;
+use Carbon\Carbon;
 
 if (!function_exists('getAllKontrakan')) {
     /**
@@ -42,7 +43,7 @@ if (!function_exists('tanggal')) {
             'MEI',
             'JUN',
             'JUL',
-            'AGU',
+            'AGS',
             'SEP',
             'OKT',
             'NOV',
@@ -66,6 +67,69 @@ if (!function_exists('tanggal')) {
     }
 }
 
+if (!function_exists('bulan')) {
+    /**
+     * Format tanggal ke dalam format Indonesia hanya menampilkan bulan saja
+     *
+     * @param int $bulan
+     * @return string
+     */
+    function bulan($bulan)
+    {
+        $nama_bulan = [
+            1 => 'JAN',
+            'FEB',
+            'MAR',
+            'APR',
+            'MEI',
+            'JUN',
+            'JUL',
+            'AGU',
+            'SEP',
+            'OKT',
+            'NOV',
+            'DES'
+        ];
+
+        return $nama_bulan[$bulan];
+    }
+}
+
+if (!function_exists('tahun')) {
+    /**
+     * Format tanggal ke dalam format Indonesia hanya menampilkan tahun
+     *
+     * @param string $tanggal
+     * @param bool $full optional
+     * @return string
+     */
+    function tahun($tanggal, $full = false)
+    {
+        $tahun = substr($tanggal, 0, 4);
+        if ($full) {
+            return $tahun;
+        } else {
+            return substr($tahun, -2);
+        }
+    }
+}
+
+if (!function_exists('periodeSewa')) {
+    /**
+     * Format periode sewa ke dalam format Indonesia menggunakan format bulan-tahun
+     * contoh: MEI - 21
+     *
+     * @param string $tanggal_mulai
+     * @return string
+     */
+    function periodeSewa($tanggal_mulai)
+    {
+        $bulan_mulai = bulan(Carbon::parse($tanggal_mulai)->month);
+        $tahun_akhir = tahun(Carbon::parse($tanggal_mulai)->year);
+
+        return $bulan_mulai . ' - ' . $tahun_akhir;
+    }
+}
 
 if (!function_exists('hari')) {
     /**
@@ -90,5 +154,18 @@ if (!function_exists('rupiah')) {
     function rupiah($angka)
     {
         return number_format($angka, 2, ',', '.');
+    }
+}
+
+if (!function_exists('nominal')) {
+    /**
+     * Format angka menjadi format nominal.
+     *
+     * @param  float|int  $angka
+     * @return string
+     */
+    function nominal($angka)
+    {
+        return number_format($angka, 0, ',', '.');
     }
 }

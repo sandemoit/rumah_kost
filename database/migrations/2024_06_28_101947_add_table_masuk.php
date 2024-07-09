@@ -15,8 +15,7 @@ return new class extends Migration
             $table->id();
             $table->integer('code_masuk');
             $table->string('deskripsi');
-            $table->integer('bulan');
-            $table->integer('tahun');
+            $table->date('periode_sewa');
             $table->date('tanggal_transaksi');
             $table->timestamps();
         });

@@ -43,6 +43,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/transaksi/{code_kontrakan}', [TransaksiController::class, 'show'])->name('transaksi.kontrakan');
     Route::get('/getKamarData/{id}', [TransaksiController::class, 'getKamarData'])->name('getKamarData');
+    Route::get('/getTunggakan/{id}', [TransaksiController::class, 'getTunggakan'])->name('getTunggakan');
     Route::post('/transaksi-masuk', [TransaksiController::class, 'store_masuk'])->name('getKamarData.store_masuk');
     Route::post('/transaksi-keluar', [TransaksiController::class, 'store_keluar'])->name('getKamarData.store_keluar');
     Route::get('/api/get-transaction/{type}/{id}', [TransaksiController::class, 'getTransaction'])->name('get-transaction');
