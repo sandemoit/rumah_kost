@@ -76,9 +76,6 @@ class TransaksiController extends Controller
             return $penyewa->kamar;
         })->filter()->flatten()->unique('id');
 
-        return response()->json($kamarTunggakan);
-        die;
-
         // Mengambil bulan dan tahun dari URL
         $month = $request->input('month', now()->month);
         $year = $request->input('year', now()->year);
