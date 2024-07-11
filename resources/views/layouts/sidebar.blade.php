@@ -40,7 +40,8 @@
 
                 {{-- laporan --}}
                 <li class="nav-item {{ request()->segment(1) == 'laporan' ? 'menu-open' : '' }}">
-                    <a href="#" class="nav-link {{ request()->segment(1) == 'laporan' ? 'active' : '' }}">
+                    <a href="javascript:void(0)"
+                        class="nav-link {{ request()->segment(1) == 'laporan' ? 'active' : '' }}">
                         <i class="nav-icon bi bi-file-earmark-bar-graph"></i>
                         <p>
                             Laporan
@@ -49,7 +50,8 @@
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="#" class="nav-link {{ request()->segment(2) == 'harian' ? 'active' : '' }}">
+                            <a href="{{ route('laporan.harian') }}"
+                                class="nav-link {{ request()->segment(2) == 'harian' ? 'active' : '' }}">
                                 <i class="nav-icon bi bi-circle-fill"></i>
                                 <p>Harian</p>
                             </a>

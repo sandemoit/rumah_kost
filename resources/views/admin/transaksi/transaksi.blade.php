@@ -26,8 +26,9 @@
                 <div class="row bukutop">
                     <div class="col-sm-6">
                         <div class="bulannav">
-                            <a href="#" class="bulan_nav_left" title="Bulan sebelumnya">&nbsp;</a>
-                            <a href="#" class="bulan_nav_right" title="Bulan selanjutnya">&nbsp;</a>
+                            <a href="#" class="bulan_nav_left" id="bulan_nav_left" title="Bulan sebelumnya">&nbsp;</a>
+                            <a href="#" class="bulan_nav_right" id="bulan_nav_right"
+                                title="Bulan selanjutnya">&nbsp;</a>
                             <form action="{{ route('transaksi.kontrakan', $code_kontrakan) }}" method="GET"
                                 id="filterForm">
                                 <div class="bulankas">

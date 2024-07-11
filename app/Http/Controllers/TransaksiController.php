@@ -143,11 +143,10 @@ class TransaksiController extends Controller
 
             if ($penyewa) {
                 // Jika ada penyewa aktif, gunakan tanggal masuk untuk menentukan bulan sewa pertama
-                $tanggalMasuk = Carbon::parse($penyewa->tanggal_masuk);
-                $periodeSewa = $tanggalMasuk->format('Y-m-d');
+                $periodeSewa = Carbon::parse($penyewa->tanggal_masuk)->format('Y-m-d');
 
                 return response()->json([
-                    'periodeDeskripsi' => periodeSewa($tanggalMasuk),
+                    'periodeDeskripsi' => periodeSewa($periodeSewa),
                     'periodeSewa' => $periodeSewa,
                     'nilaiSewa' => nominal($hargaKamar),
                 ]);
@@ -175,14 +174,12 @@ class TransaksiController extends Controller
         // Jika ada transaksi terakhir dan penyewa aktif di kamar tersebut
         if ($transaksiTerakhir && $penyewaAktif) {
             // Hitung bulan berikutnya menggunakan Carbon
-            $bulanDepan = Carbon::parse($transaksiTerakhir->periode_sewa);
-            // Format periode sewa untuk dimasukkan ke database
-            $periodeSewa = $bulanDepan->addMonth()->format('Y-m-d');
+            $periodeSewa = Carbon::parse($transaksiTerakhir->periode_sewa)->addMonth()->format('Y-m-d');
 
             return response()->json([
-                'periodeDeskripsi' => periodeSewa($bulanDepan),
-                'nilaiSewa' => nominal($hargaKamar),
+                'periodeDeskripsi' => periodeSewa($periodeSewa),
                 'periodeSewa' => $periodeSewa,
+                'nilaiSewa' => nominal($hargaKamar),
             ]);
         } else {
             // Jika tidak ada transaksi terakhir atau tidak ada penyewa aktif, set periodeSewa dan nilaiSewa ke 'N/A'
@@ -212,10 +209,10 @@ class TransaksiController extends Controller
         // Jika tidak ada transaksi atau tidak ada id_tipe, tentukan bulan tunggakan pertama
         if (!$transaksi || !$transaksi->id_tipe) {
             if ($penyewaPutusKontrak) {
-                $bulanTunggakan = Carbon::parse($penyewaPutusKontrak->tanggal_masuk);
-                $periodeSewa = $bulanTunggakan->format('Y-m-d');
+                $periodeSewa = Carbon::parse($penyewaPutusKontrak->tanggal_masuk)->format('Y-m-d');
+
                 return response()->json([
-                    'periodeTunggakanDeskripsi' => periodeSewa($bulanTunggakan),
+                    'periodeTunggakanDeskripsi' => periodeSewa($periodeSewa),
                     'periodeTunggakan' => $periodeSewa,
                     'nilaiTunggakan' => nominal($nilaiTunggakan),
                 ]);
@@ -233,22 +230,12 @@ class TransaksiController extends Controller
             ->first();
 
         if ($transaksiTerakhir) {
-            // Jika transaksi terakhir sama dengan tanggal putus kontrak, maka berhenti
-            $periodeSewaTerakhir = Carbon::parse($transaksiTerakhir->periode_sewa)->startOfMonth();
-            if ($penyewaPutusKontrak && $periodeSewaTerakhir->isSameMonth(Carbon::parse($penyewaPutusKontrak->tanggal_putus_kontrak))) {
-                return response()->json([
-                    'periodeTunggakanDeskripsi' => 'N/A',
-                    'nilaiTunggakan' => 'N/A'
-                ]);
-            }
-
             // Hitung bulan berikutnya berdasarkan akhir bulan periode sewa terakhir
-            $bulanTunggakan = Carbon::parse($transaksiTerakhir->periode_sewa);
-            $periodeSewa = $bulanTunggakan->addMonth()->format('Y-m-d');
+            $periodeSewa = Carbon::parse($transaksiTerakhir->periode_sewa)->addMonth()->format('Y-m-d');
 
             return response()->json([
                 'periodeTunggakan' => $periodeSewa,
-                'periodeTunggakanDeskripsi' => periodeSewa($bulanTunggakan),
+                'periodeTunggakanDeskripsi' => periodeSewa($periodeSewa),
                 'nilaiTunggakan' => nominal($nilaiTunggakan),
             ]);
         } else {

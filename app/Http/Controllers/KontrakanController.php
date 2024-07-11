@@ -25,7 +25,7 @@ class KontrakanController extends Controller
             'pageTitle' => 'Manajemen Kontrakan',
         ];
 
-        return view('admin.data-master.kontrakan.kontrakan', $data);
+        return view('admin.pengaturan.kontrakan.kontrakan', $data);
     }
 
     public function detail(Request $request, string $nama_kontrakan)
@@ -44,7 +44,7 @@ class KontrakanController extends Controller
             })
             ->paginate(10);
 
-        return view('admin.data-master.kontrakan.detail', [
+        return view('admin.pengaturan.kontrakan.detail', [
             'kamar' => $kamar,
             'kontrakan' => $kontrakan,
             'pageTitle' => "Kontrakan: $kontrakan->nama_kontrakan"

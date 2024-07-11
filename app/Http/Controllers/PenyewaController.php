@@ -43,7 +43,7 @@ class PenyewaController extends Controller
             'kamarTerisi' => $kamarTerisi,
         ];
 
-        return view('admin.transaksi.penyewa', $data);
+        return view('admin.pengaturan.penyewa', $data);
     }
 
     public function getKamarByKontrakan($kontrakanId)

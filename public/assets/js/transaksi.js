@@ -349,3 +349,35 @@ $(document).ready(function() {
     window.edit_exin = edit_exin;
     window.confirmDelete = confirmDelete;
 });
+
+document.getElementById('bulan_nav_left').addEventListener('click', function(event) {
+    event.preventDefault();
+    changeMonth(-1);
+});
+
+document.getElementById('bulan_nav_right').addEventListener('click', function(event) {
+    event.preventDefault();
+    changeMonth(1);
+});
+
+function changeMonth(offset) {
+    const monthSelect = document.getElementById('nav_month');
+    const yearSelect = document.getElementById('nav_year');
+    let month = parseInt(monthSelect.value);
+    let year = parseInt(yearSelect.value);
+
+    month += offset;
+
+    if (month < 1) {
+        month = 12;
+        year -= 1;
+    } else if (month > 12) {
+        month = 1;
+        year += 1;
+    }
+
+    monthSelect.value = month;
+    yearSelect.value = year;
+
+    document.getElementById('filterForm').submit();
+}

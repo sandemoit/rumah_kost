@@ -200,12 +200,12 @@ small {
 }
 
 .bulannav .bulan_nav_left {
-    background: url(/storage/icon/icon_month-next.png) center top no-repeat;
-    float: right;
-}
-.bulannav .bulan_nav_right {
     background: url(/storage/icon/icon_month-back.png) center top no-repeat;
     float: left;
+}
+.bulannav .bulan_nav_right {
+    background: url(/storage/icon/icon_month-next.png) center top no-repeat;
+    float: right;
 }
 .bulannav a {
     display: inline-block;

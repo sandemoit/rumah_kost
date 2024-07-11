@@ -1,0 +1,126 @@
+.report-section {
+    margin-top: 20px;
+}
+.card-header {
+    font-weight: bold;
+}
+.table td,
+.table th {
+    border: none; /* Menghilangkan border asli dari tabel */
+}
+.report-section td {
+    padding: 8px;
+    border-top: 1px dotted #c7c7c7;
+    line-height: 18px;
+    vertical-align: middle;
+}
+.tdgray {
+    background: #f2f2f2 !important;
+}
+.tdplusmin {
+    width: 18px;
+}
+.tdmatauang {
+    width: 32px;
+}
+.tduang {
+    width: 96px;
+}
+.center {
+    text-align: center !important;
+}
+.right {
+    text-align: right !important;
+}
+.listmasuk {
+    background: #e0ffe3 !important;
+}
+.listkeluar {
+    background: #ffeaea !important;
+}
+.line {
+    border-bottom: 1px solid #333 !important;
+    background: #f2f2f2 !important;
+}
+.line {
+    border-top: 1px solid #333 !important;
+    font-weight: 700;
+}
+#selectReport {
+    width: 180px;
+}
+.form-group {
+    display: flex;
+    align-items: center;
+}
+.labelSelect {
+    margin-right: 10px;
+}
+.lap_tgl {
+    font-size: 20px;
+    border: none;
+    line-height: 26px;
+    font-weight: 300;
+    text-align: right;
+    padding: 0;
+    width: 180px;
+    background: none;
+}
+.lap_tgl:hover {
+    color: #494e53;
+    transition: all 0.3s ease;
+}
+.lap_tgl:focus {
+    color: #494e53;
+}
+.lap_tgl input:focus,
+input:focus-visible,
+select:focus,
+select:focus-visible {
+    outline: none;
+    box-shadow: none;
+}
+.nav-pills .nav-link.active {
+    background: #343a40;
+}
+.nav-pills .nav-link.active:hover {
+    background: #494e53;
+}
+.nav-link {
+    color: #343a40;
+}
+.nav-link:hover {
+    color: #494e53;
+}
+.table-bordered > :not(caption) > * {
+    border-width: 0;
+}
+.folderreport,
+.iconreport {
+    position: relative;
+    top: 1px;
+}
+.lap_tgl,
+.folderreport,
+.pointer {
+    cursor: pointer;
+}
+.hover:hover {
+    text-decoration: underline;
+}
+.subreport {
+    font-size: 12px;
+    line-height: 16px;
+    width: 70%;
+    background: #e8e8e8;
+    color: #4d4d4d;
+}
+.subreport td {
+    padding: 2px 4px;
+}
+.tabreport td {
+    padding: 8px;
+    border-top: 1px dotted #c7c7c7;
+    line-height: 18px;
+    vertical-align: middle;
+}

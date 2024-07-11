@@ -15,6 +15,42 @@ if (!function_exists('getAllKontrakan')) {
     }
 }
 
+if (!function_exists('dateIndo')) {
+    /**
+     * Format dateIndo ke dalam format Indonesia
+     *
+     * @param string $dateIndo
+     * @param bool $cetak_hari
+     * @return string
+     */
+    function dateIndo($tanggal = false)
+    {
+        $nama_bulan = array(
+            1 => 'Januari',
+            'Februari',
+            'Maret',
+            'April',
+            'Mei',
+            'Juni',
+            'Juli',
+            'Agustus',
+            'September',
+            'Oktober',
+            'November',
+            'Desember'
+        );
+
+        $tahun = substr($tanggal, 0, 4);
+        $bulan = $nama_bulan[(int)substr($tanggal, 5, 2)];
+        $tanggal = substr($tanggal, 8, 2);
+        $text = '';
+
+        $text .= "$tanggal $bulan $tahun";
+
+        return $text;
+    }
+}
+
 if (!function_exists('tanggal')) {
     /**
      * Format tanggal ke dalam format Indonesia
@@ -23,18 +59,8 @@ if (!function_exists('tanggal')) {
      * @param bool $cetak_hari
      * @return string
      */
-    function tanggal($tanggal, $cetak_hari = false)
+    function tanggal($tanggal = false)
     {
-        $nama_hari = array(
-            1 => 'Senin',
-            'Selasa',
-            'Rabu',
-            'Kamis',
-            'Jumat',
-            'Sabtu',
-            'Minggu'
-        );
-
         $nama_bulan = array(
             1 => 'JAN',
             'FEB',
@@ -55,15 +81,26 @@ if (!function_exists('tanggal')) {
         $tanggal = substr($tanggal, 8, 2);
         $text = '';
 
-        if ($cetak_hari) {
-            $urutan_hari = date('N', strtotime($tanggal));
-            $hari = $nama_hari[$urutan_hari];
-            $text .= "$hari, $tanggal $bulan $tahun";
-        } else {
-            $text .= "$tanggal-$bulan-$tahun";
-        }
+        $text .= "$tanggal-$bulan-$tahun";
 
         return $text;
+    }
+}
+
+if (!function_exists('periodeSewa')) {
+    /**
+     * Format periode sewa ke dalam format Indonesia menggunakan format bulan-tahun
+     * contoh: MEI - 21
+     *
+     * @param string $tanggal_mulai
+     * @return string
+     */
+    function periodeSewa($tanggal_mulai)
+    {
+        $bulan_mulai = bulan(Carbon::parse($tanggal_mulai)->month);
+        $tahun_akhir = tahun(Carbon::parse($tanggal_mulai)->year);
+
+        return $bulan_mulai . ' - ' . $tahun_akhir;
     }
 }
 
@@ -111,23 +148,6 @@ if (!function_exists('tahun')) {
         } else {
             return substr($tahun, -2);
         }
-    }
-}
-
-if (!function_exists('periodeSewa')) {
-    /**
-     * Format periode sewa ke dalam format Indonesia menggunakan format bulan-tahun
-     * contoh: MEI - 21
-     *
-     * @param string $tanggal_mulai
-     * @return string
-     */
-    function periodeSewa($tanggal_mulai)
-    {
-        $bulan_mulai = bulan(Carbon::parse($tanggal_mulai)->month);
-        $tahun_akhir = tahun(Carbon::parse($tanggal_mulai)->year);
-
-        return $bulan_mulai . ' - ' . $tahun_akhir;
     }
 }
 

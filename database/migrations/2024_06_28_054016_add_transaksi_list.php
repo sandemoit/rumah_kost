@@ -19,8 +19,10 @@ return new class extends Migration
             $table->enum('jenis', ['masuk', 'keluar']);
             $table->integer('nominal');
             $table->string('saldo');
-            $table->string('created_by');
+            $table->unsignedBigInteger('created_by');
             $table->timestamps();
+
+            $table->foreign('created_by')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

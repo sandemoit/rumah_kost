@@ -78,8 +78,8 @@
         integrity="sha256-whL0tQWoY1Ku1iskqPFvmZ+CHsvmRWx/PIoEvIeWh4I=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
         integrity="sha256-YMa+wAM6QkVyz999odX7lPRxkoYAan8suedu4k2Zur8=" crossorigin="anonymous"></script>
-    <script src="{{ asset('assets/js/adminlte.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="{{ asset('assets/js/adminlte.js') }}"></script>
     <script src="{{ asset('assets/js/modal-confirm.js') }}"></script>
     <script src="{{ asset('assets/js/aksi.js') }}"></script>
     <script src="{{ asset('assets/js/message-alert.js') }}"></script>

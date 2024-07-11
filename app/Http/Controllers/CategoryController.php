@@ -17,7 +17,7 @@ class CategoryController extends Controller
         ];
         $data['pengeluaran'] = Category::where('type', 'pengeluaran')->get();
         $data['pemasukan'] = Category::where('type', 'pemasukan')->get();
-        return view('admin.data-master.cashcategory.category', $data);
+        return view('admin.pengaturan.cashcategory.category', $data);
     }
 
     /**

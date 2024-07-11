@@ -27,7 +27,7 @@ class ManajemenController extends Controller
             'pageTitle' => 'Manajemen User',
         ];
 
-        return view('admin.data-master.user.manajemen', $data);
+        return view('admin.pengaturan.user.manajemen', $data);
     }
 
     /**
@@ -38,7 +38,7 @@ class ManajemenController extends Controller
         $data = [
             'pageTitle' => 'Tambah User',
         ];
-        return view('admin.data-master.user.create', $data);
+        return view('admin.pengaturan.user.create', $data);
     }
 
     /**
@@ -94,7 +94,7 @@ class ManajemenController extends Controller
             'user' => User::findOrFail($id),
             'pageTitle' => 'Edit User',
         ];
-        return view('admin.data-master.user.edit', $data);
+        return view('admin.pengaturan.user.edit', $data);
     }
 
     /**
