@@ -49,7 +49,7 @@
                 </tbody>
             </table>
         </div>
-        <div class=""col-md-12 col-lg-6 col-sm-12">
+        <div class="col-md-12 col-lg-6 col-sm-12">
             <div class="report-chart">
                 <!-- Add chart library and code here -->
                 <canvas id="reportChart"></canvas>
