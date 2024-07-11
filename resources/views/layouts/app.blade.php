@@ -9,10 +9,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <!-- Favicons -->
-    <link rel="shortcut icon" href="{{ asset('storage/favicon/favicon.ico') }}">
-    <link rel="icon" href="{{ asset('storage/favicon/favicon-32x32.png') }}" sizes="32x32" />
-    <link rel="icon" href="{{ asset('storage/favicon/favicon-192x1922.png') }}" sizes="192x192" />
-    <link rel="apple-touch-icon" href="{{ asset('storage/favicon/apple-touch-icon.png') }}" />
+    <link rel="shortcut icon" href="{{ asset('assets/favicon/favicon.ico') }}">
+    <link rel="icon" href="{{ asset('assets/favicon/favicon-32x32.png') }}" sizes="32x32" />
+    <link rel="icon" href="{{ asset('assets/favicon/favicon-192x1922.png') }}" sizes="192x192" />
+    <link rel="apple-touch-icon" href="{{ asset('assets/favicon/apple-touch-icon.png') }}" />
 
     <!--end::Primary Meta Tags--><!--begin::Fonts-->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fontsource/source-sans-3@5.0.12/index.css"
@@ -38,12 +38,12 @@
                 </ul>
                 <ul class="navbar-nav ms-auto"> <!--begin::Navbar Search-->
                     <li class="nav-item dropdown user-menu"> <a href="#" class="nav-link dropdown-toggle"
-                            data-bs-toggle="dropdown"> <img src="{{ asset('storage/profile/' . Auth::user()->image) }}"
+                            data-bs-toggle="dropdown"> <img src="{{ asset('assets/profile/' . Auth::user()->image) }}"
                                 class="user-image rounded-circle shadow" alt="User Image"> <span
                                 class="d-none d-md-inline">{{ Auth::user()->name }}</span> </a>
                         <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end"> <!--begin::User Image-->
                             <li class="user-header text-bg-primary"> <img
-                                    src="{{ asset('storage/profile/' . Auth::user()->image) }}"
+                                    src="{{ asset('assets/profile/' . Auth::user()->image) }}"
                                     class="rounded-circle shadow" alt="User Image">
                                 <p>
                                     {{ Auth::user()->name }} - {{ Auth::user()->role }}
