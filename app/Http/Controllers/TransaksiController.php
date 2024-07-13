@@ -149,6 +149,7 @@ class TransaksiController extends Controller
                     'periodeDeskripsi' => periodeSewa($periodeSewa),
                     'periodeSewa' => $periodeSewa,
                     'nilaiSewa' => nominal($hargaKamar),
+                    'codeKontrakan' => $kontrakan->code_kontrakan,
                 ]);
             } else {
                 // Jika tidak ada penyewa aktif, set periodeSewa dan nilaiSewa ke 'N/A'
@@ -180,6 +181,7 @@ class TransaksiController extends Controller
                 'periodeDeskripsi' => periodeSewa($periodeSewa),
                 'periodeSewa' => $periodeSewa,
                 'nilaiSewa' => nominal($hargaKamar),
+                'codeKontrakan' => $kontrakan->code_kontrakan,
             ]);
         } else {
             // Jika tidak ada transaksi terakhir atau tidak ada penyewa aktif, set periodeSewa dan nilaiSewa ke 'N/A'
@@ -215,6 +217,7 @@ class TransaksiController extends Controller
                     'periodeTunggakanDeskripsi' => periodeSewa($periodeSewa),
                     'periodeTunggakan' => $periodeSewa,
                     'nilaiTunggakan' => nominal($nilaiTunggakan),
+                    'codeKontrakan' => $kontrakan->code_kontrakan,
                 ]);
             } else {
                 return response()->json([
@@ -237,6 +240,7 @@ class TransaksiController extends Controller
                 'periodeTunggakan' => $periodeSewa,
                 'periodeTunggakanDeskripsi' => periodeSewa($periodeSewa),
                 'nilaiTunggakan' => nominal($nilaiTunggakan),
+                'codeKontrakan' => $kontrakan->code_kontrakan,
             ]);
         } else {
             return response()->json([
@@ -278,6 +282,7 @@ class TransaksiController extends Controller
             'periodeSewa' => 'required',
             'deskripsi' => 'required',
             'nilaiSewa' => 'required|string',
+            'codeKontrakan' => 'required|string',
         ]);
 
         // Cek apakah sudah ada transaksi untuk periode ini di kamar ini
@@ -305,8 +310,9 @@ class TransaksiController extends Controller
                 'periode_sewa' => $validatedData['periodeSewa'],
             ]);
 
-            // Ambil saldo terakhir
-            $transaksiTerakhir = TransaksiList::latest()->first();
+            // Mengambil transaksi terakhir berdasarkan code_kontrakan
+            $transaksiTerakhir = TransaksiList::where('code_kontrakan', $validatedData['codeKontrakan'])->latest()->first();
+
             $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
 
             // Bersihkan nilaiSewa dari karakter non-digit
@@ -317,6 +323,7 @@ class TransaksiController extends Controller
 
             TransaksiList::create([
                 'code_transaksi' => $code_transaksi,
+                'code_kontrakan' => $validatedData['codeKontrakan'],
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_tipe' => $transaksiMasuk->id,
                 'tipe' => 'masuk',
@@ -340,6 +347,7 @@ class TransaksiController extends Controller
             'kamarPengeluaran.*' => 'integer|exists:kamar,id',
             'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'required|string',
+            'codeKontrakanKeluar' => 'required|string',
         ]);
 
         try {
@@ -362,13 +370,16 @@ class TransaksiController extends Controller
                     'tanggal_transaksi' => $validatedData['tanggalPengeluaran'],
                 ]);
 
-                $transaksiTerakhir = TransaksiList::latest()->first();
+                // Mengambil transaksi terakhir berdasarkan code_kontrakan
+                $transaksiTerakhir = TransaksiList::where('code_kontrakan', $validatedData['codeKontrakanKeluar'])->latest()->first();
+
                 $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
                 $saldo = (int) $saldoTerakhir - (int) $validatedData['nominalPengeluaran'];
                 $code_transaksi = random_int(1000, 9999);
 
                 TransaksiList::create([
                     'code_transaksi' => $code_transaksi,  // Sesuaikan sesuai kebutuhan
+                    'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
                     'tipe' => 'keluar',

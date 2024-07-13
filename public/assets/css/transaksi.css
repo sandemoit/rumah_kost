@@ -143,24 +143,24 @@ small {
 
 /* button tunggakan */
 .kastool #tunggakan:hover {
-    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #494e53;
+    background: url(/assets/icon/list-masuk.png) 10px 4px no-repeat #494e53;
 }
 .kastool #tunggakan {
-    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #343a40;
+    background: url(/assets/icon/list-masuk.png) 10px 4px no-repeat #343a40;
 }
 /* button pemasukan */
 .kastool #pemasukan:hover {
-    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #00a651;
+    background: url(/assets/icon/list-masuk.png) 10px 4px no-repeat #00a651;
 }
 .kastool #pemasukan {
-    background: url(/storage/icon/list-masuk.png) 10px 4px no-repeat #436e58;
+    background: url(/assets/icon/list-masuk.png) 10px 4px no-repeat #436e58;
 }
 /* button pengeluaran */
 .kastool #pengeluaran:hover {
-    background: url(/storage/icon/list-keluar.png) 10px 4px no-repeat #9e0039;
+    background: url(/assets/icon/list-keluar.png) 10px 4px no-repeat #9e0039;
 }
 .kastool #pengeluaran {
-    background: url(/storage/icon/list-keluar.png) 10px 4px no-repeat #6f3d4f;
+    background: url(/assets/icon/list-keluar.png) 10px 4px no-repeat #6f3d4f;
 }
 
 .bulannav a:hover,
@@ -200,11 +200,11 @@ small {
 }
 
 .bulannav .bulan_nav_left {
-    background: url(/storage/icon/icon_month-back.png) center top no-repeat;
+    background: url(/assets/icon/icon_month-back.png) center top no-repeat;
     float: left;
 }
 .bulannav .bulan_nav_right {
-    background: url(/storage/icon/icon_month-next.png) center top no-repeat;
+    background: url(/assets/icon/icon_month-next.png) center top no-repeat;
     float: right;
 }
 .bulannav a {

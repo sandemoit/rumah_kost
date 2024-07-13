@@ -15,16 +15,18 @@ $(document).ready(function() {
         $('#tahunSewa').val(new Date().getFullYear());
         $('#nilaiSewa').val('');
         $('#deskripsi').val('');
+        $('#codeKontrakan').val('');
 
         // Reset form pengeluaran
         $('#tanggalPengeluaran').val(new Date().toISOString().split('T')[0]);
         $('#kamarPengeluaran').val('').change();
         $('#deskripsiPengeluaran').val('');
         $('#nominalPengeluaran').val('');
+        $('#codeKontrakanKeluar').val('');
 
         // Hide delete buttons
-        $('#deleteButtonPemasukan').addClass('d-none').attr('href', '#');
-        $('#deleteButtonPengeluaran').addClass('d-none').attr('href', '#');
+        $('#deleteButtonPemasukan').addClass('d-none').attr('href', 'javascript:void(0)');
+        $('#deleteButtonPengeluaran').addClass('d-none').attr('href', 'javascript:void(0)');
     }
 
     function catat_tunggakan() {
@@ -79,7 +81,7 @@ $(document).ready(function() {
         popup: 'colored-toast',
     },
     showConfirmButton: false,
-    timer: 3000,
+    timer: 1500,
     timerProgressBar: true,
     didOpen: (toast) => {
         toast.addEventListener('mouseenter', Swal.stopTimer)
@@ -97,6 +99,7 @@ $(document).ready(function() {
                     $('#periodeTunggakanDeskripsi').val(data.periodeTunggakanDeskripsi);
                     $('#nilaiTunggakan').val(data.nilaiTunggakan);
                     $('#periodeTunggakan').val(data.periodeTunggakan);
+                    $('#codeKontrakan').val(data.codeKontrakan);
                 }
             });
         }
@@ -112,9 +115,17 @@ $(document).ready(function() {
                     $('#periodeSewa').val(data.periodeSewa);
                     $('#nilaiSewa').val(data.nilaiSewa);
                     $('#periodeDeskripsi').val(data.periodeDeskripsi);
+                    $('#codeKontrakan').val(data.codeKontrakan);
                 }
             });
         }
+    });
+
+    $('#pengeluaran').click(function() {
+        var url = new URL(window.location.href);
+        var codeKontrakan = url.pathname.split('/')[2];
+        $('#codeKontrakanKeluar').val(codeKontrakan);
+        console.log(codeKontrakan);
     });
 
     $('#formTunggakan').submit(function(event) {
@@ -126,6 +137,7 @@ $(document).ready(function() {
             periodeSewa: $('#periodeTunggakan').val(),
             deskripsi: $('#periodeTunggakanDeskripsi').val(),
             nilaiSewa: $('#nilaiTunggakan').val(),
+            codeKontrakan: $('#codeKontrakan').val(),
         };
 
         $.ajax({
@@ -143,7 +155,7 @@ $(document).ready(function() {
                 if (response.status !== 'error') {
                     setTimeout(function() {
                         window.location.reload();
-                    }, 3000)
+                    }, 1500)
                 }
             },
             error: function(response) {
@@ -162,6 +174,7 @@ $(document).ready(function() {
             periodeSewa: $('#periodeSewa').val(),
             deskripsi: $('#periodeDeskripsi').val(),
             nilaiSewa: $('#nilaiSewa').val(),
+            codeKontrakan: $('#codeKontrakan').val(),
         };
 
         $.ajax({
@@ -179,7 +192,7 @@ $(document).ready(function() {
                 if (response.status !== 'error') {
                     setTimeout(function() {
                         window.location.reload();
-                    }, 3000)
+                    }, 1500)
                 }
             },
             error: function(response) {
@@ -197,6 +210,7 @@ $(document).ready(function() {
             kamarPengeluaran: $('#kamarPengeluaran').val(),
             nominalPengeluaran: $('#nominalPengeluaran').val(),
             deskripsiPengeluaran: $('#deskripsiPengeluaran').val(),
+            codeKontrakanKeluar: $('#codeKontrakanKeluar').val(),
         };
 
         $.ajax({
@@ -214,7 +228,7 @@ $(document).ready(function() {
                 if (response.status !== 'error') {
                     setTimeout(function() {
                         window.location.reload();
-                    }, 3000)
+                    }, 1500)
                 }
             },
             error: function(response) {

@@ -90,6 +90,7 @@
                                     <option value="{{ $room->id }}">{{ $room->nama_kamar }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" id="codeKontrakan" name="codeKontrakan">
                         </div>
                         <div class="form-group">
                             <label for="periodeTunggakanDeskripsi">Periode Sewa:</label>
@@ -127,6 +128,7 @@
                                     <option value="{{ $room->id }}">{{ $room->nama_kamar }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" id="codeKontrakan" name="codeKontrakan">
                         </div>
                         <div class="form-group">
                             <label for="periodeDeskripsi">Periode Sewa:</label>
@@ -167,6 +169,7 @@
                                     <option value="{{ $key->id }}">{{ $key->nama_kamar }}</option>
                                 @endforeach
                             </select>
+                            <input type="hidden" id="codeKontrakanKeluar" name="codeKontrakanKeluar">
                         </div>
                         <div class="form-group">
                             <label for="nominalPengeluaran">Nominal:</label>

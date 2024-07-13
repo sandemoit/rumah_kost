@@ -17,6 +17,12 @@
 .tdgray {
     background: #f2f2f2 !important;
 }
+.tdblue {
+    background: #d9edf7 !important;
+}
+.tdred {
+    background: #f2dede !important;
+}
 .tdplusmin {
     width: 18px;
 }
@@ -123,4 +129,51 @@ select:focus-visible {
     border-top: 1px dotted #c7c7c7;
     line-height: 18px;
     vertical-align: middle;
+}
+.financial-report {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: center;
+    margin-top: 20px;
+}
+
+.financial-report th,
+.financial-report td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+.financial-report th {
+    background-color: #f2f2f2;
+}
+
+.section-header {
+    background-color: #3498db;
+    color: #fff;
+    font-weight: bold;
+    font-size: 1.2em;
+}
+
+.pemasukan-header {
+    background-color: #3498db;
+}
+
+.total-row {
+    background-color: #e1e1e1;
+    font-weight: bold;
+}
+
+.total {
+    background-color: #34495e;
+    color: #fff;
+    font-weight: bold;
+}
+
+.percentage {
+    background-color: #3498db;
+    color: #fff;
+}
+
+.financial-report .total {
+    font-weight: bold;
 }

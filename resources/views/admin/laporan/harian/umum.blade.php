@@ -31,7 +31,7 @@
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
-                        <input name="lap_tgl" type="text" class="lap_tgl datepicker hasDatepicker mt-4" id="lap_tgl"
+                        <input name="lap_tgl" type="text" class="lap_tgl datepicker mt-4" id="lap_tgl"
                             value="{{ dateIndo(\Carbon\Carbon::now()->format('Y-m-d')) }}" size="15"
                             title="Klik untuk mengganti tanggal" onchange="changedate()">
                     </div>
@@ -55,12 +55,19 @@
                                         class="nav-link {{ request()->segment(3) == 'aktivitas' ? 'active' : '' }}"
                                         role="tab">Aktivitas</a>
                                 </li>
+                                <li class="nav-item" role="presentation">
+                                    <a href="{{ route('laporan.harian.ringkasan') }}"
+                                        class="nav-link {{ request()->segment(3) == 'ringkasan' ? 'active' : '' }}"
+                                        role="tab">Ringkasan</a>
+                                </li>
                             </ul>
                             <div class="tab-content">
                                 @if (request()->segment(2) == 'harian' && !request()->segment(3) ? 'umum' : request()->segment(3) == 'umum')
                                     <x-general />
                                 @elseif (request()->segment(3) == 'aktivitas')
                                     <x-aktivitas />
+                                @elseif (request()->segment(3) == 'ringkasan')
+                                    <x-ringkasan />
                                 @endif
                             </div>
                         </div>
@@ -79,21 +86,7 @@
                                         <div class="exin" id="ex_exin">
                                             <table class="table table-bordered">
                                                 <tbody>
-                                                    <tr>
-                                                        <td>Akasia-01</td>
-                                                        <td class="right tdmatauang">Rp</td>
-                                                        <td class="right tduang">200.000,00</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td>ALL Akasia</td>
-                                                        <td class="right tdmatauang">Rp</td>
-                                                        <td class="right tduang">300.000,00</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td class="line">&nbsp;</td>
-                                                        <td class="right tdmatauang line">Rp</td>
-                                                        <td class="right tduang line">500.000,00</td>
-                                                    </tr>
+                                                    <!-- Data pengeluaran akan diisi di sini oleh JavaScript -->
                                                 </tbody>
                                             </table>
                                         </div>
@@ -109,50 +102,13 @@
                                             alt="income"> Pemasukan
                                     </div>
                                     <div class="card-body">
-                                        <table class="table table-bordered">
-                                            <tbody>
-                                                <tr>
-                                                    <td>Akasia-01</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">700.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-02</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">650.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-03</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">700.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-04</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">650.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-05</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">700.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-06</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">650.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td>Akasia-07</td>
-                                                    <td class="right tdmatauang">Rp</td>
-                                                    <td class="right tduang">650.000,00</td>
-                                                </tr>
-                                                <tr>
-                                                    <td class="line">&nbsp;</td>
-                                                    <td class="right tdmatauang line">Rp</td>
-                                                    <td class="right tduang line">4.700.000,00</td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                        <div class="exin" id="in_exin">
+                                            <table class="table table-bordered">
+                                                <tbody>
+                                                    <!-- Data pemasukan akan diisi di sini oleh JavaScript -->
+                                                </tbody>
+                                            </table>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -164,9 +120,8 @@
     </main>
 @endsection
 @push('custom-js')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/chart.js') }}"></script>
-    <script src="{{ asset('assets/js/laporan.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="{{ asset('assets/js/laporan.js') }}"></script>
 @endpush

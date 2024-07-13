@@ -14,6 +14,7 @@ class TransaksiList extends Model
 
     protected $fillable = [
         'code_transaksi',
+        'code_kontrakan',
         'id_kamar',
         'id_tipe',
         'tipe',
