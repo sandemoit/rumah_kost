@@ -82,17 +82,13 @@ class TransaksiController extends Controller
 
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = $request->input('search');
-        // $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
-        //     ->whereHas('kamar', function (Builder $query) use ($kontrakan, $keyword) {
-        //         $query->where('id_kontrakan', $kontrakan->id)
-        //             ->when($keyword, function (Builder $query, $keyword) {
-        //                 $query->where('nama_kamar', 'LIKE', "%$keyword%");
-        //             });
-        //     })
+
+        // Mengambil transaksi berdasarkan bulan dan tahun
         $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->when($keyword, function (Builder $query, $keyword) use ($kamar) {
-                return $query->whereHas('kamar', function (Builder $query) use ($kamar, $keyword) {
-                    $query->whereIn('id', $kamar->pluck('id'))->where('nama_kamar', 'LIKE', "%$keyword%");
+            ->where('code_kontrakan', $code_kontrakan)
+            ->when($keyword, function (Builder $query, $keyword) {
+                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
+                    $query->where('nama_kamar', 'LIKE', "%$keyword%");
                 });
             })
             ->whereMonth('created_at', $month)
@@ -104,9 +100,9 @@ class TransaksiController extends Controller
         foreach ($transaksiList as $transaksi) {
             $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];
             if (is_array($idKamarArray)) {
-                $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->toArray();
-                $transaksi->nama_kamar = implode(', ', $namaKamar);
-                $transaksi->kamar_nama_list = $namaKamar;
+                $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
+                $transaksi->nama_kamar = $namaKamar;
+                $transaksi->kamar_nama_list = $idKamarArray;
             } else {
                 $transaksi->nama_kamar = null;
             }
