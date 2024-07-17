@@ -16,9 +16,10 @@ $(function() {
         firstDay: 0,
         isRTL: false,
         showMonthAfterYear: false,
-        yearSuffix: ""
+        yearSuffix: "",
+        changeYear: true,
+        changeMonth: true
     };
     $.datepicker.setDefaults($.datepicker.regional['id']);
     $(".datepicker").datepicker();
 });
-

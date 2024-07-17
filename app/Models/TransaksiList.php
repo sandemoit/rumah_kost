@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Builder;
 
 class TransaksiList extends Model
 {
@@ -41,5 +42,19 @@ class TransaksiList extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function scopeWithTransactions(Builder $query, $code_kontrakan, $month, $year, $keyword = null)
+    {
+        return $query->with(['transaksiMasuk', 'transaksiKeluar'])
+            ->where('code_kontrakan', $code_kontrakan)
+            ->when($keyword, function (Builder $query, $keyword) {
+                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
+                    $query->where('nama_kamar', 'LIKE', "%$keyword%");
+                });
+            })
+            ->whereMonth('created_at', $month)
+            ->whereYear('created_at', $year)
+            ->orderBy('created_at', 'asc');
     }
 }

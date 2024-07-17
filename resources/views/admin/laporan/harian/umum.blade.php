@@ -31,8 +31,9 @@
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
+                        <input type="hidden" id="monthlinkkas" value="">
                         <input name="lap_tgl" type="text" class="lap_tgl datepicker mt-4" id="lap_tgl"
-                            value="{{ dateIndo(\Carbon\Carbon::now()->format('Y-m-d')) }}" size="15"
+                            value="{{ dateIndo(\Carbon\Carbon::now()) }}" size="15"
                             title="Klik untuk mengganti tanggal" onchange="changedate()">
                     </div>
                 </div>

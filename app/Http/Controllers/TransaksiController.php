@@ -84,17 +84,7 @@ class TransaksiController extends Controller
         $keyword = $request->input('search');
 
         // Mengambil transaksi berdasarkan bulan dan tahun
-        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where('code_kontrakan', $code_kontrakan)
-            ->when($keyword, function (Builder $query, $keyword) {
-                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
-                    $query->where('nama_kamar', 'LIKE', "%$keyword%");
-                });
-            })
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
-            ->orderBy('created_at', 'asc')
-            ->paginate(10);
+        $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)->paginate(10);
 
         // Uraikan JSON id_kamar dan dapatkan nama kamar
         foreach ($transaksiList as $transaksi) {

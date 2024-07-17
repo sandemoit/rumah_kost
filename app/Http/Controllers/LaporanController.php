@@ -9,6 +9,7 @@ use App\Models\TransaksiList;
 use App\Models\TransaksiMasuk;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class LaporanController extends Controller
 {
@@ -45,12 +46,18 @@ class LaporanController extends Controller
                 $query->whereDate('tanggal_transaksi', $date);
             })->get();
 
-        // Menghitung saldo awal hari
-        $saldoAwalHari = TransaksiList::whereHas('transaksiMasuk', function ($query) use ($date) {
-            $query->whereDate('tanggal_transaksi', '<', $date);
-        })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-            $query->whereDate('tanggal_transaksi', '<', $date);
-        })->sum('saldo');
+        // Menghitung saldo awal hari untuk setiap code_kontrakan
+        $saldoAwalHari = TransaksiList::select('code_kontrakan', DB::raw('SUM(nominal) as saldo_awal'))
+            ->where(function ($query) use ($date) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', '<', $date);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', '<', $date);
+                });
+            })
+            ->groupBy('code_kontrakan')
+            ->get()
+            ->sum('saldo_awal');
 
         // Menghitung semua pemasukan dan pengeluaran pada tanggal tertentu
         $semuaPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
@@ -62,6 +69,7 @@ class LaporanController extends Controller
 
         // Mengembalikan data dalam format JSON
         return response()->json([
+            'date' => $date,
             'saldoAwalHari' => rupiah($saldoAwalHari),
             'semuaPemasukan' => rupiah($semuaPemasukan),
             'semuaPengeluaran' => rupiah($semuaPengeluaran),
@@ -72,11 +80,12 @@ class LaporanController extends Controller
 
     public function getAllExIn(Request $request)
     {
-        $date = $request->input('lap_tgl');
+        $date = $request->lap_tgl;
+
         if (!$date) {
             $date = Carbon::now()->format('Y-m-d');
         } else {
-            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+            $date = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
         }
 
         // Mengambil data transaksi masuk berdasarkan tanggal transaksi
@@ -109,6 +118,7 @@ class LaporanController extends Controller
         return response()->json([
             'transaksiMasuk' => $transaksiMasuk,
             'transaksiKeluar' => $transaksiKeluar,
+            'date' => $date
         ]);
     }
 

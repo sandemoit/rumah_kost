@@ -25,17 +25,17 @@ function slidedetail(a) {
     }
 }
 
-$(document).ready(function() {
+document.addEventListener('DOMContentLoaded', function() {
     // Inisialisasi datepicker
-    $('#lap_tgl').datepicker({
-        dateFormat: 'dd-mm-yy',
+    $('.datepicker').datepicker({
+        autoclose: true,
         onSelect: function(dateText) {
             changedate();
         }
     });
 
-    const updateBukuKas = (selectedDate) => {
-        fetch(`/getAllBukuKas?date=${selectedDate}`)
+    const updateBukuKas = (date) => {
+        fetch(`/getAllBukuKas?date=${date}`)
             .then(response => response.json())
             .then(data => {
                 const saldoAwalHari = document.querySelector('#saldo_awal_hari');
@@ -53,17 +53,6 @@ $(document).ready(function() {
             .catch(error => console.error('Error:', error));
     };
 
-    const changedate = () => {
-        const selectedDate = $('#lap_tgl').val();
-        updateBukuKas(selectedDate);
-    };
-
-    // Inisialisasi awal dengan tanggal hari ini
-    const initialDate = $('#lap_tgl').val();
-    updateBukuKas(initialDate);
-});
-
-document.addEventListener('DOMContentLoaded', function() {
     const updateExIn = (date) => {
         fetch(`/getAllExIn?date=${date}`)
             .then(response => response.json())
@@ -128,17 +117,16 @@ document.addEventListener('DOMContentLoaded', function() {
         reportChart.update();
     };
 
-    // Mengambil tanggal dari datepicker dan memperbarui data
-    const datePicker = $('#lap_tgl');
-    datePicker.datepicker({
-        format: 'yyyy-mm-dd',
-        autoclose: true,
-    }).on('changeDate', function(e) {
-        updateExIn(e.format('yyyy-mm-dd'));
-    });
+    const changedate = () => {
+        const date = document.querySelector('.datepicker').value;
+        if (!date) {
+            alert("Date cannot be empty");
+            return;
+        }
 
-    // Memperbarui data pada saat halaman dimuat
-    updateExIn(datePicker.val());
+        updateBukuKas(date);
+        updateExIn(date);
+    };
 
     // Inisialisasi chart
     var ctx = document.getElementById('reportChart').getContext('2d');
@@ -147,17 +135,16 @@ document.addEventListener('DOMContentLoaded', function() {
         data: {
             labels: ['Pemasukan', 'Pengeluaran'],
             datasets: [{
-                // label: 'Pemasukan vs Pengeluaran',
                 data: [0, 0],
                 backgroundColor: [
-                    'rgba(75, 192, 192, 0.2)',
-                    'rgba(255, 99, 132, 0.2)'
+                    'rgba(0, 128, 0, 0.2)',
+                    'rgba(255, 0, 0, 0.2)'
                 ],
                 borderColor: [
-                    'rgba(75, 192, 192, 1)',
-                    'rgba(255, 99, 132, 1)'
+                    'rgba(0, 128, 0, 1)',
+                    'rgba(255, 0, 0, 1)'
                 ],
-                borderWidth: 1
+                borderWidth: 2
             }]
         },
         options: {
@@ -173,6 +160,9 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
     });
+
+    // Inisialisasi awal dengan tanggal hari ini
+    const today = new Date().toISOString().split('T')[0];
+    updateBukuKas(today);
+    updateExIn(today);
 });
-
-
