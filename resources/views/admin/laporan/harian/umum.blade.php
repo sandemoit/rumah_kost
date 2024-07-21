@@ -5,16 +5,16 @@
 @extends('layouts.app')
 @section('content')
     <main class="app-main"> <!--begin::App Content Header-->
-        <div class="app-content-header"> <!--begin::Container-->
-            <div class="container-fluid"> <!--begin::Row-->
+        <div class="app-content-header">
+            <div class="container-fluid">
                 <div class="row">
                     <div class="col-sm-6">
-                        <h3 class="mb-0">Semua Buku Kas</h3>
+                        <h3 id="headingTitle" class="mb-0">Semua Buku Kas</h3>
                         <p>{{ __($pageTitle) }}</p>
                     </div>
                     @stack('custom-button')
-                </div> <!--end::Row-->
-            </div> <!--end::Container-->
+                </div>
+            </div>
         </div>
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
@@ -32,8 +32,7 @@
                     </div>
                     <div class="col-md-6 text-end">
                         <input type="hidden" id="monthlinkkas" value="">
-                        <input name="lap_tgl" type="text" class="lap_tgl datepicker mt-4" id="lap_tgl"
-                            value="{{ dateIndo(\Carbon\Carbon::now()) }}" size="15"
+                        <input type="text" name="lap_tgl" class="lap_tgl datepicker mt-4" id="lap_tgl" size="15"
                             title="Klik untuk mengganti tanggal" onchange="changedate()">
                     </div>
                 </div>
@@ -41,7 +40,7 @@
                 <!-- Report Section -->
                 <div class="report-section">
                     <div class="card">
-                        <div class="card-header">
+                        <div class="card-header" id="cardTitle">
                             <i class="bi bi-journal-text"></i> Semua Buku Kas
                         </div>
                         <div class="card-body">

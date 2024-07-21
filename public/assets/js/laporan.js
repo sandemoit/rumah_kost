@@ -26,16 +26,39 @@ function slidedetail(a) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Inisialisasi datepicker
-    $('.datepicker').datepicker({
-        autoclose: true,
+    // Inisialisasi datepicker dengan format 'dd-mm-yy'
+    $('#lap_tgl').datepicker({
+        dateFormat: 'dd-mm-yy', // Set the date format
         onSelect: function(dateText) {
+            console.log("Tanggal dipilih: ", dateText); // Log tanggal yang dipilih
+            // Update the input value with the selected date
+            $(this).val(dateText);
+            // Trigger the onchange event
             changedate();
         }
     });
 
-    const updateBukuKas = (date) => {
-        fetch(`/getAllBukuKas?date=${date}`)
+    const selectReport = document.getElementById('selectReport');
+    const headingTitle = document.getElementById('headingTitle');
+    const cardTitle = document.getElementById('cardTitle');
+    
+    selectReport.addEventListener('change', function() {
+        const codeKontrakan = this.value;
+        const selectedText = this.options[this.selectedIndex].text;
+
+        // Update heading dan nama kartu
+        headingTitle.textContent = selectedText;
+        cardTitle.textContent = selectedText;
+        
+        const date = document.querySelector('.datepicker').value;
+        const formattedDate = formatDate(date);
+        window.history.pushState({}, '', `?book=${codeKontrakan}`);
+        updateBukuKas(formattedDate, codeKontrakan);
+        updateExIn(formattedDate, codeKontrakan);
+    });
+
+    const updateBukuKas = (date, codeKontrakan = 'all') => {
+        fetch(`/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
                 const saldoAwalHari = document.querySelector('#saldo_awal_hari');
@@ -53,8 +76,8 @@ document.addEventListener('DOMContentLoaded', function() {
             .catch(error => console.error('Error:', error));
     };
 
-    const updateExIn = (date) => {
-        fetch(`/getAllExIn?date=${date}`)
+    const updateExIn = (date, codeKontrakan = 'all') => {
+        fetch(`/getAllExIn?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
                 const exinElement = document.querySelector('#ex_exin tbody');
@@ -117,15 +140,21 @@ document.addEventListener('DOMContentLoaded', function() {
         reportChart.update();
     };
 
+    const formatDate = (date) => {
+        if (typeof date !== 'string') {
+            return '';
+        }
+        const [day, month, year] = date.split('-');
+        return `${day}-${month}-${year}`;
+    };
+
     const changedate = () => {
         const date = document.querySelector('.datepicker').value;
-        if (!date) {
-            alert("Date cannot be empty");
-            return;
-        }
-
-        updateBukuKas(date);
-        updateExIn(date);
+        const codeKontrakan = document.getElementById('selectReport').value;
+        const formattedDate = formatDate(date);
+        console.log("Tanggal yang akan digunakan: ", formattedDate); // Log tanggal yang diformat
+        updateBukuKas(formattedDate, codeKontrakan);
+        updateExIn(formattedDate, codeKontrakan);
     };
 
     // Inisialisasi chart
@@ -161,8 +190,10 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    // Inisialisasi awal dengan tanggal hari ini
-    const today = new Date().toISOString().split('T')[0];
-    updateBukuKas(today);
-    updateExIn(today);
+    const today = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const dateInput = document.querySelector('.datepicker');
+    dateInput.value = today;
+    const formattedToday = formatDate(today);
+    updateBukuKas(formattedToday);
+    updateExIn(formattedToday);
 });

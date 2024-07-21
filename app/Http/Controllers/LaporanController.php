@@ -38,26 +38,41 @@ class LaporanController extends Controller
             $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
         }
 
-        // Mengambil transaksi berdasarkan tanggal_transaksi dari transaksiMasuk dan transaksiKeluar
-        $transaksiList = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
-            })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
-            })->get();
+        $code_kontrakan = $request->input('book', 'all');
 
-        // Menghitung saldo awal hari untuk setiap code_kontrakan
-        $saldoAwalHari = TransaksiList::select('code_kontrakan', DB::raw('SUM(nominal) as saldo_awal'))
+        // Menghitung saldo awal hari
+        $saldoAwalHariQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($date) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->whereDate('tanggal_transaksi', '<', $date);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', '<', $date);
                 });
             })
-            ->groupBy('code_kontrakan')
-            ->get()
-            ->sum('saldo_awal');
+            ->groupBy('code_kontrakan');
+
+        if ($code_kontrakan !== 'all') {
+            $saldoAwalHariQuery->where('code_kontrakan', $code_kontrakan);
+        }
+
+        $saldoAwalHari = $saldoAwalHariQuery->get()->sum('saldo_awal');
 
         // Menghitung semua pemasukan dan pengeluaran pada tanggal tertentu
+        $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->where(function ($query) use ($date) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', $date);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', $date);
+                });
+            });
+
+        if ($code_kontrakan !== 'all') {
+            $transaksiListQuery->where('code_kontrakan', $code_kontrakan);
+        }
+
+        $transaksiList = $transaksiListQuery->get();
+
         $semuaPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
         $semuaPengeluaran = $transaksiList->where('tipe', 'keluar')->sum('nominal');
 
@@ -86,23 +101,30 @@ class LaporanController extends Controller
             $date = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
         }
 
-        // Mengambil data transaksi masuk berdasarkan tanggal transaksi
-        $transaksiMasuk = TransaksiList::where('tipe', 'masuk')
+        $code_kontrakan = $request->input('book', 'all');
+
+        $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
                 $query->whereDate('tanggal_transaksi', $date);
-            })
-            ->with('transaksiMasuk')
-            ->get();
+            });
 
-        // Mengambil data transaksi keluar berdasarkan tanggal transaksi
-        $transaksiKeluar = TransaksiList::where('tipe', 'keluar')
+        if ($code_kontrakan !== 'all') {
+            $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
+        }
+
+        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
+
+        $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
             ->whereHas('transaksiKeluar', function ($query) use ($date) {
                 $query->whereDate('tanggal_transaksi', $date);
-            })
-            ->with('transaksiKeluar')
-            ->get();
+            });
 
-        // Menambahkan nama_kontrakan berdasarkan code_kontrakan
+        if ($code_kontrakan !== 'all') {
+            $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
+        }
+
+        $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
+
         foreach ($transaksiMasuk as $transaksi) {
             $kontrakan = Kontrakan::where('code_kontrakan', $transaksi->code_kontrakan)->first();
             $transaksi->nama_kontrakan = $kontrakan->nama_kontrakan ?? 'Unknown';
@@ -116,7 +138,6 @@ class LaporanController extends Controller
         return response()->json([
             'transaksiMasuk' => $transaksiMasuk,
             'transaksiKeluar' => $transaksiKeluar,
-            'date' => $date
         ]);
     }
 

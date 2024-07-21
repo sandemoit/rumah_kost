@@ -299,4 +299,5 @@
 @push('custom-js')
     <script src=" {{ asset('assets/js/transaksi.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/select2@4.0.13/dist/js/select2.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 @endpush

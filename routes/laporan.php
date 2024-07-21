@@ -7,6 +7,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/harian', [LaporanController::class, 'harian'])->name('laporan.harian');
     Route::get('/getAllBukuKas', [LaporanController::class, 'getAllBukuKas'])->name('getAllBukuKas');
     Route::get('/getAllExIn', [LaporanController::class, 'getAllExIn'])->name('getAllExIn');
+    Route::get('/getAktivitas', [LaporanController::class, 'getAktivitas'])->name('getAktivitas');
 
     Route::get('/laporan/harian/umum', [LaporanController::class, 'umum'])->name('laporan.harian.umum');
     Route::get('/laporan/harian/aktivitas', [LaporanController::class, 'aktivitas'])->name('laporan.harian.aktivitas');
