@@ -51,8 +51,6 @@ class LaporanController extends Controller
             ->where(function ($query) use ($date) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->whereDate('tanggal_transaksi', '<', $date);
-                })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->whereDate('tanggal_transaksi', '<', $date);
                 });
             })
             ->groupBy('code_kontrakan')
