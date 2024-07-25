@@ -49,7 +49,8 @@
                                     {{ Auth::user()->name }} - {{ Auth::user()->role }}
                                 </p>
                             </li> <!--end::User Image--> <!--begin::Menu Body-->
-                            <li class="user-footer"> <a href="#" class="btn btn-default btn-flat">Profile</a>
+                            <li class="user-footer"> <a href="{{ route('profile.edit') }}"
+                                    class="btn btn-default btn-flat">Profile</a>
                                 <a href="{{ route('logout') }}" class="btn btn-default btn-flat float-end">Keluar</a>
                             </li>
                             <!--end::Menu Footer-->

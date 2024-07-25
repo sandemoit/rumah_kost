@@ -10,12 +10,12 @@
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
                     <div class="input-group mb-3"> <input id="email" class="form-control" type="email"
-                            name="email" :value="old('email')" required autofocus autocomplete="email"
+                            name="email" value="{{ old('email') }}" required autofocus autocomplete="email"
                             placeholder="Masukan email Anda">
                         <div class="input-group-text"> <span class="bi bi-envelope"></span> </div>
                     </div>
                     @error('email')
-                        <div class="invalid-feedback">
+                        <div class="error invalid-feedback">
                             {{ $message }}</div>
                     @enderror
 
@@ -24,7 +24,7 @@
                         <div class="input-group-text"> <span class="bi bi-lock-fill"></span> </div>
                     </div>
                     @error('password')
-                        <div class="invalid-feedback">
+                        <div class="error invalid-feedback">
                             {{ $message }}</div>
                     @enderror
                     <!--begin::Row-->

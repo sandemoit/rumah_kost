@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\View\View;
+use Illuminate\Support\Str;
 
 class ProfileController extends Controller
 {
@@ -16,9 +17,12 @@ class ProfileController extends Controller
      */
     public function edit(Request $request): View
     {
-        return view('profile.edit', [
+        $data = [
+            'pageTitle' => 'Informasi Profile',
             'user' => $request->user(),
-        ]);
+        ];
+
+        return view('profile.edit', $data);
     }
 
     /**
@@ -32,29 +36,23 @@ class ProfileController extends Controller
             $request->user()->email_verified_at = null;
         }
 
+        if ($request->hasFile('image')) {
+            // delete old image
+            if ($request->user()->image) {
+                $imagePath = public_path('assets/profile/') . $request->user()->image;
+                if (file_exists($imagePath)) {
+                    unlink($imagePath);
+                }
+            }
+
+            $file = $request->file('image');
+            $filename = Str::random(12) . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('assets/profile'), $filename);
+            $request->user()->image = $filename;
+        }
+
         $request->user()->save();
 
-        return Redirect::route('profile.edit')->with('status', 'profile-updated');
-    }
-
-    /**
-     * Delete the user's account.
-     */
-    public function destroy(Request $request): RedirectResponse
-    {
-        $request->validateWithBag('userDeletion', [
-            'password' => ['required', 'current_password'],
-        ]);
-
-        $user = $request->user();
-
-        Auth::logout();
-
-        $user->delete();
-
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
-
-        return Redirect::to('/');
+        return Redirect::route('profile.edit')->with('success', 'Profile updated.');
     }
 }

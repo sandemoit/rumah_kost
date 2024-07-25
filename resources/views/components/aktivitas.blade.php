@@ -7,8 +7,6 @@
                         <img src="{{ asset('assets/icon/list-keluar.png') }}" width="20" height="20" alt="expense">
                         Pengeluaran
                     </div>
-                    <input type="hidden" id="detail_from" value="1706806800">
-                    <input type="hidden" id="detail_to" value="1706893200">
                     <input type="hidden" id="detail_report_book" value="all">
                     <div class="card-body">
                         <div id="pengeluaran">
@@ -24,7 +22,7 @@
                                         <td><span class="pointer hover" onclick="slidedetail('4352')">
                                                 Kontrakan 1 </span></td>
                                         <td class="right tdmatauang">Rp</td>
-                                        <td class="right tduang">200.000,00</td>
+                                        <td class="right tduang" id="totalKontrakan_4352">200.000,00</td>
                                     </tr>
                                     <tr class="none" id="trsub_4352" style="display: none;">
                                         <td>&nbsp;</td>
@@ -52,7 +50,7 @@
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line">500.000,00</td>
+                                        <td class="right tduang line" id="totalSeluruhKontrakan_4352">500.000,00</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -82,7 +80,7 @@
                                         <td><span class="pointer hover" onclick="slidedetail('4353')">
                                                 Kontrakan 5 </span></td>
                                         <td class="right tdmatauang">Rp</td>
-                                        <td class="right tduang">700.000,00</td>
+                                        <td class="right tduang" id="totalKontrakan_4353">700.000,00</td>
                                     </tr>
                                     <tr class="none" id="trsub_4353" style="display: none;">
                                         <td>&nbsp;</td>
@@ -110,7 +108,8 @@
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line">4.700.000,00</td>
+                                        <td class="right tduang line" id="totalSeluruhKontrakan_4353">4.700.000,00
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>
