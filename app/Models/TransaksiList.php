@@ -53,8 +53,15 @@ class TransaksiList extends Model
                     $query->where('nama_kamar', 'LIKE', "%$keyword%");
                 });
             })
-            ->whereMonth('created_at', $month)
-            ->whereYear('created_at', $year)
+            ->where(function (Builder $query) use ($month, $year) {
+                $query->whereHas('transaksiMasuk', function (Builder $query) use ($month, $year) {
+                    $query->whereMonth('tanggal_transaksi', $month)
+                        ->whereYear('tanggal_transaksi', $year);
+                })->orWhereHas('transaksiKeluar', function (Builder $query) use ($month, $year) {
+                    $query->whereMonth('tanggal_transaksi', $month)
+                        ->whereYear('tanggal_transaksi', $year);
+                });
+            })
             ->orderBy('created_at', 'asc');
     }
 }

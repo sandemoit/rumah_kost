@@ -78,9 +78,8 @@
                         @csrf
                         <h3 class="text-dark">Tunggakan</h3>
                         <div class="form-group">
-                            <label for="tanggalTerima">Tanggal Terima:</label>
-                            <input type="date" class="form-control" id="tanggalTerima" name="tanggalTerima"
-                                value="{{ date('Y-m-d') }}">
+                            <label for="tanggalTunggakan">Tanggal Terima:</label>
+                            <input type="date" class="form-control" id="tanggalTunggakan" name="tanggalTunggakan">
                         </div>
                         <div class="form-group">
                             <label for="kamarTunggakan">Kamar:</label>
@@ -272,7 +271,8 @@
                                                         data-tanggal="{{ $transaksi->transaksiMasuk ? $transaksi->transaksiMasuk->tanggal_transaksi : $transaksi->transaksiKeluar->tanggal_transaksi }}"
                                                         data-kamar-id="{{ $transaksi->id_kamar }}"
                                                         data-deskripsi="{{ $transaksi->transaksiMasuk ? $transaksi->transaksiMasuk->deskripsi : $transaksi->transaksiKeluar->deskripsi }}"
-                                                        data-nominal="{{ $transaksi->nominal }}"
+                                                        data-nominal="{{ nominal($transaksi->nominal) }}"
+                                                        data-periode-sewa="{{ $transaksi->transaksiMasuk ? $transaksi->transaksiMasuk->periode_sewa : $transaksi->transaksiKeluar->periode_sewa }}"
                                                         onclick="edit_exin(this)"><i class="bi bi-gear"></i>
                                                     </span>
                                                 </td>

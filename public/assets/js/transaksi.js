@@ -9,16 +9,16 @@ $(document).ready(function() {
         // Reset form pemasukan
         $('#transaksiId').val('');
         $('#saldo').val('');
-        $('#tanggalTerima').val(moment().format('YYYY-MM-DD'));
+        $('#tanggalTerima').val(moment().format('DD-MM-YYYY'));
         $('#kamarPemasukan').val('').change();
         $('#periodeSewa').val('');
-        $('#tahunSewa').val(new Date().getFullYear());
+        $('#periodeDeskripsi').val('');
         $('#nilaiSewa').val('');
         $('#deskripsi').val('');
         $('#codeKontrakan').val('');
 
         // Reset form pengeluaran
-        $('#tanggalTerima').val(moment().format('YYYY-MM-DD'));
+        $('#tanggalPengeluaran').val(moment().format('DD-MM-YYYY'));
         $('#kamarPengeluaran').val('').change();
         $('#deskripsiPengeluaran').val('');
         $('#nominalPengeluaran').val('');
@@ -269,6 +269,7 @@ function edit_exin(element) {
     var deskripsi = $(element).data('deskripsi');
     var nominal = $(element).data('nominal');
     var saldo = $(element).data('saldo');
+    var periodeSewa = $(element).data('periode-sewa');
 
     if (tipe === 'masuk') {
         $('#formPengeluaran').slideUp();

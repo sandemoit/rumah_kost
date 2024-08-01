@@ -94,7 +94,7 @@ class TransaksiController extends Controller
                 $transaksi->nama_kamar = $namaKamar;
                 $transaksi->kamar_nama_list = $idKamarArray;
             } else {
-                $transaksi->nama_kamar = null;
+                $transaksi->nama_kamar = 'Undefined';
             }
         }
 
@@ -265,7 +265,7 @@ class TransaksiController extends Controller
         $validatedData = $request->validate([
             'tanggalTerima' => 'required|date',
             'kamarPemasukan' => 'required|integer',
-            'periodeSewa' => 'required',
+            'periodeSewa' => 'required|date',
             'deskripsi' => 'required',
             'nilaiSewa' => 'required|string',
             'codeKontrakan' => 'required|string',
@@ -396,31 +396,30 @@ class TransaksiController extends Controller
         $validatedData = $request->validate([
             'tanggalTerima' => 'required|date',
             'kamarPemasukan' => 'required|integer',
-            'periodeSewa' => 'required|integer',
-            'tahunSewa' => 'required|integer',
-            'nilaiSewa' => 'required|integer',
+            'periodeSewa' => 'required|date',
+            'nilaiSewa' => 'required|numeric',
             'deskripsi' => 'nullable|string',
         ]);
 
         try {
             $transaksi = TransaksiList::findOrFail($idTrx);
+            $nilaiSewa = preg_replace('/\D/', '', $validatedData['nilaiSewa']);
 
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_tipe);
             $transaksiMasuk->update([
-                'tanggal_transaksi' => $validatedData['tanggalTerima'],
-                'bulan' => $validatedData['periodeSewa'],
-                'tahun' => $validatedData['tahunSewa'],
                 'deskripsi' => $validatedData['deskripsi'],
+                'tanggal_transaksi' => $validatedData['tanggalTerima'],
+                'periode_sewa' => $validatedData['periodeSewa'],
                 'updated_at' => now(),
             ]);
 
             // Hitung saldo baru
             $saldoSebelum = $transaksi->saldo;
-            $saldoBaru = $saldoSebelum - $transaksi->nominal + $validatedData['nilaiSewa'];
+            $saldoBaru = $saldoSebelum - $transaksi->nominal + $nilaiSewa;
 
             $transaksi->update([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
-                'nominal' => $validatedData['nilaiSewa'],
+                'nominal' => $nilaiSewa,
                 'saldo' => $saldoBaru,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
