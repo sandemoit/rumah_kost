@@ -440,7 +440,7 @@ class TransaksiController extends Controller
             'tanggalPengeluaran' => 'required|date',
             'kamarPengeluaran' => 'required|array',
             'kamarPengeluaran.*' => 'integer|exists:kamar,id',
-            'nominalPengeluaran' => 'required|integer',
+            'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'nullable|string',
         ]);
 
