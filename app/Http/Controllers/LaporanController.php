@@ -31,14 +31,17 @@ class LaporanController extends Controller
 
     public function getAllBukuKas(Request $request)
     {
-        $date = $request->input('lap_tgl');
+        // Mengambil parameter 'date' dan 'book' dari query string
+        $date = $request->query('date');
+        $code_kontrakan = $request->query('book', 'all');
+
+        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
         if (!$date) {
             $date = Carbon::now()->format('Y-m-d');
         } else {
+            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
             $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
         }
-
-        $code_kontrakan = $request->input('book', 'all');
 
         // Menghitung saldo awal hari
         $saldoAwalHariQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
@@ -93,12 +96,16 @@ class LaporanController extends Controller
 
     public function getAllExIn(Request $request)
     {
-        $date = $request->lap_tgl;
+        // Mengambil parameter 'date' dan 'book' dari query string
+        $date = $request->query('date');
+        $code_kontrakan = $request->query('book', 'all');
 
+        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
         if (!$date) {
             $date = Carbon::now()->format('Y-m-d');
         } else {
-            $date = Carbon::createFromFormat('Y-m-d', $date)->format('Y-m-d');
+            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
+            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
         }
 
         $code_kontrakan = $request->input('book', 'all');

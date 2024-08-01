@@ -190,10 +190,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    const today = new Date().toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' });
-    const dateInput = document.querySelector('.datepicker');
-    dateInput.value = today;
-    const formattedToday = formatDate(today);
-    updateBukuKas(formattedToday);
-    updateExIn(formattedToday);
+    const todayDate = document.querySelector('.datepicker').value;
+    updateBukuKas(todayDate);
+    updateExIn(todayDate);
 });

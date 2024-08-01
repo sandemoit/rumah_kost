@@ -177,3 +177,11 @@ select:focus-visible {
 .financial-report .total {
     font-weight: bold;
 }
+.notifreport {
+    margin-top: 10%;
+    font-size: 20px;
+    line-height: 26px;
+    padding: 72px 0;
+    text-align: center;
+    color: silver;
+}

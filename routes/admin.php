@@ -1,12 +1,12 @@
 <?php
 
+use App\Http\Controllers\AplikasiController;
 use App\Http\Controllers\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\PenyewaController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\TransaksiController;
 
 Route::middleware('auth')->group(function () {
@@ -53,9 +53,7 @@ Route::middleware('auth')->group(function () {
     Route::put('/transaksi-masuk/update/{id}', [TransaksiController::class, 'update_masuk']);
     Route::put('/transaksi-keluar/update/{id}', [TransaksiController::class, 'update_keluar']);
 
-    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
-    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+    Route::get('/aplikasi', [AplikasiController::class, 'index'])->name('aplikasi');
 });
 
 require __DIR__ . '/laporan.php';

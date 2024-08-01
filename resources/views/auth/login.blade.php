@@ -9,32 +9,38 @@
                 <p class="login-box-msg">Masukkan email dan kata sandi Anda untuk masuk</p>
                 <form action="{{ route('login') }}" method="POST">
                     @csrf
-                    <div class="input-group mb-3"> <input id="email" class="form-control" type="email"
+                    <div class="input-group mb-3">
+                        <input id="email" class="form-control @error('email') is-invalid @enderror" type="email"
                             name="email" value="{{ old('email') }}" required autofocus autocomplete="email"
                             placeholder="Masukan email Anda">
                         <div class="input-group-text"> <span class="bi bi-envelope"></span> </div>
+                        @error('email')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
-                    @error('email')
-                        <div class="error invalid-feedback">
-                            {{ $message }}</div>
-                    @enderror
 
-                    <div class="input-group mb-3"> <input id="password" class="form-control" type="password"
-                            name="password" required autocomplete="password" placeholder="Masukan password Anda">
+                    <div class="input-group mb-3">
+                        <input id="password" class="form-control @error('password') is-invalid @enderror"
+                            type="password" name="password" required autocomplete="password"
+                            placeholder="Masukan password Anda">
                         <div class="input-group-text"> <span class="bi bi-lock-fill"></span> </div>
+                        @error('password')
+                            <div class="invalid-feedback">
+                                {{ $message }}
+                            </div>
+                        @enderror
                     </div>
-                    @error('password')
-                        <div class="error invalid-feedback">
-                            {{ $message }}</div>
-                    @enderror
-                    <!--begin::Row-->
 
                     <div class="row">
                         <div class="col-8">
-                            <div class="form-check"> <input class="form-check-input" type="checkbox" name="remember"
-                                    id="flexCheckDefault"> <label class="form-check-label" for="flexCheckDefault">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" name="remember" id="flexCheckDefault">
+                                <label class="form-check-label" for="flexCheckDefault">
                                     Ingat Saya
-                                </label> </div>
+                                </label>
+                            </div>
                         </div> <!-- /.col -->
                         <div class="col-4">
                             <div class="d-grid gap-2">

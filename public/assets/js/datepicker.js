@@ -12,7 +12,7 @@ $(function() {
         dayNamesShort: [ "Min","Sen","Sel","Rab","kam","Jum","Sab" ],
         dayNamesMin: [ "Mg","Sn","Sl","Rb","Km","jm","Sb" ],
         weekHeader: "Mg",
-        dateFormat: "d MM yy",
+        dateFormat: "dd-mm-yy",
         firstDay: 0,
         isRTL: false,
         showMonthAfterYear: false,

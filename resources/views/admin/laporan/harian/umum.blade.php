@@ -20,7 +20,7 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     <div class="col-md-6 reportSelect">
-                        <div class="form-group">
+                        <div class="form-group" id="pilihBukuKas">
                             <label for="selectReport" class="labelSelect">Pilih Buku Kas</label>
                             <select class="form-select" id="selectReport">
                                 <option value="all">Semua Buku Kas</option>
@@ -33,7 +33,7 @@
                     <div class="col-md-6 text-end">
                         <input type="hidden" id="monthlinkkas" value="">
                         <input type="text" name="lap_tgl" class="lap_tgl datepicker mt-4" id="lap_tgl" size="15"
-                            title="Klik untuk mengganti tanggal" onchange="changedate()">
+                            title="Klik untuk mengganti tanggal" value="{{ date('d-m-Y') }}" onchange="changedate()">
                     </div>
                 </div>
 
