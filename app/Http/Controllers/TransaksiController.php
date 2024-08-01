@@ -446,6 +446,7 @@ class TransaksiController extends Controller
 
         try {
             $transaksi = TransaksiList::findOrFail($idTrx);
+            $nominalKeluar = preg_replace('/\D/', '', $validatedData['nominalPengeluaran']);
 
             $transaksiKeluar = TransaksiKeluar::findOrFail($transaksi->id_tipe);
             $transaksiKeluar->update([
@@ -456,7 +457,7 @@ class TransaksiController extends Controller
 
             // Hitung saldo baru
             $saldoSebelum = $transaksi->saldo;
-            $saldoBaru = $saldoSebelum + $transaksi->nominal - $validatedData['nominalPengeluaran'];
+            $saldoBaru = $saldoSebelum + $transaksi->nominal - $nominalKeluar;
 
             // Mengambil semua ID kamar jika 'All' dipilih
             if ($validatedData['kamarPengeluaran'] === 'all') {
@@ -470,7 +471,7 @@ class TransaksiController extends Controller
 
             $transaksi->update([
                 'id_kamar' => $id_kamar_json,
-                'nominal' => $validatedData['nominalPengeluaran'],
+                'nominal' => $nominalKeluar,
                 'saldo' => $saldoBaru,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
