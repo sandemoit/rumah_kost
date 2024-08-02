@@ -9,7 +9,8 @@ $(document).ready(function() {
         // Reset form pemasukan
         $('#transaksiId').val('');
         $('#saldo').val('');
-        $('#tanggalTerima').val(moment().format('DD-MM-YYYY'));
+        $('#tanggalTunggakan').val(new Date().toISOString().split('T')[0]);
+        $('#tanggalTerima').val(new Date().toISOString().split('T')[0]);
         $('#kamarPemasukan').val('').change();
         $('#periodeSewa').val('');
         $('#periodeDeskripsi').val('');
@@ -18,7 +19,8 @@ $(document).ready(function() {
         $('#codeKontrakan').val('');
 
         // Reset form pengeluaran
-        $('#tanggalPengeluaran').val(moment().format('DD-MM-YYYY'));
+        $('#tanggalPengeluaran').val(new Date().toISOString().split('T')[0]);
+        $('#tanggalPengeluaran').val(new Date().toISOString().split('T')[0]);
         $('#kamarPengeluaran').val('').change();
         $('#deskripsiPengeluaran').val('');
         $('#nominalPengeluaran').val('');

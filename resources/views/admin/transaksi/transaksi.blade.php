@@ -79,7 +79,8 @@
                         <h3 class="text-dark">Tunggakan</h3>
                         <div class="form-group">
                             <label for="tanggalTunggakan">Tanggal Terima:</label>
-                            <input type="date" class="form-control" id="tanggalTunggakan" name="tanggalTunggakan">
+                            <input type="date" class="form-control" id="tanggalTunggakan" name="tanggalTunggakan"
+                                value="{{ date('Y-m-d') }}">
                         </div>
                         <div class="form-group">
                             <label for="kamarTunggakan">Kamar:</label>
@@ -116,8 +117,7 @@
                         <h3 class="text-success">Pemasukan</h3>
                         <div class="form-group">
                             <label for="tanggalTerima">Tanggal Terima:</label>
-                            <input type="date" class="form-control" id="tanggalTerima" name="tanggalTerima"
-                                value="{{ date('Y-m-d') }}">
+                            <input type="date" class="form-control" id="tanggalTerima" name="tanggalTerima">
                         </div>
                         <div class="form-group">
                             <label for="kamarPemasukan">Kamar:</label>
