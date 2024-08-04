@@ -17,7 +17,7 @@ return new class extends Migration
             $table->integer('code_kontrakan');
             $table->json('id_kamar');
             $table->integer('id_tipe');
-            $table->enum('jenis', ['masuk', 'keluar']);
+            $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('nominal');
             $table->string('saldo');
             $table->unsignedBigInteger('created_by');
