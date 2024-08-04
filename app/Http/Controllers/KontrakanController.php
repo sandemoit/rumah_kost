@@ -28,11 +28,11 @@ class KontrakanController extends Controller
         return view('admin.pengaturan.kontrakan.kontrakan', $data);
     }
 
-    public function detail(Request $request, string $nama_kontrakan)
+    public function detail(Request $request, string $code_kontrakan)
     {
         $keyword = $request->query('search');
 
-        $kontrakan = Kontrakan::where('nama_kontrakan', $nama_kontrakan)->firstOrFail();
+        $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
 
         $kamar = Kamar::where('id_kontrakan', $kontrakan->id)
             ->when($keyword, function ($query, $keyword) {

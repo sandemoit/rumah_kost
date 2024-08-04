@@ -29,7 +29,7 @@
                                     </svg>
                                 </div>
                                 <div class="small-box-footer">
-                                    <a href="{{ route('kontrakan.detail', Str::slug($key->nama_kontrakan)) }}"
+                                    <a href="{{ route('kontrakan.detail', Str::slug($key->code_kontrakan)) }}"
                                         class="btn btn-sm btn-primary me-2">
                                         kamar <i class="bi bi-arrow-right"></i>
                                     </a>
