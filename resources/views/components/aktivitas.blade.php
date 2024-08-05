@@ -56,12 +56,13 @@
                                             </td>
                                         </tr>
                                     @endforeach
+
                                     <tr>
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
                                         <td class="right tduang line"
-                                            id="totalSeluruhKontrakan_{{ $pengeluaran['id'] }}">{{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
+                                            id="">{{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -131,7 +132,7 @@
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
                                         <td class="right tduang line"
-                                            id="totalSeluruhKontrakan_{{ $pemasukan['id'] }}">{{ number_format($total_pemasukan, 0, ',', '.') }}</td>
+                                            id="">{{ number_format($total_pemasukan, 0, ',', '.') }}</td>
                                     </tr>
                                 </tbody>
                             </table>
