@@ -12,45 +12,56 @@
                         <div id="pengeluaran">
                             <table class="table table-bordered">
                                 <tbody>
-                                    <tr>
-                                        <td class="center" style="width: 20px;">
-                                            <img class="folderreport" id="folder_4352"
-                                                src="{{ asset('assets/icon/folder.png') }}" width="20"
-                                                height="15" alt="folder" title="Klik untuk melihat detilnya"
-                                                onclick="slidedetail('4352')">
-                                        </td>
-                                        <td><span class="pointer hover" onclick="slidedetail('4352')">
-                                                Kontrakan 1 </span></td>
-                                        <td class="right tdmatauang">Rp</td>
-                                        <td class="right tduang" id="totalKontrakan_4352">200.000,00</td>
-                                    </tr>
-                                    <tr class="none" id="trsub_4352" style="display: none;">
-                                        <td>&nbsp;</td>
-                                        <td colspan="3">
-                                            <div class="trsub" id="divsub_4352">
-                                                <table border="0" class="subreport">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="center" style="width:140px;">
-                                                                <span class="longdate">02 Peb 2024, 01.34</span>
-                                                                <span class="shortdate">02</span>
-                                                            </td>
-                                                            <td>
-                                                                Perbaikan Plafon Ruang Tamu<br><em><small>Kas:
-                                                                        Nama Kamar</small></em></td>
-                                                            <td class="right tdmatauang">Rp</td>
-                                                            <td class="right" style="width:96px;">200.000,00</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    @foreach ($pengeluarans as $pengeluaran)
+                                        <tr>
+                                            <td class="center" style="width: 20px;">
+                                                <img class="folderreport" id="folder_{{ $pengeluaran['id'] }}"
+                                                    src="{{ asset('assets/icon/folder.png') }}" width="20"
+                                                    height="15" alt="folder" title="Klik untuk melihat detilnya"
+                                                    onclick="slidedetail('{{ $pengeluaran['id'] }}')">
+                                            </td>
+                                            <td><span class="pointer hover"
+                                                    onclick="slidedetail('{{ $pengeluaran['id'] }}')">
+                                                    {{ $pengeluaran['nama_kontrakan'] }} </span></td>
+                                            <td class="right tdmatauang">Rp</td>
+                                            <td class="right tduang" id="totalKontrakan_{{ $pengeluaran['id'] }}">
+                                                {{ number_format($pengeluaran['total'], 0, ',', '.') }}</td>
+                                        </tr>
+                                        <tr class="none" id="trsub_{{ $pengeluaran['id'] }}" style="display: none;">
+                                            <td>&nbsp;</td>
+                                            <td colspan="3">
+                                                <div class="trsub" id="divsub_{{ $pengeluaran['id'] }}">
+                                                    <table border="0" class="subreport">
+                                                        <tbody>
+                                                            @foreach ($pengeluaran['transaksi'] as $detail)
+                                                                <tr>
+                                                                    <td class="center" style="width:140px;">
+                                                                        <span
+                                                                            class="longdate">{{ \Illuminate\Support\Carbon::parse($detail->created_at)->format('d M Y, H:i') }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        {{$detail->deskripsi}}<br><em><small>Kas:
+                                                                            @php
+                                                                                $kamar = \App\Models\Kamar::whereIn('id', json_decode($detail->transaksiList->id_kamar))->pluck('nama_kamar')->implode(', ');
+                                                                            @endphp
+                                                                                {{ $kamar }}</small></em></td>
+                                                                    <td class="right tdmatauang">Rp</td>
+                                                                    <td class="right" style="width:96px;">{{ number_format($detail->transaksiList->nominal, 0, ',', '.') }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                     <tr>
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line" id="totalSeluruhKontrakan_4352">500.000,00</td>
+                                        <td class="right tduang line"
+                                            id="totalSeluruhKontrakan_{{ $pengeluaran['id'] }}">{{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -69,47 +80,58 @@
                     <div class="card-body">
                         <div id="pemasukan">
                             <table class="table table-bordered">
+                                
                                 <tbody>
-                                    <tr>
-                                        <td class="center" style="width: 20px;">
-                                            <img class="folderreport" id="folder_4353"
-                                                src="{{ asset('assets/icon/folder.png') }}" width="20"
-                                                height="15" alt="folder" title="Klik untuk melihat detilnya"
-                                                onclick="slidedetail('4353')">
-                                        </td>
-                                        <td><span class="pointer hover" onclick="slidedetail('4353')">
-                                                Kontrakan 5 </span></td>
-                                        <td class="right tdmatauang">Rp</td>
-                                        <td class="right tduang" id="totalKontrakan_4353">700.000,00</td>
-                                    </tr>
-                                    <tr class="none" id="trsub_4353" style="display: none;">
-                                        <td>&nbsp;</td>
-                                        <td colspan="3">
-                                            <div class="trsub" id="divsub_4353">
-                                                <table border="0" class="subreport">
-                                                    <tbody>
-                                                        <tr>
-                                                            <td class="center" style="width:140px;">
-                                                                <span class="longdate">02 Peb 2024, 01.34</span>
-                                                                <span class="shortdate">02</span>
-                                                            </td>
-                                                            <td>
-                                                                Perbaikan Plafon Ruang Tamu<br><em><small>Kas:
-                                                                        Nama Kamar</small></em></td>
-                                                            <td class="right tdmatauang">Rp</td>
-                                                            <td class="right" style="width:96px;">200.000,00</td>
-                                                        </tr>
-                                                    </tbody>
-                                                </table>
-                                            </div>
-                                        </td>
-                                    </tr>
+                                    @foreach ($pemasukans as $pemasukan)
+                                        <tr>
+                                            <td class="center" style="width: 20px;">
+                                                <img class="folderreport" id="folder_{{ $pemasukan['id'] }}"
+                                                    src="{{ asset('assets/icon/folder.png') }}" width="20"
+                                                    height="15" alt="folder" title="Klik untuk melihat detilnya"
+                                                    onclick="slidedetail('{{ $pemasukan['id'] }}')">
+                                            </td>
+                                            <td><span class="pointer hover"
+                                                    onclick="slidedetail('{{ $pemasukan['id'] }}')">
+                                                    {{ $pemasukan['nama_kontrakan'] }} </span></td>
+                                            <td class="right tdmatauang">Rp</td>
+                                            <td class="right tduang" id="totalKontrakan_{{ $pemasukan['id'] }}">
+                                                {{ number_format($pemasukan['total'], 0, ',', '.') }}</td>
+                                        </tr>
+                                        <tr class="none" id="trsub_{{ $pemasukan['id'] }}" style="display: none;">
+                                            <td>&nbsp;</td>
+                                            <td colspan="3">
+                                                <div class="trsub" id="divsub_{{ $pemasukan['id'] }}">
+                                                    <table border="0" class="subreport">
+                                                        <tbody>
+                                                            @foreach ($pemasukan['transaksi'] as $detail)
+                                                                <tr>
+                                                                    <td class="center" style="width:140px;">
+                                                                        <span
+                                                                            class="longdate">{{ \Illuminate\Support\Carbon::parse($detail->created_at)->format('d M Y, H:i') }}</span>
+                                                                    </td>
+                                                                    <td>
+                                                                        {{$detail->deskripsi}}<br><em><small>Kas:
+                                                                            @php
+                                                                                $kamar = \App\Models\Kamar::whereIn('id', json_decode($detail->transaksiList->id_kamar))->pluck('nama_kamar')->implode(', ');
+                                                                            @endphp
+                                                                                {{ $kamar }}</small></em></td>
+                                                                    <td class="right tdmatauang">Rp</td>
+                                                                    <td class="right" style="width:96px;">{{ number_format($detail->transaksiList->nominal, 0, ',', '.') }}
+                                                                    </td>
+                                                                </tr>
+                                                            @endforeach
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    @endforeach
                                     <tr>
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line" id="totalSeluruhKontrakan_4353">4.700.000,00
-                                        </td>
+                                        <td class="right tduang line"
+                                            id="totalSeluruhKontrakan_{{ $pemasukan['id'] }}">{{ number_format($total_pemasukan, 0, ',', '.') }}</td>
                                     </tr>
                                 </tbody>
                             </table>

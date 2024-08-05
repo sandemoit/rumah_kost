@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('transaksi_keluar', function (Blueprint $table) {
             $table->id();
             $table->integer('code_keluar');
-            $table->string('deskrispi');
+            $table->string('deskripsi');
             $table->date('tanggal_transaksi');
             $table->timestamps();
         });

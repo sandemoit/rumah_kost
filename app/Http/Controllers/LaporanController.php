@@ -171,8 +171,52 @@ class LaporanController extends Controller
             'pageTitle' => 'Laporan Harian',
         ];
 
-        return view('admin.laporan.harian.umum', $data);
+        return view('admin.laporan.harian.aktivitas', $data);
     }
+    // =================NSE===================================
+    public function get_aktivitas_harian(Request $request)
+    {
+        $data = [];
+        $date = $request->date;
+        $code_kontrakan = $request->book;
+        $transaksi = TransaksiList::all();
+        if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
+            $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+        }
+        $data['pengeluarans'] = $transaksi
+            ->where('tipe', 'keluar')
+            ->whereBetween('created_at', [Carbon::parse($date . ' 00:00:00'), Carbon::parse($date . ' 23:59:59')])
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) {
+                return [
+                    'id' => $item[0]->id,
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'total' => $item->sum('nominal'),
+                    'transaksi' => $item->pluck('transaksiKeluar'),
+
+                ];
+            })->values();
+
+        $data['pemasukans'] = $transaksi
+        ->where('tipe', 'masuk')
+        ->whereBetween('created_at', [Carbon::parse("$date 00:00:00"), Carbon::parse("$date 23:59:59")])
+        ->groupBy('code_kontrakan')
+        ->map(function ($item) {
+            return [
+                'id' => $item[0]->id,
+                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                'total' => $item->sum('nominal'),
+                'transaksi' => $item->pluck('transaksiMasuk'),
+
+            ];
+        })->values();
+        $data['total_pemasukan'] = $data['pemasukans']->sum('total');
+        $data['total_pengeluaran'] = $data['pengeluarans']->sum('total');
+        $html = view('components.aktivitas', $data)->render();
+
+        return response()->json(['html' => $html]);
+    }
+    // ==================NSE===================================
 
     public function ringkasan()
     {
