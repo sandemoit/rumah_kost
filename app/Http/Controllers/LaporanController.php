@@ -197,6 +197,7 @@ class LaporanController extends Controller
                 ];
             })->values();
 
+            
         $data['pemasukans'] = $transaksi
         ->where('tipe', 'masuk')
         ->whereBetween('created_at', [Carbon::parse("$date 00:00:00"), Carbon::parse("$date 23:59:59")])
@@ -210,10 +211,10 @@ class LaporanController extends Controller
 
             ];
         })->values();
+
         $data['total_pemasukan'] = $data['pemasukans']->sum('total');
         $data['total_pengeluaran'] = $data['pengeluarans']->sum('total');
         $html = view('components.aktivitas', $data)->render();
-
         return response()->json(['html' => $html]);
     }
     // ==================NSE===================================
