@@ -43,7 +43,7 @@ function slidedetail(a) {
         const selectReport = document.getElementById('selectReport');
         const headingTitle = document.getElementById('headingTitle');
         const cardTitle = document.getElementById('cardTitle');
-        try{
+
             selectReport.addEventListener('change', function () {
                 const codeKontrakan = this.value;
                 const selectedText = this.options[this.selectedIndex].text;
@@ -60,12 +60,7 @@ function slidedetail(a) {
     
             });
 
-        }catch(error){
-            console.log(error);
-        }
-
-        try{
-
+   
             const updateBukuKas = (date, codeKontrakan = 'all') => {
                 fetch(`/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
                     .then(response => response.json())
@@ -201,9 +196,7 @@ function slidedetail(a) {
             const todayDate = document.querySelector('.datepicker').value;
             updateBukuKas(todayDate);
             updateExIn(todayDate);
-        }catch(error){
-            console.log(error);
-        }
+
 
     });
 
