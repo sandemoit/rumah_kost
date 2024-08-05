@@ -308,7 +308,7 @@ class TransaksiController extends Controller
             $code_transaksi = random_int(1000, 9999);
 
             TransaksiList::create([
-                'code_transaksi' => $code_transaksi,
+                'code_transaksi' => $transaksiMasuk->code_masuk,
                 'code_kontrakan' => $validatedData['codeKontrakan'],
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_tipe' => $transaksiMasuk->id,
@@ -364,7 +364,7 @@ class TransaksiController extends Controller
                 $code_transaksi = random_int(1000, 9999);
 
                 TransaksiList::create([
-                    'code_transaksi' => $code_transaksi,  // Sesuaikan sesuai kebutuhan
+                    'code_transaksi' => $transaksiKeluar->code_keluar,  // Sesuaikan sesuai kebutuhan
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
