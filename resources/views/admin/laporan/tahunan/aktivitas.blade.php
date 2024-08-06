@@ -19,9 +19,9 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group" id="">
-                            <label for="selectReportActivity" class="labelSelect">Pilih Buku Kas</label>
+                    <div class="col-md-6 reportSelect">
+                        <div class="form-group" id="pilihBukuKas">
+                            <label for="selectReport" class="labelSelect">Pilih Buku Kas</label>
                             <select class="form-select" id="selectReportActivity">
                                 <option value="all">Semua Buku Kas</option>
                                 @foreach ($kontrakan as $item)
@@ -31,9 +31,13 @@
                         </div>
                     </div>
                     <div class="col-md-6 text-end">
-                        <input type="hidden" id="monthlinkkas" value="">
-                        <input type="text" name="lap_tgl" class="lap_tgl datepicker mt-4" id="lap_tgl_activity"
-                            size="15" title="Klik untuk mengganti tanggal" value="{{ date('d-m-Y') }}">
+                        <div class="bulannav">
+                            <a href="javascript:void(0)" class="bulan_nav_left" id="bulan_nav_left"
+                                title="Bulan sebelumnya">&nbsp;</a>
+                            <a href="javascript:void(0)" class="bulan_nav_right" id="bulan_nav_right"
+                                title="Bulan selanjutnya">&nbsp;</a>
+                            <div class="bulankas" id="bulankasreport"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -46,17 +50,17 @@
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.umum') }}"
-                                        class="nav-link {{ request()->segment(2) == 'harian' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
+                                    <a href="{{ route('laporan.bulanan.umum') }}"
+                                        class="nav-link {{ request()->segment(2) == 'bulanan' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
                                         role="tab">Umum</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.aktivitas') }}"
+                                    <a href="{{ route('laporan.bulanan.aktivitas') }}"
                                         class="nav-link {{ request()->segment(3) == 'aktivitas' ? 'active' : '' }}"
                                         role="tab">Aktivitas</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.ringkasan') }}"
+                                    <a href="{{ route('laporan.bulanan.ringkasan') }}"
                                         class="nav-link {{ request()->segment(3) == 'ringkasan' ? 'active' : '' }}"
                                         role="tab">Ringkasan</a>
                                 </li>
@@ -67,7 +71,7 @@
                         </div>
                     </div>
                 </div>
-                @if (request()->segment(2) == 'harian' && !request()->segment(3) ? 'umum' : request()->segment(3) == 'umum')
+                @if (request()->segment(2) == 'bulanan' && !request()->segment(3) ? 'umum' : request()->segment(3) == 'umum')
                     <div class="row">
                         <div class="col-md-6 col-sm-12">
                             <div class="report-section">
@@ -120,6 +124,6 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ asset('assets/js/laporan/harian/aktivitas.js') }}"></script>
-    <script src="{{ asset('assets/js/laporan/harian/laporan.js') }}"></script>
+    <script src="{{ asset('assets/js/laporan/bulanan/aktivitas.js') }}"></script>
+    <script src="{{ asset('assets/js/laporan/bulanan/laporan.js') }}"></script>
 @endpush

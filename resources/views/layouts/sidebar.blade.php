@@ -59,26 +59,26 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#"
+                                <a href="{{ route('laporan.bulanan') }}"
                                     class="nav-link {{ request()->segment(2) == 'bulanan' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>Bulanan</p>
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a href="#"
+                                <a href="{{ route('laporan.tahunan') }}"
                                     class="nav-link {{ request()->segment(2) == 'tahunan' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>Tahunan</p>
                                 </a>
                             </li>
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a href="#"
                                     class="nav-link {{ request()->segment(2) == 'custom' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>Custom</p>
                                 </a>
-                            </li>
+                            </li> --}}
                         </ul>
                     </li>
 

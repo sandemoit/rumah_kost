@@ -52,7 +52,8 @@
     border-top: 1px solid #333 !important;
     font-weight: 700;
 }
-#selectReport {
+#selectReport,
+#selectReportActivity {
     width: 180px;
 }
 .form-group {
@@ -63,7 +64,7 @@
     margin-right: 10px;
 }
 .lap_tgl {
-    font-size: 20px;
+    font-size: 22px;
     border: none;
     line-height: 26px;
     font-weight: 300;
@@ -184,4 +185,137 @@ select:focus-visible {
     padding: 72px 0;
     text-align: center;
     color: silver;
+}
+
+.tahunnav a:hover,
+.bulannav a:hover,
+.kasbutton:hover,
+.kasdown a:hover,
+.navblock a:hover,
+.regnotifbutton,
+.usernav a:hover {
+    text-decoration: none;
+}
+.kasbutton {
+    float: right;
+    display: block;
+    background: #cc0;
+    border-radius: 4px;
+    padding: 8px 16px 8px 42px;
+    font-size: 13px;
+    line-height: 18px;
+    color: #fff;
+    margin: 8px 5px 0 8px;
+}
+.kasbutton {
+    cursor: pointer;
+}
+
+.tahunnav {
+    width: 250px;
+    height: 32px;
+    text-align: center;
+    margin: 10px 0 0;
+    float: right;
+}
+
+.tahunnav .tahun_nav_left,
+.tahunnav .tahun_nav_right {
+    margin-top: 6px;
+}
+
+.tahunnav .tahun_nav_left {
+    background: url(/assets/icon/icon_month-back.png) center top no-repeat;
+    float: left;
+}
+.tahunnav .tahun_nav_right {
+    background: url(/assets/icon/icon_month-next.png) center top no-repeat;
+    float: right;
+}
+.tahunnav a {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-decoration: none;
+}
+
+.tahunkas {
+    font-size: 22px;
+    line-height: 20px;
+    color: #3e4751;
+    padding-top: 4px;
+}
+
+.bulannav {
+    width: 250px;
+    height: 32px;
+    text-align: center;
+    margin: 10px 0 0;
+    float: right;
+}
+
+.bulannav .bulan_nav_left,
+.bulannav .bulan_nav_right {
+    margin-top: 6px;
+}
+
+.bulannav .bulan_nav_left {
+    background: url(/assets/icon/icon_month-back.png) center top no-repeat;
+    float: left;
+}
+.bulannav .bulan_nav_right {
+    background: url(/assets/icon/icon_month-next.png) center top no-repeat;
+    float: right;
+}
+.bulannav a {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-decoration: none;
+}
+
+.bulankas {
+    font-size: 22px;
+    line-height: 20px;
+    color: #3e4751;
+    padding-top: 4px;
+}
+
+.bulankas,
+.tahunkas,
+.navblock a,
+.navblock ul,
+.navblock ul li {
+    display: block;
+}
+
+.bulankas,
+.tahunkas,
+.judulkas,
+.navusername,
+.thebalance,
+.topwizard h2 {
+    font-weight: 300;
+}
+
+.bulankas select,
+.bulankas select:active,
+.bulankas select:focus,
+.bulankas select:hover {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #9ea5aa;
+    background: 0 0;
+    box-shadow: none;
+}
+
+.tahunkas select,
+.tahunkas select:active,
+.tahunkas select:focus,
+.tahunkas select:hover {
+    border-radius: 0;
+    border: none;
+    border-bottom: 1px solid #9ea5aa;
+    background: 0 0;
+    box-shadow: none;
 }
