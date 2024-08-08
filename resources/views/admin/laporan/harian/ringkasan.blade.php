@@ -50,17 +50,17 @@
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.umum') }}"
-                                        class="nav-link {{ request()->segment(2) == 'bulanan' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
+                                    <a href="{{ route('laporan.harian.umum') }}"
+                                        class="nav-link {{ request()->segment(2) == 'harian' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
                                         role="tab">Umum</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.aktivitas') }}"
+                                    <a href="{{ route('laporan.harian.aktivitas') }}"
                                         class="nav-link {{ request()->segment(3) == 'aktivitas' ? 'active' : '' }}"
                                         role="tab">Aktivitas</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.ringkasan') }}"
+                                    <a href="{{ route('laporan.harian.ringkasan') }}"
                                         class="nav-link {{ request()->segment(3) == 'ringkasan' ? 'active' : '' }}"
                                         role="tab">Ringkasan</a>
                                 </li>
@@ -124,5 +124,5 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ asset('assets/js/laporan/bulanan/aktivitas.js') }}"></script>
+    <script src="{{ asset('assets/js/laporan/harian/ringkasan.js') }}"></script>
     @endpush

@@ -58,3 +58,4 @@ Route::middleware('auth')->group(function () {
 
 require __DIR__ . '/laporan.php';
 require __DIR__ . '/aktivitas.php';
+require __DIR__ . '/ringkasan.php';

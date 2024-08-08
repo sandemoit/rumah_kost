@@ -30,15 +30,6 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <div class="bulannav">
-                            <a href="javascript:void(0)" class="bulan_nav_left" id="bulan_nav_left"
-                                title="Bulan sebelumnya">&nbsp;</a>
-                            <a href="javascript:void(0)" class="bulan_nav_right" id="bulan_nav_right"
-                                title="Bulan selanjutnya">&nbsp;</a>
-                            <div class="bulankas" id="bulankasreport"></div>
-                        </div>
-                    </div>
                 </div>
 
                 <!-- Report Section -->
@@ -50,17 +41,17 @@
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.umum') }}"
-                                        class="nav-link {{ request()->segment(2) == 'bulanan' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
+                                    <a href="{{ route('laporan.tahunan.umum') }}"
+                                        class="nav-link {{ request()->segment(2) == 'tahunan' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
                                         role="tab">Umum</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.aktivitas') }}"
+                                    <a href="{{ route('laporan.tahunan.aktivitas') }}"
                                         class="nav-link {{ request()->segment(3) == 'aktivitas' ? 'active' : '' }}"
                                         role="tab">Aktivitas</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.bulanan.ringkasan') }}"
+                                    <a href="{{ route('laporan.tahunan.ringkasan') }}"
                                         class="nav-link {{ request()->segment(3) == 'ringkasan' ? 'active' : '' }}"
                                         role="tab">Ringkasan</a>
                                 </li>
@@ -124,5 +115,5 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ asset('assets/js/laporan/bulanan/aktivitas.js') }}"></script>
+    <script src="{{ asset('assets/js/laporan/tahunan/ringkasan.js') }}"></script>
     @endpush

@@ -124,6 +124,5 @@
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="{{ asset('assets/js/laporan/bulanan/aktivitas.js') }}"></script>
-    <script src="{{ asset('assets/js/laporan/bulanan/laporan.js') }}"></script>
+    <script src="{{ asset('assets/js/laporan/tahunan/aktivitas.js') }}"></script>
 @endpush

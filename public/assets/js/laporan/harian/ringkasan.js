@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', function () {
             'date': currentDate.getFullYear() + '-' + ('0' + (currentDate.getMonth() + 1)).slice(-2),
             'book': $('#selectReportActivity').val(),
         }
-        response = await fetch(`${endpount}/api/aktivitas/bulanan`, {
+        response = await fetch(`${endpount}/api/ringkasan/harian`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
