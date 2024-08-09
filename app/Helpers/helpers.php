@@ -15,6 +15,15 @@ if (!function_exists('getAllKontrakan')) {
     }
 }
 
+if (!function_exists('monthName')) {
+    function monthName($month)
+    {
+        $month = bulan(Carbon::parse($month)->month);
+
+        return $month;
+    }
+}
+
 if (!function_exists('dateIndo')) {
     /**
      * Format dateIndo ke dalam format Indonesia
