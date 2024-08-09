@@ -25,65 +25,64 @@ function slidedetail(a) {
     }
 }
 
-document.addEventListener('DOMContentLoaded', function() {
-    const bulanNavLeft = document.getElementById('bulan_nav_left');
-    const bulanNavRight = document.getElementById('bulan_nav_right');
-    const bulanKasReport = document.getElementById('bulankasreport');
+document.addEventListener('DOMContentLoaded', function () {
+    bulanNavLeft = document.getElementById('bulan_nav_left');
+    bulanNavRight = document.getElementById('bulan_nav_right');
+    bulanKasReport = document.getElementById('bulankasreport');
+    currentDate = new Date();
 
     function updateBulanKasReport() {
-        const currentDate = new Date();
-        const month = currentDate.toLocaleString('default', { month: 'long' });
-        const year = currentDate.getFullYear();
-        bulanKasReport.textContent = `${month} ${year}`;
+        year = currentDate.getFullYear();
+        bulanKasReport.textContent = `${year}`;
+        drawPage();
+
+
     }
 
     function changeMonth(delta) {
-        const currentDate = new Date();
-        const month = (currentDate.getMonth() + delta + 12) % 12;
-        currentDate.setMonth(month);
+        month = (currentDate.getFullYear() + delta );
+        currentDate.setMonth(currentDate.getMonth() + delta);
         updateBulanKasReport();
     }
 
     bulanNavLeft.addEventListener('click', function (event) {
         event.preventDefault();
-        changeMonth(-1);
+        changeMonth(-12);
     });
 
     bulanNavRight.addEventListener('click', function (event) {
         event.preventDefault();
-        changeMonth(1);
+        changeMonth(12);
     });
 
     updateBulanKasReport();
 
-    
+
     async function drawPage() {
-        let endpount = $('#endpoint').val();
-        let postData = {
+        endpount = $('#endpoint').val();
+        postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
-            'date': $('#lap_tgl_activity').val(),
+            'date': currentDate.getFullYear(),
             'book': $('#selectReportActivity').val(),
         }
-        
-        response = await fetch(`${endpount}/api/aktivitas/bulanan`, {
+        response = await fetch(`${endpount}/api/aktivitas/tahunan`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(postData),
         })
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            $('.tab-content').html(data.html);
-        });
+            .then(response => response.json())
+            .then(data => {
+                $('.tab-content').html(data.html);
+            });
     }
 
     drawPage();
-    
+
     $('#lap_tgl_activity').datepicker({
         dateFormat: 'dd-mm-yy', // Set the date format
-        onSelect: function(dateText) {
+        onSelect: function (dateText) {
             console.log("Tanggal dipilih: ", dateText); // Log tanggal yang dipilih
             // Update the input value with the selected date
             $(this).val(dateText);
@@ -92,7 +91,7 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
-    $('#selectReportActivity').on('change', function() {
+    $('#selectReportActivity').on('change', function () {
         drawPage();
     });
 });

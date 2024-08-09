@@ -32,28 +32,27 @@ document.addEventListener('DOMContentLoaded', function () {
     currentDate = new Date();
 
     function updateBulanKasReport() {
-        month = currentDate.toLocaleString('default', { month: 'long' });
         year = currentDate.getFullYear();
-        bulanKasReport.textContent = `${month} ${year}`;
+        bulanKasReport.textContent = `${year}`;
         drawPage();
 
 
     }
 
     function changeMonth(delta) {
-        month = (currentDate.getMonth() + delta + 12) % 12;
+        month = (currentDate.getFullYear() + delta );
         currentDate.setMonth(currentDate.getMonth() + delta);
         updateBulanKasReport();
     }
 
     bulanNavLeft.addEventListener('click', function (event) {
         event.preventDefault();
-        changeMonth(-1);
+        changeMonth(-12);
     });
 
     bulanNavRight.addEventListener('click', function (event) {
         event.preventDefault();
-        changeMonth(1);
+        changeMonth(12);
     });
 
     updateBulanKasReport();
@@ -63,10 +62,10 @@ document.addEventListener('DOMContentLoaded', function () {
         endpount = $('#endpoint').val();
         postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
-            'date': currentDate.getFullYear() + '-' + ('0' + (currentDate.getMonth() + 1)).slice(-2),
+            'date': currentDate.getFullYear(),
             'book': $('#selectReportActivity').val(),
         }
-        response = await fetch(`${endpount}/api/aktivitas/bulanan`, {
+        response = await fetch(`${endpount}/api/ringkasan/bulanan`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

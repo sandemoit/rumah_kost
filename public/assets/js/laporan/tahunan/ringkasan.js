@@ -26,47 +26,15 @@ function slidedetail(a) {
 }
 
 document.addEventListener('DOMContentLoaded', function () {
-    bulanNavLeft = document.getElementById('bulan_nav_left');
-    bulanNavRight = document.getElementById('bulan_nav_right');
-    bulanKasReport = document.getElementById('bulankasreport');
-    currentDate = new Date();
-
-    function updateBulanKasReport() {
-        month = currentDate.toLocaleString('default', { month: 'long' });
-        year = currentDate.getFullYear();
-        bulanKasReport.textContent = `${month} ${year}`;
-        drawPage();
-
-
-    }
-
-    function changeMonth(delta) {
-        month = (currentDate.getMonth() + delta + 12) % 12;
-        currentDate.setMonth(currentDate.getMonth() + delta);
-        updateBulanKasReport();
-    }
-
-    bulanNavLeft.addEventListener('click', function (event) {
-        event.preventDefault();
-        changeMonth(-1);
-    });
-
-    bulanNavRight.addEventListener('click', function (event) {
-        event.preventDefault();
-        changeMonth(1);
-    });
-
-    updateBulanKasReport();
 
 
     async function drawPage() {
         endpount = $('#endpoint').val();
         postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
-            'date': currentDate.getFullYear() + '-' + ('0' + (currentDate.getMonth() + 1)).slice(-2),
             'book': $('#selectReportActivity').val(),
         }
-        response = await fetch(`${endpount}/api/aktivitas/bulanan`, {
+        response = await fetch(`${endpount}/api/ringkasan/tahunan`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
