@@ -19,7 +19,6 @@ return new class extends Migration
             $table->integer('id_tipe');
             $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('nominal');
-            $table->string('saldo');
             $table->unsignedBigInteger('created_by');
             $table->timestamps();
 

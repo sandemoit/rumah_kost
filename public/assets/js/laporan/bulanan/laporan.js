@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', function () {
     const bulanNavLeft = document.getElementById('bulan_nav_left');
     const bulanNavRight = document.getElementById('bulan_nav_right');
     const bulanKasReport = document.getElementById('bulankasreport');
-    let currentDate = new Date();
+    let currentDate = new Date(getUrlParameter('date') || new Date().toISOString().slice(0, 7) + '-01');
     let currentCodeKontrakan = 'all';
 
     function updateBulanKasReport() {
@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', function () {
 
     function changeMonth(delta) {
         currentDate.setMonth(currentDate.getMonth() + delta);
+        const currentUrl = window.location.href;
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('date', formatDate(currentDate));
+        const newUrl = `${currentUrl.split('?')[0]}?${urlParams.toString()}`;
+        window.history.pushState({}, '', newUrl);
         updateBulanKasReport();
         updateExIn(formatDate(currentDate), currentCodeKontrakan);
         updateBukuKas(formatDate(currentDate), currentCodeKontrakan);
@@ -27,6 +32,13 @@ document.addEventListener('DOMContentLoaded', function () {
         event.preventDefault();
         changeMonth(1);
     });
+
+    function getUrlParameter(name) {
+        name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+        var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+        var results = regex.exec(location.search);
+        return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+    }
 
     function formatDate(date) {
         const year = date.getFullYear();

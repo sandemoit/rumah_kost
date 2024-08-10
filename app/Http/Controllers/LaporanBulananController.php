@@ -62,10 +62,10 @@ class LaporanBulananController extends Controller
         $saldoAwalBulanQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($year, $month) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
-                    $query->whereYear('tanggal_transaksi', '<', $year)
+                    $query->whereYear('periode_sewa', '<', $year)
                         ->orWhere(function ($query) use ($year, $month) {
-                            $query->whereYear('tanggal_transaksi', '=', $year)
-                                ->whereMonth('tanggal_transaksi', '<', $month);
+                            $query->whereYear('periode_sewa', '=', $year)
+                                ->whereMonth('periode_sewa', '<', $month);
                         });
                 })->orWhereHas('transaksiKeluar', function ($query) use ($year, $month) {
                     $query->whereYear('tanggal_transaksi', '<', $year)
@@ -85,14 +85,12 @@ class LaporanBulananController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada bulan tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where(function ($query) use ($month, $year) {
-                $query->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
-                    $query->whereYear('tanggal_transaksi', '=', $year)
-                        ->whereMonth('tanggal_transaksi', '=', $month);
-                })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
-                    $query->whereYear('tanggal_transaksi', '=', $year)
-                        ->whereMonth('tanggal_transaksi', '=', $month);
-                });
+            ->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
+                $query->whereYear('periode_sewa', '=', $year)
+                    ->whereMonth('periode_sewa', '=', $month);
+            })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
+                $query->whereYear('tanggal_transaksi', '=', $year)
+                    ->whereMonth('tanggal_transaksi', '=', $month);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -143,8 +141,8 @@ class LaporanBulananController extends Controller
 
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
-                $query->whereYear('tanggal_transaksi', $year)
-                    ->whereMonth('tanggal_transaksi', $month);
+                $query->whereYear('periode_sewa', $year)
+                    ->whereMonth('periode_sewa', $month);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -202,10 +200,10 @@ class LaporanBulananController extends Controller
         DB::enableQueryLog();
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m')."%");
+                $query->where('periode_sewa', 'like', Carbon::parse($date)->format('Y-m') . "%");
             })
             ->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m')."%");
+                $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m') . "%");
             })
             ->get();
         if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
@@ -290,7 +288,7 @@ class LaporanBulananController extends Controller
                 foreach ($data['dates'] as $date) {
                     $t = TransaksiList::with(['transaksiKeluar'])
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date.'%');
+                            $query->where('tanggal_transaksi', 'like', $date . '%');
                         })
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $t->sum('nominal') ?? 0;
@@ -309,11 +307,11 @@ class LaporanBulananController extends Controller
         foreach ($data['dates'] as $date) {
             $t = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date.'%');
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
                 });
-                if (request('book') !== 'all' && request('book') !== null) {
-                    $t = $t->where('code_kontrakan', $request->book);
-                }
+            if (request('book') !== 'all' && request('book') !== null) {
+                $t = $t->where('code_kontrakan', $request->book);
+            }
             $data['grandTotalPengeluarans'][$date] = $t->sum('nominal') ?? 0;
         }
 
@@ -348,11 +346,11 @@ class LaporanBulananController extends Controller
         foreach ($data['dates'] as $date) {
             $t = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date. '%');
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
                 });
-                if (request('book') !== 'all' && request('book') !== null) {
-                    $t = $t->where('code_kontrakan', $request->book);
-                }
+            if (request('book') !== 'all' && request('book') !== null) {
+                $t = $t->where('code_kontrakan', $request->book);
+            }
             $data['grandTotalPemasukans'][$date] = $t->sum('nominal') ?? 0;
         }
 
@@ -366,12 +364,12 @@ class LaporanBulananController extends Controller
                 foreach ($data['dates'] as $date) {
                     $tMasuk = TransaksiList::with(['transaksiMasuk'])
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date. '%');
+                            $query->where('tanggal_transaksi', 'like', $date . '%');
                         })
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $tKeluar = TransaksiList::with(['transaksiKeluar'])
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date. '%');
+                            $query->where('tanggal_transaksi', 'like', $date . '%');
                         })
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
@@ -389,16 +387,16 @@ class LaporanBulananController extends Controller
         foreach ($data['dates'] as $date) {
             $tMasuk = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date.'%');
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
                 });
             $tKeluar = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date.'%');
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
                 });
-                if (request('book') !== 'all' && request('book') !== null) {
-                    $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
-                    $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
-                }
+            if (request('book') !== 'all' && request('book') !== null) {
+                $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
+                $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
+            }
             $data['grandTotalProfits'][$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
         }
 

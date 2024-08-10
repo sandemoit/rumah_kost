@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transaksi_masuk', function (Blueprint $table) {
             $table->id();
-            $table->integer('code_masuk');
+            $table->json('id_kamar');
             $table->string('deskripsi');
             $table->date('periode_sewa');
             $table->date('tanggal_transaksi');

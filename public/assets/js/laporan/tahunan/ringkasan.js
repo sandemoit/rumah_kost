@@ -52,7 +52,6 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#lap_tgl_activity').datepicker({
         dateFormat: 'dd-mm-yy', // Set the date format
         onSelect: function (dateText) {
-            console.log("Tanggal dipilih: ", dateText); // Log tanggal yang dipilih
             // Update the input value with the selected date
             $(this).val(dateText);
             // Trigger the onchange event

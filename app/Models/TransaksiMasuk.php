@@ -14,7 +14,7 @@ class TransaksiMasuk extends Model
 
     protected $fillable = [
         'tanggal_transaksi',
-        'code_masuk',
+        'id_kamar',
         'deskripsi',
         'tanggal_transaksi',
         'periode_sewa',

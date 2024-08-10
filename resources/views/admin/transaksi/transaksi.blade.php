@@ -113,7 +113,6 @@
                     <form id="formPemasukan">
                         @csrf
                         <input type="hidden" id="transaksiId" name="transaksiId">
-                        <input type="hidden" id="saldo" name="saldo">
                         <h3 class="text-success">Pemasukan</h3>
                         <div class="form-group">
                             <label for="tanggalTerima">Tanggal Terima:</label>
@@ -144,8 +143,8 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
-                                id="deleteButtonPemasukan">Hapus</a>
+                            {{-- <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPemasukan">Hapus</a> --}}
                         </div>
                     </form>
 
@@ -184,8 +183,8 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
-                                id="deleteButtonPengeluaran">Hapus</a>
+                            {{-- <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPengeluaran">Hapus</a> --}}
                         </div>
                     </form>
                 </div>

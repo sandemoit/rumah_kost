@@ -87,6 +87,7 @@ class TransaksiController extends Controller
         $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)->paginate(10);
 
         // Uraikan JSON id_kamar dan dapatkan nama kamar
+        $saldo = 0; // Inisialisasi saldo awal
         foreach ($transaksiList as $transaksi) {
             $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];
             if (is_array($idKamarArray)) {
@@ -96,6 +97,16 @@ class TransaksiController extends Controller
             } else {
                 $transaksi->nama_kamar = 'Undefined';
             }
+
+            // Hitung saldo berdasarkan tipe transaksi
+            if ($transaksi->tipe === 'masuk') {
+                $saldo += $transaksi->nominal;
+            } elseif ($transaksi->tipe === 'keluar') {
+                $saldo -= $transaksi->nominal;
+            }
+
+            // Set saldo pada transaksi saat ini
+            $transaksi->saldo = $saldo;
         }
 
         // Menyiapkan data untuk dikirim ke view
@@ -147,7 +158,7 @@ class TransaksiController extends Controller
         }
 
         // Cari transaksi masuk terakhir berdasarkan periode_sewa
-        $transaksiTerakhir = TransaksiMasuk::where('id', $transaksi->id_tipe)
+        $transaksiTerakhir = TransaksiMasuk::where('id_kamar', 'like', '%"' . $id . '"%')
             ->select('periode_sewa')
             ->latest('periode_sewa')
             ->first();
@@ -244,16 +255,24 @@ class TransaksiController extends Controller
         // Ambil semua kamar yang terkait dengan kontrakan tersebut
         $kamarIds = Kamar::where('id_kontrakan', $kontrakan->id)->pluck('id');
 
-        // Ambil semua transaksi
+        // Ambil semua transaksi yang terkait dengan kamar tersebut
         $transaksiList = TransaksiList::all();
 
+        // Filter transaksi yang terkait dengan kamar dalam kontrakan
         $transaksiFiltered = $transaksiList->filter(function ($transaksi) use ($kamarIds) {
             $transaksiKamarIds = json_decode($transaksi->id_kamar);
             return !array_diff($transaksiKamarIds, $kamarIds->toArray());
         });
 
-        // Ambil saldo terakhir dari transaksi tersebut
-        $saldo = $transaksiFiltered->isEmpty() ? 0 : $transaksiFiltered->sortByDesc('created_at')->first()->saldo;
+        // Kalkulasi saldo berdasarkan nominal yang masuk dan keluar
+        $saldo = $transaksiFiltered->reduce(function ($carry, $transaksi) {
+            if ($transaksi->tipe == 'masuk') {
+                return $carry + $transaksi->nominal;
+            } elseif ($transaksi->tipe == 'keluar') {
+                return $carry - $transaksi->nominal;
+            }
+            return $carry;
+        }, 0);
 
         return response()->json([
             'saldo' => $saldo
@@ -287,34 +306,23 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($validatedData) {
             // Buat transaksi masuk baru
-            $code_masuk = random_int(1000, 9999);
 
             $transaksiMasuk = TransaksiMasuk::create([
-                'code_masuk' => $code_masuk,
+                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'deskripsi' => $validatedData['deskripsi'],
                 'tanggal_transaksi' => $validatedData['tanggalTerima'],
                 'periode_sewa' => $validatedData['periodeSewa'],
             ]);
 
-            // Mengambil transaksi terakhir berdasarkan code_kontrakan
-            $transaksiTerakhir = TransaksiList::where('code_kontrakan', $validatedData['codeKontrakan'])->latest()->first();
-
-            $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
-
-            // Bersihkan nilaiSewa dari karakter non-digit
-            $nilaiSewaBersih = preg_replace('/\D/', '', $validatedData['nilaiSewa']);
-            $saldo = (int) $saldoTerakhir + (int) $nilaiSewaBersih;
-
             $code_transaksi = random_int(1000, 9999);
 
             TransaksiList::create([
-                'code_transaksi' => $transaksiMasuk->code_masuk,
+                'code_transaksi' => $code_transaksi,
                 'code_kontrakan' => $validatedData['codeKontrakan'],
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_tipe' => $transaksiMasuk->id,
                 'tipe' => 'masuk',
                 'nominal' => preg_replace('/\D/', '', $validatedData['nilaiSewa']),
-                'saldo' => $saldo,
                 'created_by' => Auth::user()->id,
             ]);
         });
@@ -356,21 +364,15 @@ class TransaksiController extends Controller
                     'tanggal_transaksi' => $validatedData['tanggalPengeluaran'],
                 ]);
 
-                // Mengambil transaksi terakhir berdasarkan code_kontrakan
-                $transaksiTerakhir = TransaksiList::where('code_kontrakan', $validatedData['codeKontrakanKeluar'])->latest()->first();
-
-                $saldoTerakhir = $transaksiTerakhir ? $transaksiTerakhir->saldo : 0;
-                $saldo = (int) $saldoTerakhir - (int) $validatedData['nominalPengeluaran'];
                 $code_transaksi = random_int(1000, 9999);
 
                 TransaksiList::create([
-                    'code_transaksi' => $transaksiKeluar->code_keluar,  // Sesuaikan sesuai kebutuhan
+                    'code_transaksi' => $code_transaksi,  // Sesuaikan sesuai kebutuhan
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
                     'tipe' => 'keluar',
                     'nominal' => $validatedData['nominalPengeluaran'],
-                    'saldo' => $saldo,
                     'created_by' => Auth::user()->id,
                 ]);
             });
@@ -407,20 +409,16 @@ class TransaksiController extends Controller
 
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_tipe);
             $transaksiMasuk->update([
+                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'deskripsi' => $validatedData['deskripsi'],
                 'tanggal_transaksi' => $validatedData['tanggalTerima'],
                 'periode_sewa' => $validatedData['periodeSewa'],
                 'updated_at' => now(),
             ]);
 
-            // Hitung saldo baru
-            $saldoSebelum = $transaksi->saldo;
-            $saldoBaru = $saldoSebelum - $transaksi->nominal + $nilaiSewa;
-
             $transaksi->update([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'nominal' => $nilaiSewa,
-                'saldo' => $saldoBaru,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
             ]);
@@ -455,10 +453,6 @@ class TransaksiController extends Controller
                 'updated_at' => now(),
             ]);
 
-            // Hitung saldo baru
-            $saldoSebelum = $transaksi->saldo;
-            $saldoBaru = $saldoSebelum + $transaksi->nominal - $nominalKeluar;
-
             // Mengambil semua ID kamar jika 'All' dipilih
             if ($validatedData['kamarPengeluaran'] === 'all') {
                 $id_kamar = Kamar::pluck('id')->toArray();
@@ -472,7 +466,6 @@ class TransaksiController extends Controller
             $transaksi->update([
                 'id_kamar' => $id_kamar_json,
                 'nominal' => $nominalKeluar,
-                'saldo' => $saldoBaru,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
             ]);

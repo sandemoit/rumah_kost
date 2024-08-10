@@ -88,10 +88,6 @@
                                                                         <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                     </a>
                                                                 @endif
-                                                                <a href="{{ route('penyewa.destroy', $key->id) }}"
-                                                                    class="btn-mobile" onclick="confirmDelete(event, this)">
-                                                                    <i class="bi bi-trash"></i> Hapus
-                                                                </a>
                                                             </div>
                                                         </div>
 
@@ -113,10 +109,6 @@
                                                                     <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                 </a>
                                                             @endif
-                                                            <a href="{{ route('penyewa.destroy', $key->id) }}"
-                                                                class="btn btn-danger" onclick="confirmDelete(event, this)">
-                                                                <i class="bi bi-trash"></i> Hapus
-                                                            </a>
                                                         </div>
                                                     </td>
                                                 </tr>

@@ -8,7 +8,6 @@ $(document).ready(function() {
     function resetForm() {
         // Reset form pemasukan
         $('#transaksiId').val('');
-        $('#saldo').val('');
         $('#tanggalTunggakan').val(new Date().toISOString().split('T')[0]);
         $('#tanggalTerima').val(new Date().toISOString().split('T')[0]);
         $('#kamarPemasukan').val('').change();
@@ -127,7 +126,6 @@ $(document).ready(function() {
         var url = new URL(window.location.href);
         var codeKontrakan = url.pathname.split('/')[2];
         $('#codeKontrakanKeluar').val(codeKontrakan);
-        console.log(codeKontrakan);
     });
 
     $('#formTunggakan').submit(function(event) {
@@ -270,7 +268,6 @@ function edit_exin(element) {
     var kamarId = $(element).data('kamar-id');
     var deskripsi = $(element).data('deskripsi');
     var nominal = $(element).data('nominal');
-    var saldo = $(element).data('saldo');
     var periodeSewa = $(element).data('periode-sewa');
 
     if (tipe === 'masuk') {
@@ -280,17 +277,16 @@ function edit_exin(element) {
         $('#formContainer').slideDown();
 
         $('#transaksiId').val(transaksiId);
-        $('#saldo').val(saldo);
         $('#tanggalTerima').val(tanggal);
         $('#kamarPemasukan').val(kamarId);
         $('#periodeSewa').val(periodeSewa);
         $('#periodeDeskripsi').val(deskripsi);
         $('#nilaiSewa').val(nominal);
 
-        $('#deleteButtonPemasukan')
-            .removeClass('d-none')
-            .attr('href', '/transaksi-masuk/delete/' + transaksiId)
-            .attr('onclick', 'confirmDelete(event, this)');
+        // $('#deleteButtonPemasukan')
+        //     .removeClass('d-none')
+        //     .attr('href', '/transaksi-masuk/delete/' + transaksiId)
+        //     .attr('onclick', 'confirmDelete(event, this)');
     } else {
         $('#formPemasukan').slideUp();
         $('#formTunggakan').slideUp();
@@ -298,16 +294,15 @@ function edit_exin(element) {
         $('#formContainer').slideDown();
 
         $('#transaksiId').val(transaksiId);
-        $('#saldo').val(saldo);
         $('#tanggalPengeluaran').val(tanggal);
         $('#kamarPengeluaran').val(kamarId).change();
         $('#deskripsiPengeluaran').val(deskripsi);
         $('#nominalPengeluaran').val(nominal);
         
-        $('#deleteButtonPengeluaran')
-            .removeClass('d-none')
-            .attr('href', '/transaksi-keluar/delete/' + transaksiId)
-            .attr('onclick', 'confirmDelete(event, this)');
+        // $('#deleteButtonPengeluaran')
+        //     .removeClass('d-none')
+        //     .attr('href', '/transaksi-keluar/delete/' + transaksiId)
+        //     .attr('onclick', 'confirmDelete(event, this)');
     }
 }
 

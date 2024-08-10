@@ -112,17 +112,17 @@
                                 <!-- Add more rows as needed -->
                                 <tr class="total-row">
                                     <td class="tdgray">TOTAL</td>
-                                    <td class="tdgray">{{ $profits->sum('qty') }}</td>
+                                    <td class="tdgray">{{ $pengeluarans->sum('qty') }}</td>
                                     @php
-                                        $sumGrandTotalProfit = 0;
+                                        $sumGrandTotalPengeluarans = 0;
                                     @endphp
-                                    @foreach ($grandTotalProfits as $grandTotal)
+                                    @foreach ($grandTotalPengeluarans as $grandTotal)
                                         <td class="tdgray">{{ number_format($grandTotal, 0, '.', ',') }}</td>
                                         @php
-                                            $sumGrandTotalProfit += $grandTotal;
+                                            $sumGrandTotalPengeluarans += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">{{ number_format($sumGrandTotalProfit, 0, '.', ',') }}</td>
+                                    <td class="tdgray">{{ number_format($sumGrandTotalPengeluarans, 0, '.', ',') }}</td>
                                 </tr>
                             </tbody>
                         </table>

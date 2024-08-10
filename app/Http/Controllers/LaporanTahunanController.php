@@ -76,12 +76,10 @@ class LaporanTahunanController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada Tahun tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where(function ($query) use ($year) {
-                $query->whereHas('transaksiMasuk', function ($query) use ($year) {
-                    $query->whereYear('tanggal_transaksi', '=', $year);
-                })->orWhereHas('transaksiKeluar', function ($query) use ($year) {
-                    $query->whereYear('tanggal_transaksi', '=', $year);
-                });
+            ->whereHas('transaksiMasuk', function ($query) use ($year) {
+                $query->whereYear('tanggal_transaksi', '=', $year);
+            })->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+                $query->whereYear('tanggal_transaksi', '=', $year);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -181,209 +179,209 @@ class LaporanTahunanController extends Controller
         return view('admin.laporan.tahunan.aktivitas', $data);
     }
 
-        // nse
-        public function get_aktivitas_tahunan(Request $request)
-        {
-            $date = $request->input('date');
-            $code_kontrakan = $request->input('book');
-            $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+    // nse
+    public function get_aktivitas_tahunan(Request $request)
+    {
+        $date = $request->input('date');
+        $code_kontrakan = $request->input('book');
+        $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->whereHas('transaksiMasuk', function ($query) use ($date) {
+                $query->where('tanggal_transaksi', 'like', $date . "%");
+            })
+            ->orWhereHas('transaksiKeluar', function ($query) use ($date) {
+                $query->where('tanggal_transaksi', 'like', $date . "%");
+            })
+            ->get();
+        if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
+            $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+        }
+        $data['pengeluarans'] = $transaksi
+            ->where('tipe', 'keluar')
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) {
+                return [
+                    'id' => $item[0]->id,
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'total' => $item->sum('nominal'),
+                    'transaksi' => $item->pluck('transaksiKeluar'),
+
+                ];
+            })->values();
+
+
+        $data['pemasukans'] = $transaksi
+            ->where('tipe', 'masuk')
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) {
+                return [
+                    'id' => $item[0]->id,
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'total' => $item->sum('nominal'),
+                    'transaksi' => $item->pluck('transaksiMasuk'),
+
+                ];
+            })->values();
+
+        $data['total_pemasukan'] = $data['pemasukans']->sum('total');
+        $data['total_pengeluaran'] = $data['pengeluarans']->sum('total');
+        $html = view('components.aktivitas', $data)->render();
+        return response()->json(['html' => $html]);
+    }
+
+
+    public function ringkasan()
+    {
+
+        $kontrakan = Kontrakan::select('code_kontrakan', 'nama_kontrakan')->get();
+
+        $data = [
+            'kontrakan' => $kontrakan,
+            'pageTitle' => 'Laporan Tahunan',
+        ];
+
+        return view('admin.laporan.tahunan.ringkasan', $data);
+    }
+
+    public function get_ringkasan_tahunan(Request $request)
+    {
+
+        $code_kontrakan = $request->input('book');
+
+        $data['dates'] = [];
+        $data['type'] = 'Tahunan';
+        for ($i = 3; $i >= 0; $i--) {
+            $data['dates'][] = Carbon::now()->subYears($i)->format('Y');
+        }
+
+        $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->get();
+        if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
+            $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+        }
+
+
+        $data['pengeluarans'] = $transaksi
+            ->where('tipe', 'keluar')
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) use ($data) {
+                $trx = [];
+                foreach ($data['dates'] as $date) {
+                    $t = TransaksiList::with(['transaksiKeluar'])
+                        ->whereHas('transaksiKeluar', function ($query) use ($date) {
+                            $query->where('tanggal_transaksi', 'like', $date . '%');
+                        })
+                        ->where('code_kontrakan', $item[0]->code_kontrakan);
+                    $trx[$date] = $t->sum('nominal') ?? 0;
+                }
+                return [
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'qty' => $item->count(),
+                    'total' => $item->sum('nominal'),
+                    'transaksi' => $trx,
+                ];
+            })
+            ->values();
+
+
+        $data['grandTotalPengeluarans'] = [];
+        foreach ($data['dates'] as $date) {
+            $t = TransaksiList::with(['transaksiKeluar'])
+                ->whereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
+                });
+            if (request('book') !== 'all' && request('book') !== null) {
+                $t = $t->where('code_kontrakan', $request->book);
+            }
+            $data['grandTotalPengeluarans'][$date] = $t->sum('nominal') ?? 0;
+        }
+
+
+        $data['pemasukans'] = $transaksi
+            ->where('tipe', 'masuk')
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) use ($data) {
+                $trx = [];
+                foreach ($data['dates'] as $date) {
+                    $t = TransaksiList::with(['transaksiMasuk'])
+                        ->whereHas('transaksiMasuk', function ($query) use ($date) {
+                            $query->where('periode_sewa', 'like', $date . "%");
+                        })
+                        ->where('code_kontrakan', $item[0]->code_kontrakan);
+                    if (request('book') !== 'all' && request('book') !== null) {
+                        $t = $t->where('code_kontrakan', $item[0]->code_kontrakan);
+                    }
+                    $trx[$date] = $t->sum('nominal') ?? 0;
+                }
+                return [
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'qty' => $item->count(),
+                    'total' => $item->sum('nominal'),
+                    'transaksi' => $trx,
+                ];
+            })
+            ->values();
+
+
+        $data['grandTotalPemasukans'] = [];
+        foreach ($data['dates'] as $date) {
+            $t = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date."%");
-                })
-                ->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date."%");
-                })
-                ->get();
-            if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
-                $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+                    $query->where('periode_sewa', 'like', $date . '%');
+                });
+            if (request('book') !== 'all' && request('book') !== null) {
+                $t = $t->where('code_kontrakan', $request->book);
             }
-            $data['pengeluarans'] = $transaksi
-                ->where('tipe', 'keluar')
-                ->groupBy('code_kontrakan')
-                ->map(function ($item) {
-                    return [
-                        'id' => $item[0]->id,
-                        'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                        'total' => $item->sum('nominal'),
-                        'transaksi' => $item->pluck('transaksiKeluar'),
-    
-                    ];
-                })->values();
-    
-    
-            $data['pemasukans'] = $transaksi
-                ->where('tipe', 'masuk')
-                ->groupBy('code_kontrakan')
-                ->map(function ($item) {
-                    return [
-                        'id' => $item[0]->id,
-                        'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                        'total' => $item->sum('nominal'),
-                        'transaksi' => $item->pluck('transaksiMasuk'),
-    
-                    ];
-                })->values();
-    
-            $data['total_pemasukan'] = $data['pemasukans']->sum('total');
-            $data['total_pengeluaran'] = $data['pengeluarans']->sum('total');
-            $html = view('components.aktivitas', $data)->render();
-            return response()->json(['html' => $html]);
+            $data['grandTotalPemasukans'][$date] = $t->sum('nominal') ?? 0;
         }
 
 
-        public function ringkasan()
-        {
-    
-            $kontrakan = Kontrakan::select('code_kontrakan', 'nama_kontrakan')->get();
-    
-            $data = [
-                'kontrakan' => $kontrakan,
-                'pageTitle' => 'Laporan Tahunan',
-            ];
-    
-            return view('admin.laporan.tahunan.ringkasan', $data);
-        }
-    
-        public function get_ringkasan_tahunan(Request $request)
-        {
-            
-            $code_kontrakan = $request->input('book');
-    
-            $data['dates'] = [];
-            $data['type'] = 'Tahunan';
-            for ($i = 3; $i >= 0; $i--) {
-                $data['dates'][] = Carbon::now()->subYears($i)->format('Y');
-            }
 
-            $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-                ->get();
-            if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
-                $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+
+        $data['profits'] = $transaksi
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) use ($data) {
+                $trx = [];
+                foreach ($data['dates'] as $date) {
+                    $tMasuk = TransaksiList::with(['transaksiMasuk'])
+                        ->whereHas('transaksiMasuk', function ($query) use ($date) {
+                            $query->where('periode_sewa', 'like', $date . '%');
+                        })
+                        ->where('code_kontrakan', $item[0]->code_kontrakan);
+                    $tKeluar = TransaksiList::with(['transaksiKeluar'])
+                        ->whereHas('transaksiKeluar', function ($query) use ($date) {
+                            $query->where('tanggal_transaksi', 'like', $date . '%');
+                        })
+                        ->where('code_kontrakan', $item[0]->code_kontrakan);
+                    $trx[$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
+                }
+                return [
+                    'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                    'qty' => $item->count(),
+                    'transaksi' => $trx,
+                ];
+            })
+            ->values();
+
+
+        $data['grandTotalProfits'] = [];
+        foreach ($data['dates'] as $date) {
+            $tMasuk = TransaksiList::with(['transaksiMasuk'])
+                ->whereHas('transaksiMasuk', function ($query) use ($date) {
+                    $query->where('periode_sewa', 'like', $date . '%');
+                });
+            $tKeluar = TransaksiList::with(['transaksiKeluar'])
+                ->whereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->where('tanggal_transaksi', 'like', $date . '%');
+                });
+            if (request('book') !== 'all' && request('book') !== null) {
+                $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
+                $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
             }
-    
-    
-            $data['pengeluarans'] = $transaksi
-                ->where('tipe', 'keluar')
-                ->groupBy('code_kontrakan')
-                ->map(function ($item) use ($data) {
-                    $trx = [];
-                    foreach ($data['dates'] as $date) {
-                        $t = TransaksiList::with(['transaksiKeluar'])
-                            ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                                $query->where('tanggal_transaksi', 'like', $date.'%');
-                            })
-                            ->where('code_kontrakan', $item[0]->code_kontrakan);
-                        $trx[$date] = $t->sum('nominal') ?? 0;
-                    }
-                    return [
-                        'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                        'qty' => $item->count(),
-                        'total' => $item->sum('nominal'),
-                        'transaksi' => $trx,
-                    ];
-                })
-                ->values();
-    
-    
-            $data['grandTotalPengeluarans'] = [];
-            foreach ($data['dates'] as $date) {
-                $t = TransaksiList::with(['transaksiKeluar'])
-                    ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                        $query->where('tanggal_transaksi', 'like', $date.'%');
-                    });
-                    if (request('book') !== 'all' && request('book') !== null) {
-                        $t = $t->where('code_kontrakan', $request->book);
-                    }
-                $data['grandTotalPengeluarans'][$date] = $t->sum('nominal') ?? 0;
-            }
-    
-    
-            $data['pemasukans'] = $transaksi
-                ->where('tipe', 'masuk')
-                ->groupBy('code_kontrakan')
-                ->map(function ($item) use ($data) {
-                    $trx = [];
-                    foreach ($data['dates'] as $date) {
-                        $t = TransaksiList::with(['transaksiMasuk'])
-                            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                                $query->where('tanggal_transaksi', 'like', $date . "%");
-                            })
-                            ->where('code_kontrakan', $item[0]->code_kontrakan);
-                        if (request('book') !== 'all' && request('book') !== null) {
-                            $t = $t->where('code_kontrakan', $item[0]->code_kontrakan);
-                        }
-                        $trx[$date] = $t->sum('nominal') ?? 0;
-                    }
-                    return [
-                        'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                        'qty' => $item->count(),
-                        'total' => $item->sum('nominal'),
-                        'transaksi' => $trx,
-                    ];
-                })
-                ->values();
-    
-    
-            $data['grandTotalPemasukans'] = [];
-            foreach ($data['dates'] as $date) {
-                $t = TransaksiList::with(['transaksiMasuk'])
-                    ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                        $query->where('tanggal_transaksi', 'like', $date. '%');
-                    });
-                    if (request('book') !== 'all' && request('book') !== null) {
-                        $t = $t->where('code_kontrakan', $request->book);
-                    }
-                $data['grandTotalPemasukans'][$date] = $t->sum('nominal') ?? 0;
-            }
-    
-    
-    
-    
-            $data['profits'] = $transaksi
-                ->groupBy('code_kontrakan')
-                ->map(function ($item) use ($data) {
-                    $trx = [];
-                    foreach ($data['dates'] as $date) {
-                        $tMasuk = TransaksiList::with(['transaksiMasuk'])
-                            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                                $query->where('tanggal_transaksi', 'like', $date. '%');
-                            })
-                            ->where('code_kontrakan', $item[0]->code_kontrakan);
-                        $tKeluar = TransaksiList::with(['transaksiKeluar'])
-                            ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                                $query->where('tanggal_transaksi', 'like', $date. '%');
-                            })
-                            ->where('code_kontrakan', $item[0]->code_kontrakan);
-                        $trx[$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
-                    }
-                    return [
-                        'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                        'qty' => $item->count(),
-                        'transaksi' => $trx,
-                    ];
-                })
-                ->values();
-    
-    
-            $data['grandTotalProfits'] = [];
-            foreach ($data['dates'] as $date) {
-                $tMasuk = TransaksiList::with(['transaksiMasuk'])
-                    ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                        $query->where('tanggal_transaksi', 'like', $date.'%');
-                    });
-                $tKeluar = TransaksiList::with(['transaksiKeluar'])
-                    ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                        $query->where('tanggal_transaksi', 'like', $date.'%');
-                    });
-                    if (request('book') !== 'all' && request('book') !== null) {
-                        $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
-                        $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
-                    }
-                $data['grandTotalProfits'][$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
-            }
-    
-    
-            $html = view('components.ringkasan', $data)->render();
-            return response()->json(['html' => $html]);
+            $data['grandTotalProfits'][$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
         }
+
+
+        $html = view('components.ringkasan', $data)->render();
+        return response()->json(['html' => $html]);
+    }
 }
