@@ -66,7 +66,6 @@
                                 </li>
                             </ul>
                             <div class="tab-content">
-
                             </div>
                         </div>
                     </div>
@@ -116,13 +115,13 @@
             </div>
         </div>
     </main>
-    @endsection
-    @push('custom-js')
+@endsection
+@push('custom-js')
     {{-- definie config --}}
-    
+
     <input type="hidden" id="endpoint" value="{{ env('APP_URL') }}">
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('assets/js/laporan/harian/ringkasan.js') }}"></script>
-    @endpush
+@endpush

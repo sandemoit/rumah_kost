@@ -85,12 +85,14 @@ class LaporanBulananController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada bulan tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
-                $query->whereYear('periode_sewa', '=', $year)
-                    ->whereMonth('periode_sewa', '=', $month);
-            })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
-                $query->whereYear('tanggal_transaksi', '=', $year)
-                    ->whereMonth('tanggal_transaksi', '=', $month);
+            ->where(function ($query) use ($month, $year) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
+                    $query->whereYear('periode_sewa', '=', $year)
+                        ->whereMonth('periode_sewa', '=', $month);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
+                    $query->whereYear('tanggal_transaksi', '=', $year)
+                        ->whereMonth('tanggal_transaksi', '=', $month);
+                });
             });
 
         if ($code_kontrakan !== 'all') {

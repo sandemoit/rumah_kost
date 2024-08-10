@@ -61,15 +61,22 @@ class LaporanController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada tanggal tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('periode_sewa', $date);
-            })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
+            ->where(function ($query) use ($date, $code_kontrakan) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($date) {
+                    $query->whereDate('periode_sewa', '=', $date);
+                })
+                    ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
+                        $query->where('code_kontrakan', $code_kontrakan);
+                    });
+            })
+            ->orWhere(function ($query) use ($date, $code_kontrakan) {
+                $query->whereHas('transaksiKeluar', function ($query) use ($date) {
+                    $query->whereDate('tanggal_transaksi', '=', $date);
+                })
+                    ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
+                        $query->where('code_kontrakan', $code_kontrakan);
+                    });
             });
-
-        if ($code_kontrakan !== 'all') {
-            $transaksiListQuery->where('code_kontrakan', $code_kontrakan);
-        }
 
         $transaksiList = $transaksiListQuery->get();
 
@@ -199,7 +206,6 @@ class LaporanController extends Controller
 
                 ];
             })->values();
-
 
         $data['pemasukans'] = $transaksi
             ->where('tipe', 'masuk')

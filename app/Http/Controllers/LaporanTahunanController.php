@@ -76,10 +76,12 @@ class LaporanTahunanController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada Tahun tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->whereHas('transaksiMasuk', function ($query) use ($year) {
-                $query->whereYear('tanggal_transaksi', '=', $year);
-            })->orWhereHas('transaksiKeluar', function ($query) use ($year) {
-                $query->whereYear('tanggal_transaksi', '=', $year);
+            ->where(function ($query) use ($year) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($year) {
+                    $query->whereYear('tanggal_transaksi', '=', $year);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+                    $query->whereYear('tanggal_transaksi', '=', $year);
+                });
             });
 
         if ($code_kontrakan !== 'all') {
@@ -228,10 +230,8 @@ class LaporanTahunanController extends Controller
         return response()->json(['html' => $html]);
     }
 
-
     public function ringkasan()
     {
-
         $kontrakan = Kontrakan::select('code_kontrakan', 'nama_kontrakan')->get();
 
         $data = [
@@ -259,7 +259,6 @@ class LaporanTahunanController extends Controller
             $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
         }
 
-
         $data['pengeluarans'] = $transaksi
             ->where('tipe', 'keluar')
             ->groupBy('code_kontrakan')
@@ -282,7 +281,6 @@ class LaporanTahunanController extends Controller
             })
             ->values();
 
-
         $data['grandTotalPengeluarans'] = [];
         foreach ($data['dates'] as $date) {
             $t = TransaksiList::with(['transaksiKeluar'])
@@ -294,7 +292,6 @@ class LaporanTahunanController extends Controller
             }
             $data['grandTotalPengeluarans'][$date] = $t->sum('nominal') ?? 0;
         }
-
 
         $data['pemasukans'] = $transaksi
             ->where('tipe', 'masuk')
@@ -333,9 +330,6 @@ class LaporanTahunanController extends Controller
             }
             $data['grandTotalPemasukans'][$date] = $t->sum('nominal') ?? 0;
         }
-
-
-
 
         $data['profits'] = $transaksi
             ->groupBy('code_kontrakan')

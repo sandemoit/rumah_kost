@@ -25,7 +25,7 @@
                                                     {{ $pengeluaran['nama_kontrakan'] }} </span></td>
                                             <td class="right tdmatauang">Rp</td>
                                             <td class="right tduang" id="totalKontrakan_{{ $pengeluaran['id'] }}">
-                                                {{ number_format($pengeluaran['total'], 0, ',', '.') }}</td>
+                                                {{ rupiah($pengeluaran['total']) }}</td>
                                         </tr>
                                         <tr class="none" id="trsub_{{ $pengeluaran['id'] }}" style="display: none;">
                                             <td>&nbsp;</td>
@@ -40,13 +40,22 @@
                                                                             class="longdate">{{ \Illuminate\Support\Carbon::parse($detail->created_at)->format('d M Y, H:i') }}</span>
                                                                     </td>
                                                                     <td>
-                                                                        {{$detail->deskripsi}}<br><em><small>Kas:
-                                                                            @php
-                                                                                $kamar = \App\Models\Kamar::whereIn('id', json_decode($detail->transaksiList->id_kamar))->pluck('nama_kamar')->implode(', ');
-                                                                            @endphp
+                                                                        {{ $detail->deskripsi }}<br><em><small>Kas:
+                                                                                @php
+                                                                                    $kamar = \App\Models\Kamar::whereIn(
+                                                                                        'id',
+                                                                                        json_decode(
+                                                                                            $detail->transaksiList
+                                                                                                ->id_kamar,
+                                                                                        ),
+                                                                                    )
+                                                                                        ->pluck('nama_kamar')
+                                                                                        ->implode(', ');
+                                                                                @endphp
                                                                                 {{ $kamar }}</small></em></td>
                                                                     <td class="right tdmatauang">Rp</td>
-                                                                    <td class="right" style="width:96px;">{{ number_format($detail->transaksiList->nominal, 0, ',', '.') }}
+                                                                    <td class="right" style="width:96px;">
+                                                                        {{ rupiah($detail->transaksiList->nominal) }}
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -61,8 +70,8 @@
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line"
-                                            id="">{{ number_format($total_pengeluaran, 0, ',', '.') }}</td>
+                                        <td class="right tduang line" id="">
+                                            {{ rupiah($total_pengeluaran) }}</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -81,7 +90,7 @@
                     <div class="card-body">
                         <div id="pemasukan">
                             <table class="table table-bordered">
-                                
+
                                 <tbody>
                                     @foreach ($pemasukans as $pemasukan)
                                         <tr>
@@ -96,7 +105,7 @@
                                                     {{ $pemasukan['nama_kontrakan'] }} </span></td>
                                             <td class="right tdmatauang">Rp</td>
                                             <td class="right tduang" id="totalKontrakan_{{ $pemasukan['id'] }}">
-                                                {{ number_format($pemasukan['total'], 0, ',', '.') }}</td>
+                                                {{ rupiah($pemasukan['total']) }}</td>
                                         </tr>
                                         <tr class="none" id="trsub_{{ $pemasukan['id'] }}" style="display: none;">
                                             <td>&nbsp;</td>
@@ -111,13 +120,22 @@
                                                                             class="longdate">{{ \Illuminate\Support\Carbon::parse($detail->created_at)->format('d M Y, H:i') }}</span>
                                                                     </td>
                                                                     <td>
-                                                                        {{$detail->deskripsi}}<br><em><small>Kas:
-                                                                            @php
-                                                                                $kamar = \App\Models\Kamar::whereIn('id', json_decode($detail->transaksiList->id_kamar))->pluck('nama_kamar')->implode(', ');
-                                                                            @endphp
+                                                                        {{ $detail->deskripsi }}<br><em><small>Kas:
+                                                                                @php
+                                                                                    $kamar = \App\Models\Kamar::whereIn(
+                                                                                        'id',
+                                                                                        json_decode(
+                                                                                            $detail->transaksiList
+                                                                                                ->id_kamar,
+                                                                                        ),
+                                                                                    )
+                                                                                        ->pluck('nama_kamar')
+                                                                                        ->implode(', ');
+                                                                                @endphp
                                                                                 {{ $kamar }}</small></em></td>
                                                                     <td class="right tdmatauang">Rp</td>
-                                                                    <td class="right" style="width:96px;">{{ number_format($detail->transaksiList->nominal, 0, ',', '.') }}
+                                                                    <td class="right" style="width:96px;">
+                                                                        {{ rupiah($detail->transaksiList->nominal) }}
                                                                     </td>
                                                                 </tr>
                                                             @endforeach
@@ -131,8 +149,8 @@
                                         <td class="line">&nbsp;</td>
                                         <td class="line">&nbsp;</td>
                                         <td class="right tdmatauang line">Rp</td>
-                                        <td class="right tduang line"
-                                            id="">{{ number_format($total_pemasukan, 0, ',', '.') }}</td>
+                                        <td class="right tduang line" id="">{{ rupiah($total_pemasukan) }}
+                                        </td>
                                     </tr>
                                 </tbody>
                             </table>

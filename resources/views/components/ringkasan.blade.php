@@ -36,12 +36,12 @@
                                             $totalPerKontrakan = 0;
                                         @endphp
                                         @foreach ($pemasukan['transaksi'] as $p)
-                                            <td>{{ number_format($p, 0, '.', ',') }}</td>
+                                            <td>{{ rupiah($p) }}</td>
                                             @php
                                                 $totalPerKontrakan += $p;
                                             @endphp
                                         @endforeach
-                                        <td>{{ number_format($totalPerKontrakan, 0, '.', ',') }}</td>
+                                        <td>{{ rupiah($totalPerKontrakan) }}</td>
                                     </tr>
                                 @endforeach
                                 <!-- Add more rows as needed -->
@@ -52,12 +52,12 @@
                                         $sumGrandTotalPemasukans = 0;
                                     @endphp
                                     @foreach ($grandTotalPemasukans as $grandTotal)
-                                        <td class="tdgray">{{ number_format($grandTotal, 0, '.', ',') }}</td>
+                                        <td class="tdgray">{{ rupiah($grandTotal) }}</td>
                                         @php
                                             $sumGrandTotalPemasukans += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">{{ number_format($sumGrandTotalPemasukans, 0, '.', ',') }}</td>
+                                    <td class="tdgray">{{ rupiah($sumGrandTotalPemasukans) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -72,7 +72,7 @@
                         <img src="{{ asset('assets/icon/list-keluar.png') }}" width="20" height="20"
                             alt="income"> Pengeluaran
                     </div>
-                    <div class="card-body">
+                    <div class="card-body table-responsive">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -101,12 +101,12 @@
                                             $totalPerKontrakan = 0;
                                         @endphp
                                         @foreach ($pengeluaran['transaksi'] as $p)
-                                            <td>{{ number_format($p, 0, '.', ',') }}</td>
+                                            <td>{{ rupiah($p) }}</td>
                                             @php
                                                 $totalPerKontrakan += $p;
                                             @endphp
                                         @endforeach
-                                        <td>{{ number_format($totalPerKontrakan, 0, '.', ',') }}</td>
+                                        <td>{{ rupiah($totalPerKontrakan) }}</td>
                                     </tr>
                                 @endforeach
                                 <!-- Add more rows as needed -->
@@ -117,12 +117,12 @@
                                         $sumGrandTotalPengeluarans = 0;
                                     @endphp
                                     @foreach ($grandTotalPengeluarans as $grandTotal)
-                                        <td class="tdgray">{{ number_format($grandTotal, 0, '.', ',') }}</td>
+                                        <td class="tdgray">{{ rupiah($grandTotal) }}</td>
                                         @php
                                             $sumGrandTotalPengeluarans += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">{{ number_format($sumGrandTotalPengeluarans, 0, '.', ',') }}</td>
+                                    <td class="tdgray">{{ rupiah($sumGrandTotalPengeluarans) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -137,7 +137,7 @@
                         <img src="{{ asset('assets/icon/list-masuk.png') }}" width="20" height="20"
                             alt="income"> Profit
                     </div>
-                    <div class="card-body">
+                    <div class="card-body table-responsive">
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
@@ -167,12 +167,12 @@
                                             $totalPerKontrakan = 0;
                                         @endphp
                                         @foreach ($profit['transaksi'] as $p)
-                                            <td>{{ number_format($p, 0, '.', ',') }}</td>
+                                            <td>{{ rupiah($p) }}</td>
                                             @php
                                                 $totalPerKontrakan += $p;
                                             @endphp
                                         @endforeach
-                                        <td>{{ number_format($totalPerKontrakan, 0, '.', ',') }}</td>
+                                        <td>{{ rupiah($totalPerKontrakan) }}</td>
                                     </tr>
                                 @endforeach
                                 <!-- Add more rows as needed -->
@@ -183,12 +183,12 @@
                                         $sumGrandTotalProfit = 0;
                                     @endphp
                                     @foreach ($grandTotalProfits as $grandTotal)
-                                        <td class="tdgray">{{ number_format($grandTotal, 0, '.', ',') }}</td>
+                                        <td class="tdgray">{{ rupiah($grandTotal) }}</td>
                                         @php
                                             $sumGrandTotalProfit += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">{{ number_format($sumGrandTotalProfit, 0, '.', ',') }}</td>
+                                    <td class="tdgray">{{ rupiah($sumGrandTotalProfit) }}</td>
                                 </tr>
                             </tbody>
                         </table>
