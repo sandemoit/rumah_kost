@@ -338,7 +338,7 @@ class TransaksiController extends Controller
         $validatedData = $request->validate([
             'tanggalPengeluaran' => 'required|date',
             'kamarPengeluaran' => 'required',
-            'kamarPengeluaran.*' => 'integer|exists:kamar,id',
+            'kamarPengeluaran.*' => 'exists:kamar,id',
             'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'required|string',
             'codeKontrakanKeluar' => 'required|string',
