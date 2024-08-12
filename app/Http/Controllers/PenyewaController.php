@@ -151,13 +151,13 @@ class PenyewaController extends Controller
         }
     }
 
-    public function putus_kontrak($id)
+    public function putus_kontrak(Request $request, $id)
     {
         $penyewa = Penyewa::findOrFail($id);
         try {
             $penyewa->update([
                 'status' => 'putus_kontrak',
-                'tanggal_keluar' => Carbon::now()->format('Y-m-d'),
+                'tanggal_keluar' => $request->tanggal_keluar,
             ]);
 
             return redirect()->back()->with('success', 'Penyewa berhasil diubah.');

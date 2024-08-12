@@ -103,9 +103,9 @@
                                                                     class="btn btn-success">
                                                                     <i class="bi bi-whatsapp"></i> Kirim Tagihan
                                                                 </a>
-                                                                <a href="{{ route('penyewa.putus_kontrak', $key->id) }}"
-                                                                    class="btn btn-dark"
-                                                                    onclick="return confirm('Apakah anda yakin ingin putus kontrak?')">
+                                                                <a href="javascript:void(0)" class="btn btn-dark"
+                                                                    data-bs-toggle="modal"
+                                                                    data-bs-target="#putusKontrak_{{ $key->id }}">
                                                                     <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                 </a>
                                                             @endif
@@ -134,6 +134,39 @@
         </div>
     </main>
 
+    <!-- Form modal for edit penyewa -->
+    @foreach ($penyewa as $key)
+        <div class="modal fade" id="putusKontrak_{{ $key->id }}" tabindex="-1"
+            aria-labelledby="putusKontrakModalLabel{{ $key->id }}" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="putusKontrakModalLabel{{ $key->id }}">Edit Penyewa</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form action="{{ route('penyewa.putus_kontrak', $key->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <div class="form-group mb-3">
+                                <label for="tanggal_keluar" class="form-label">Tanggal Keluar</label>
+                                <input type="date" class="form-control @error('tanggal_keluar') is-invalid @enderror"
+                                    id="tanggal_keluar" name="tanggal_keluar" value="{{ date('d-m-Y') }}" required>
+                                @error('tanggal_keluar')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <button type="submit" class="btn btn-primary">Simpan</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endforeach
     <!-- Form modal for edit penyewa -->
     @foreach ($penyewa as $key)
         <div class="modal fade" id="editPenyewa_{{ $key->id }}" tabindex="-1"
@@ -225,7 +258,7 @@
         </div>
     @endforeach
 
-    <!-- Modal -->
+    <!-- Modal edit-->
     <div class="modal fade" id="tambahPenyewa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
