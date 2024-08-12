@@ -16,7 +16,7 @@
                     <div class="col-sm-6 text-end">
                         <strong>Saldo</strong>
                         <h3 class="mb-0" id="saldoKontrakan">Loading...</h3>
-                        <span class="smallsaldo">Semua Buku Kas: Rp 10.350.000,00</span>
+                        <span class="smallsaldo">Semua Buku Kas: <span id="totalSaldo">Loading...</span></span>
                     </div>
                 </div> <!--end::Row-->
             </div>

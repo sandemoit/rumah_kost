@@ -275,7 +275,26 @@ class TransaksiController extends Controller
         }, 0);
 
         return response()->json([
-            'saldo' => $saldo
+            'saldo' => rupiah($saldo)
+        ]);
+    }
+
+    public function getAllSaldo()
+    {
+        // Menghitung total pemasukan
+        $totalPemasukan = TransaksiList::where('tipe', 'masuk')
+            ->sum('nominal');
+
+        // Menghitung total pengeluaran
+        $totalPengeluaran = TransaksiList::where('tipe', 'keluar')
+            ->sum('nominal');
+
+        // Menghitung total saldo (pemasukan - pengeluaran)
+        $totalSaldo = $totalPemasukan - $totalPengeluaran;
+
+        // Mengembalikan response JSON dengan total saldo
+        return response()->json([
+            'totalSaldo' => $totalSaldo,
         ]);
     }
 
