@@ -61,7 +61,6 @@ class TransaksiList extends Model
                     $query->whereMonth('tanggal_transaksi', $month)
                         ->whereYear('tanggal_transaksi', $year);
                 });
-            })
-            ->orderBy('created_at', 'asc');
+            });
     }
 }

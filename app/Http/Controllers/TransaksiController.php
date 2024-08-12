@@ -84,11 +84,16 @@ class TransaksiController extends Controller
         $keyword = $request->input('search');
 
         // Mengambil transaksi berdasarkan bulan dan tahun
-        $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)->paginate(10);
+        $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)
+            // ->orderBy('id', 'desc')
+            ->paginate(10);
 
-        // Uraikan JSON id_kamar dan dapatkan nama kamar
-        $saldo = 0; // Inisialisasi saldo awal
+        // Inisialisasi saldo awal
+        $saldo = 0;
+
+        // Iterasi transaksi
         foreach ($transaksiList as $transaksi) {
+            // Uraikan JSON id_kamar dan dapatkan nama kamar
             $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];
             if (is_array($idKamarArray)) {
                 $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
