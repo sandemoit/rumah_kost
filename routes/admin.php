@@ -41,7 +41,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/penyewa/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
     Route::get('/penyewa/send_wa/{id}', [PenyewaController::class, 'wa_tagihan'])->name('penyewa.wa_tagihan');
 
-    Route::get('/route-to-getAllSaldo', [TransaksiController::class, 'getAllSaldo']);
+    Route::get('/getAllSaldo', [TransaksiController::class, 'getAllSaldo']);
     Route::get('/transaksi/{code_kontrakan}', [TransaksiController::class, 'show'])->name('transaksi.kontrakan');
     Route::get('/getKamarData/{id}', [TransaksiController::class, 'getKamarData'])->name('getKamarData');
     Route::get('/getTunggakan/{id}', [TransaksiController::class, 'getTunggakan'])->name('getTunggakan');

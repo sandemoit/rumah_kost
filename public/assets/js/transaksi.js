@@ -393,7 +393,7 @@ function changeMonth(offset) {
 
 document.addEventListener("DOMContentLoaded", function() {
     // Lakukan fetch ke controller untuk mendapatkan total saldo
-    fetch('/route-to-getAllSaldo')
+    fetch('/getAllSaldo')
         .then(response => response.json())
         .then(data => {
             // Format saldo menjadi rupiah dan tampilkan
