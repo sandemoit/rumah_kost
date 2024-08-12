@@ -48,7 +48,7 @@ class TransaksiController extends Controller
 
             // Ambil periode saat ini dan tanggal putus kontrak
             $periodeSaatIni = Carbon::now()->startOfMonth();
-            $tanggalPutusKontrak = Carbon::parse($penyewa->tanggal_putus_kontrak)->startOfMonth();
+            $tanggalPutusKontrak = Carbon::parse($penyewa->tanggal_keluar)->startOfMonth();
 
             // Periksa setiap transaksi untuk menentukan apakah periode sewa telah mencapai tanggal putus kontrak
             $periodeSewaTerakhir = null;

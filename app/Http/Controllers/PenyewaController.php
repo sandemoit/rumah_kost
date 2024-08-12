@@ -157,7 +157,7 @@ class PenyewaController extends Controller
         try {
             $penyewa->update([
                 'status' => 'putus_kontrak',
-                'tanggal_putus_kontrak' => Carbon::now()->format('Y-m-d'),
+                'tanggal_keluar' => Carbon::now()->format('Y-m-d'),
             ]);
 
             return redirect()->back()->with('success', 'Penyewa berhasil diubah.');

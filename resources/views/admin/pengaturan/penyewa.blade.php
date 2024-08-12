@@ -59,7 +59,7 @@
                                                             <span class="badge bg-danger">Nonaktif</span>
                                                         @elseif ($key->status == 'putus_kontrak')
                                                             <span class="badge bg-dark">Putus Kontrak</span><br>
-                                                            <span>{{ tanggal($key->tanggal_putus_kontrak) }}</span>
+                                                            <span>{{ tanggal($key->tanggal_keluar) }}</span>
                                                         @endif
                                                     </td>
                                                     <td>
