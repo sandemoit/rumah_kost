@@ -38,7 +38,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/penyewa', [PenyewaController::class, 'store'])->name('penyewa.store');
     Route::put('/penyewa/{id}', [PenyewaController::class, 'update'])->name('penyewa.update');
     Route::delete('/penyewa/{id}', [PenyewaController::class, 'destroy'])->name('penyewa.destroy');
-    Route::put('/penyewa/putus_kontrak/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
+    Route::put('/penyewa/putus_kontrake/{id}', [PenyewaController::class, 'putus_kontrak'])->name('penyewa.putus_kontrak');
     Route::get('/penyewa/send_wa/{id}', [PenyewaController::class, 'wa_tagihan'])->name('penyewa.wa_tagihan');
 
     Route::get('/getAllSaldo', [TransaksiController::class, 'getAllSaldo']);

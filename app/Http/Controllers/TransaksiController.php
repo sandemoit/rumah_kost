@@ -356,8 +356,7 @@ class TransaksiController extends Controller
     {
         $validatedData = $request->validate([
             'tanggalPengeluaran' => 'required|date',
-            'kamarPengeluaran' => 'required',
-            // 'kamarPengeluaran.*' => 'string|exists:kamar,id',
+            'kamarPengeluaran' => 'required|array',
             'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'required|string',
             'codeKontrakanKeluar' => 'required|string',
@@ -365,20 +364,23 @@ class TransaksiController extends Controller
 
         try {
             DB::transaction(function () use ($validatedData) {
-                // Mengambil semua ID kamar jika 'All' dipilih
-                if ($validatedData['kamarPengeluaran'] === 'all') {
-                    $id_kamar = Kamar::pluck('id')->toArray();
+                // Cek apakah "all" dipilih, jika ya, ambil semua ID kamar berdasarkan code_kontrakan
+                if (in_array('all', $validatedData['kamarPengeluaran'])) {
+                    // Mengambil semua ID kamar yang terkait dengan code_kontrakan
+                    $id_kamar = Kamar::whereHas('kontrakan', function ($query) use ($validatedData) {
+                        $query->where('code_kontrakan', $validatedData['codeKontrakanKeluar']);
+                    })->pluck('id')->toArray();
                 } else {
                     $id_kamar = $validatedData['kamarPengeluaran'];
                 }
 
                 // Mengubah array ID kamar menjadi JSON string
-                $id_kamar_json = json_encode($id_kamar);
+                $id_kamar_json = json_encode(array_map('strval', $id_kamar));
 
                 $code_keluar = random_int(1000, 9999);
 
                 $transaksiKeluar = TransaksiKeluar::create([
-                    'code_keluar' => $code_keluar,  // Sesuaikan sesuai kebutuhan
+                    'code_keluar' => $code_keluar,
                     'deskripsi' => $validatedData['deskripsiPengeluaran'],
                     'tanggal_transaksi' => $validatedData['tanggalPengeluaran'],
                 ]);
@@ -386,7 +388,7 @@ class TransaksiController extends Controller
                 $code_transaksi = random_int(1000, 9999);
 
                 TransaksiList::create([
-                    'code_transaksi' => $code_transaksi,  // Sesuaikan sesuai kebutuhan
+                    'code_transaksi' => $code_transaksi,
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
@@ -408,6 +410,7 @@ class TransaksiController extends Controller
             ], 500);
         }
     }
+
 
     /**
      * Update the specified resource in storage.
