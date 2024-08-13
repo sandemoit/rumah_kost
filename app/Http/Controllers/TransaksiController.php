@@ -13,7 +13,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class TransaksiController extends Controller
 {
@@ -31,7 +30,7 @@ class TransaksiController extends Controller
 
         // Ambil data penyewa yang memiliki status putus_kontrak dan terkait dengan kamar yang terkait dengan kontrakan tersebut
         $penyewa = Penyewa::whereHas('kamar', function (Builder $query) use ($kontrakan) {
-            $query->select('id', 'nama_kamar')->where('id_kontrakan', $kontrakan->id);
+            $query->where('id_kontrakan', $kontrakan->id);
         })->where('status', 'putus_kontrak')->with('kamar:id,nama_kamar')->get();
 
         // Menyaring kamar dengan penyewa yang menunggak

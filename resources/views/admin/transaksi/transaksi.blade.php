@@ -87,7 +87,8 @@
                             <select class="form-select" id="kamarTunggakan" name="kamarTunggakan">
                                 <option selected disabled>Pilih kamar...</option>
                                 @foreach ($kamarTunggakan as $room)
-                                    <option value="{{ $room->id }}">{{ $room->nama_kamar }}</option>
+                                    <option value="{{ $room->id }}">
+                                        {{ $room->nama_kamar . ' ' . $room->nama_penyewa }}</option>
                                 @endforeach
                             </select>
                             <input type="hidden" id="codeKontrakan" name="codeKontrakan">

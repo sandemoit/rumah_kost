@@ -72,13 +72,13 @@
                                     <p>Tahunan</p>
                                 </a>
                             </li>
-                            {{-- <li class="nav-item">
-                                <a href="#"
+                            <li class="nav-item">
+                                <a href="{{ route('laporan.custom') }}"
                                     class="nav-link {{ request()->segment(2) == 'custom' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>Custom</p>
                                 </a>
-                            </li> --}}
+                            </li>
                         </ul>
                     </li>
 
