@@ -17,6 +17,7 @@ class TransaksiList extends Model
         'code_transaksi',
         'code_kontrakan',
         'id_kamar',
+        'id_penyewa',
         'id_tipe',
         'tipe',
         'nominal',
@@ -37,6 +38,11 @@ class TransaksiList extends Model
     public function kamar(): BelongsTo
     {
         return $this->belongsTo(Kamar::class, 'id_kamar');
+    }
+
+    public function penyewa(): BelongsTo
+    {
+        return $this->belongsTo(Penyewa::class, 'id_penyewa');
     }
 
     public function user(): BelongsTo

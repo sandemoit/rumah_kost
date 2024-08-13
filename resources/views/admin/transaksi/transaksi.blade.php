@@ -24,7 +24,7 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row bukutop">
-                    <div class="col-sm-6">
+                    <div class="col-lg-6 col-md-3 col-sm-3">
                         <div class="bulannav">
                             <a href="#" class="bulan_nav_left" id="bulan_nav_left" title="Bulan sebelumnya">&nbsp;</a>
                             <a href="#" class="bulan_nav_right" id="bulan_nav_right"
@@ -66,7 +66,7 @@
                             </form>
                         </div>
                     </div>
-                    <div class="col-sm-6 text-end kastool" id="catatkas">
+                    <div class="col-lg-6 col-md-9 col-sm-9 text-end kastool" id="catatkas">
                         <span class="kasbutton" id="pengeluaran" onclick="catat_out()">Catat Pengeluaran</span>
                         <span class="kasbutton" id="pemasukan" onclick="catat_in()">Catat Pemasukan</span>
                         <span class="kasbutton" id="tunggakan" onclick="catat_tunggakan()">Catat Tunggakan</span>

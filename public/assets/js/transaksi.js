@@ -17,6 +17,16 @@ $(document).ready(function() {
         $('#deskripsi').val('');
         $('#codeKontrakan').val('');
 
+        // Reset form pemasukan
+        $('#transaksiId').val('');
+        $('#tanggalTunggakan').val(new Date().toISOString().split('T')[0]);
+        $('#kamarTunggakan').val('').change();
+        $('#periodeTunggakan').val('');
+        $('#periodeTunggakanDeskripsi').val('');
+        $('#nilaiTunggakan').val('');
+        $('#deskripsi').val('');
+        $('#codeKontrakan').val('');
+
         // Reset form pengeluaran
         $('#tanggalPengeluaran').val(new Date().toISOString().split('T')[0]);
         $('#tanggalPengeluaran').val(new Date().toISOString().split('T')[0]);
@@ -132,7 +142,7 @@ $(document).ready(function() {
         event.preventDefault();
 
         var data = {
-            tanggalTerima: $('#tanggalTerima').val(),
+            tanggalTerima: $('#tanggalTunggakan').val(),
             kamarPemasukan: $('#kamarTunggakan').val(),
             periodeSewa: $('#periodeTunggakan').val(),
             deskripsi: $('#periodeTunggakanDeskripsi').val(),

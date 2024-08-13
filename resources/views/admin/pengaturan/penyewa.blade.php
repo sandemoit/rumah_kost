@@ -1,5 +1,5 @@
 @push('custom-button')
-    <div class="col-sm-6">
+    <div class="col-lg-6 col-md-6 col-sm-3">
         <div class="float-end">
             <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#tambahPenyewa"><i
                     class="bi bi-person-plus-fill"></i> {{ __('Tambah Penyewa') }}</button>
@@ -82,9 +82,9 @@
                                                                         class="btn-mobile">
                                                                         <i class="bi bi-whatsapp"></i> Kirim Tagihan
                                                                     </a>
-                                                                    <a href="{{ route('penyewa.putus_kontrak', $key->id) }}"
-                                                                        class="btn-mobile"
-                                                                        onclick="return confirm('Apakah anda yakin ingin putus kontrak?')">
+                                                                    <a href="javascript:void(0)"
+                                                                        class="btn-mobile"data-bs-toggle="modal"
+                                                                        data-bs-target="#putusKontrak_{{ $key->id }}">
                                                                         <i class="bi bi-x-circle"></i> Putus Kontrak
                                                                     </a>
                                                                 @endif
@@ -151,7 +151,7 @@
                             <div class="form-group mb-3">
                                 <label for="tanggal_keluar" class="form-label">Tanggal Keluar</label>
                                 <input type="date" class="form-control @error('tanggal_keluar') is-invalid @enderror"
-                                    id="tanggal_keluar" name="tanggal_keluar" value="{{ date('d-m-Y') }}" required>
+                                    id="tanggal_keluar" name="tanggal_keluar" value="{{ date('Y-m-d') }}" required>
                                 @error('tanggal_keluar')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
@@ -167,6 +167,7 @@
             </div>
         </div>
     @endforeach
+
     <!-- Form modal for edit penyewa -->
     @foreach ($penyewa as $key)
         <div class="modal fade" id="editPenyewa_{{ $key->id }}" tabindex="-1"

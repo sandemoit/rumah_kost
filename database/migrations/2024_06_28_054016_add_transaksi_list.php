@@ -16,6 +16,7 @@ return new class extends Migration
             $table->integer('code_transaksi');
             $table->integer('code_kontrakan');
             $table->json('id_kamar');
+            $table->integer('id_penyewa');
             $table->integer('id_tipe');
             $table->enum('tipe', ['masuk', 'keluar']);
             $table->integer('nominal');
