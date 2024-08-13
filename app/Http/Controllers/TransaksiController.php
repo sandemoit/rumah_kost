@@ -212,7 +212,8 @@ class TransaksiController extends Controller
             ->where('id_penyewa', $penyewaKeluar->id)
             ->where('code_kontrakan', $kontrakan->code_kontrakan)
             ->where('tipe', 'masuk')
-            ->firstOrFail();
+            ->latest('id_tipe')
+            ->first();
 
         // Jika tidak ada transaksi atau tidak ada id_tipe, tentukan bulan tunggakan pertama
         if (empty($transaksi) || empty($transaksi->id_tipe)) {
@@ -233,19 +234,12 @@ class TransaksiController extends Controller
             }
         }
 
-        // Cari transaksi masuk terakhir di TransaksiMasuk berdasarkan periode_sewa
-        $transaksiTerakhir = TransaksiMasuk::where('id', $transaksi->id_tipe)
-            ->where('id_kamar', $id)
-            ->where('periode_sewa', '<=', $penyewaKeluar->tanggal_keluar)
-            ->latest('periode_sewa')
-            ->first();
-
-        if ($transaksiTerakhir) {
+        if ($transaksi) {
             // Hitung bulan berikutnya jika periode_sewa transaksi terakhir belum melewati tanggal_keluar
             $tanggalKeluar = Carbon::parse($penyewaKeluar->tanggal_keluar);
-            $periodeSewa = Carbon::parse($transaksiTerakhir->periode_sewa);
+            $periodeSewa = Carbon::parse($transaksi->transaksiMasuk->periode_sewa);
 
-            if ($periodeSewa->addMonth() > $tanggalKeluar) {
+            if ($periodeSewa >= $tanggalKeluar) {
                 return response()->json([
                     'periodeTunggakanDeskripsi' => 'N/A',
                     'nilaiTunggakan' => 'N/A'
@@ -261,12 +255,12 @@ class TransaksiController extends Controller
                 'nilaiTunggakan' => nominal($nilaiTunggakan),
                 'codeKontrakan' => $kontrakan->code_kontrakan,
             ]);
+        } else {
+            return response()->json([
+                'periodeTunggakanDeskripsi' => 'N/A',
+                'nilaiTunggakan' => 'N/A'
+            ]);
         }
-
-        return response()->json([
-            'periodeTunggakanDeskripsi' => 'N/A',
-            'nilaiTunggakan' => 'N/A'
-        ]);
     }
 
     public function getSaldoKontrakan($code_kontrakan)
@@ -436,7 +430,6 @@ class TransaksiController extends Controller
             ], 500);
         }
     }
-
 
     /**
      * Update the specified resource in storage.
