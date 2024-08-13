@@ -448,6 +448,9 @@ class TransaksiController extends Controller
             $transaksi = TransaksiList::findOrFail($idTrx);
             $nilaiSewa = preg_replace('/\D/', '', $validatedData['nilaiSewa']);
 
+            $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
+            $penyewa = Kamar::findOrFail($kamar->id_kamar);
+
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_tipe);
             $transaksiMasuk->update([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
@@ -458,6 +461,7 @@ class TransaksiController extends Controller
             ]);
 
             $transaksi->update([
+                'id_penyewa' => $penyewa->id,
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'nominal' => $nilaiSewa,
                 'created_by' => Auth::user()->id,
