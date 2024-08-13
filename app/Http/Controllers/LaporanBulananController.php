@@ -271,7 +271,7 @@ class LaporanBulananController extends Controller
 
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->whereHas('transaksiMasuk', function ($query) use ($year) {
-                $query->where('tanggal_transaksi', 'like', $year . "%");
+                $query->where('periode_sewa', 'like', $year . "%");
             })
             ->orWhereHas('transaksiKeluar', function ($query) use ($year) {
                 $query->where('tanggal_transaksi', 'like', $year . "%");
@@ -326,7 +326,7 @@ class LaporanBulananController extends Controller
                 foreach ($data['dates'] as $date) {
                     $t = TransaksiList::with(['transaksiMasuk'])
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date . "%");
+                            $query->where('periode_sewa', 'like', $date . "%");
                         })
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     if (request('book') !== 'all' && request('book') !== null) {
@@ -348,7 +348,7 @@ class LaporanBulananController extends Controller
         foreach ($data['dates'] as $date) {
             $t = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date . '%');
+                    $query->where('periode_sewa', 'like', $date . '%');
                 });
             if (request('book') !== 'all' && request('book') !== null) {
                 $t = $t->where('code_kontrakan', $request->book);
@@ -366,7 +366,7 @@ class LaporanBulananController extends Controller
                 foreach ($data['dates'] as $date) {
                     $tMasuk = TransaksiList::with(['transaksiMasuk'])
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date . '%');
+                            $query->where('periode_sewa', 'like', $date . '%');
                         })
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $tKeluar = TransaksiList::with(['transaksiKeluar'])
@@ -389,7 +389,7 @@ class LaporanBulananController extends Controller
         foreach ($data['dates'] as $date) {
             $tMasuk = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date . '%');
+                    $query->where('periode_sewa', 'like', $date . '%');
                 });
             $tKeluar = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
