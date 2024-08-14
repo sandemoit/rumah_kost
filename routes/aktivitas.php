@@ -13,4 +13,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/harian/aktivitas/exportExcel', [LaporanController::class, 'excel_aktivitas_harian']);
     Route::get('/laporan/bulan/aktivitas/exportExcel', [LaporanBulananController::class, 'excel_aktivitas_bulan']);
     Route::get('/laporan/tahun/aktivitas/exportExcel', [LaporanTahunanController::class, 'excel_aktivitas_tahun']);
+
+    Route::get('/laporan/harian/ringkasan/exportExcel', [LaporanController::class, 'excel_ringkasan_harian']);
+    Route::get('/laporan/bulan/ringkasan/exportExcel', [LaporanBulananController::class, 'excel_ringkasan_bulan']);
+    Route::get('/laporan/tahun/ringkasan/exportExcel', [LaporanTahunanController::class, 'excel_ringkasan_tahun']);
 });

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nomor_wa', 15);
             $table->enum('status', ['aktif', 'tidak_aktif', 'putus_kontrak'])->default('aktif');
             $table->date('tanggal_masuk');
-            $table->date('tanggal_keluar');
+            $table->date('tanggal_keluar')->nullable();
             $table->unsignedBigInteger('id_kontrakan');
             $table->unsignedBigInteger('id_kamar');
             $table->timestamps();

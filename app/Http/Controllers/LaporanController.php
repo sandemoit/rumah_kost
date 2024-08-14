@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Exports\ExcelAktivitasHarian;
+use App\Exports\ExcelAktivitas;
 use App\Models\Kontrakan;
 use App\Models\TransaksiList;
 use Carbon\Carbon;
@@ -405,9 +405,6 @@ class LaporanController extends Controller
 
     public function excel_aktivitas_harian(Request $request)
     {
-        $satu = $request->query('satu');
-        $dua = $request->query('dua');
-        $tiga = $request->query('tiga');
-        return Excel::download(new ExcelAktivitasHarian($satu, $dua, $tiga), 'report.xlsx');
+        return Excel::download(new ExcelAktivitas(), 'report.xlsx');
     }
 }
