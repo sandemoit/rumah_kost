@@ -21,7 +21,7 @@
                                             <th class="tdblue">
                                                 {{ monthName($date) }}</th>
                                         @else
-                                            <th class="tdblue">{{ $date }}</th>
+                                            <th class="tdblue" nowrap>{{ $date }}</th>
                                         @endif
                                     @endforeach
                                     <th class="tdblue">Total</th>
@@ -86,7 +86,7 @@
                                             <th class="tdred">
                                                 {{ monthName($date) }}</th>
                                         @else
-                                            <th class="tdred">{{ $date }}</th>
+                                            <th class="tdred" nowrap>{{ $date }}</th>
                                         @endif
                                     @endforeach
                                     <th class="tdred">Total</th>
@@ -151,7 +151,7 @@
                                             <th class="tdgray">
                                                 {{ monthName($date) }}</th>
                                         @else
-                                            <th class="tdgray">{{ $date }}</th>
+                                            <th class="tdgray" nowrap>{{ $date }}</th>
                                         @endif
                                     @endforeach
                                     <th class="tdgray">Total</th>

@@ -32,11 +32,11 @@ document.addEventListener('DOMContentLoaded', function() {
         let endpount = $('#endpoint').val();
         let postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
-            'date': $('#lap_tgl_activity').val(),
+            'date': $('#daterange').val(),
             'book': $('#selectReportActivity').val(),
         }
         
-        response = await fetch(`${endpount}/api/aktivitas/harian`, {
+        response = await fetch(`${endpount}/api/aktivitas/custom`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -50,17 +50,12 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     drawPage();
-    
-    $('#lap_tgl_activity').datepicker({
-        dateFormat: 'dd-mm-yy', // Set the date format
-        onSelect: function(dateText) {
-            // Update the input value with the selected date
-            $(this).val(dateText);
-            // Trigger the onchange event
-            drawPage();
-        }
-    });
-
+    $('#daterange').daterangepicker();
+    $('#daterange').on('apply.daterangepicker', function(ev, picker) {
+        //do something, like clearing an input
+        drawPage();
+      });
+      
     $('#selectReportActivity').on('change', function() {
         drawPage();
     });

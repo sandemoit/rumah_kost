@@ -37,7 +37,7 @@
                                                                 <tr>
                                                                     <td class="center" style="width:140px;">
                                                                         <span
-                                                                            class="longdate">{{ tanggal($detail->tanggal_transaksi) }}</span>
+                                                                            class="longdate">{{ tanggal($detail->periode_sewa) }}</span>
                                                                     </td>
                                                                     <td>
                                                                         {{ $detail->deskripsi }}<br><em><small>Kas:
