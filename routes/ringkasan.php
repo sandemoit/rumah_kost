@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ExportRingkasanController;
 use App\Http\Controllers\LaporanBulananController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\LaporanCustomController;
@@ -12,7 +13,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/api/ringkasan/tahunan', [LaporanTahunanController::class, 'get_ringkasan_tahunan']);
     Route::post('/api/ringkasan/custom', [LaporanCustomController::class, 'get_ringkasan_custom']);
 
-    Route::get('/api/ringkasan/exportExcel/harian', [LaporanController::class, 'excel_ringkasan_harian']);
-    Route::get('/api/ringkasan/exportExcel/bulanan', [LaporanBulananController::class, 'excel_ringkasan_bulanan']);
-    Route::get('/api/ringkasan/exportExcel/tahunan', [LaporanTahunanController::class, 'excel_ringkasan_tahunan']);
+    Route::get('/ringkasan/harian/export', [ExportRingkasanController::class, 'harian'])->name('laporan.harian.ringkasan.exportExcel');
+    Route::get('/ringkasan/bulanan/export', [ExportRingkasanController::class, 'bulanan'])->name('laporan.bulanan.ringkasan.exportExcel');
+    Route::get('/ringkasan/tahun/export', [LaporanTahunanController::class, 'excel_ringkasan_tahun']);
 });

@@ -411,6 +411,7 @@ class TransaksiController extends Controller
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_tipe' => $transaksiKeluar->id,
+                    'id_penyewa' => 0,
                     'tipe' => 'keluar',
                     'nominal' => $validatedData['nominalPengeluaran'],
                     'created_by' => Auth::user()->id,

@@ -66,6 +66,9 @@ document.addEventListener('DOMContentLoaded', function () {
             'date': currentDate.getFullYear() + '-' + ('0' + (currentDate.getMonth() + 1)).slice(-2),
             'book': $('#selectReportActivity').val(),
         }
+        // change export url 
+        url = `${endpount}/ringkasan/harian/export?date=${currentDate.getFullYear()}-${('0' + (currentDate.getMonth() + 1)).slice(-2)}&book=${$('#selectReportActivity').val()}`
+        $('#export').attr("href", url)
         response = await fetch(`${endpount}/api/ringkasan/harian`, {
             method: 'POST',
             headers: {
