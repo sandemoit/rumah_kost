@@ -65,6 +65,9 @@ document.addEventListener('DOMContentLoaded', function () {
             'date': currentDate.getFullYear(),
             'book': $('#selectReportActivity').val(),
         }
+        // change export url 
+        url = `${endpount}/ringkasan/bulanan/export?date=${currentDate.getFullYear()}&book=${$('#selectReportActivity').val()}`
+        $('#export').attr("href", url)
         response = await fetch(`${endpount}/api/ringkasan/bulanan`, {
             method: 'POST',
             headers: {

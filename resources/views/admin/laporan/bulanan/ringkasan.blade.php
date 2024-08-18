@@ -46,21 +46,24 @@
                     <div class="card">
                         <div class="card-header" id="cardTitle">
                             <i class="bi bi-journal-text"></i> Semua Buku Kas
+                            <a id="export" href="{{route('laporan.bulanan.ringkasan.exportExcel')}}" id="exportToExcel" class="float-end" title="Export to Excel">
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export
+                            </a>
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.umum') }}"
-                                        class="nav-link {{ request()->segment(2) == 'harian' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
+                                    <a href="{{ route('laporan.bulanan.umum') }}"
+                                        class="nav-link {{ request()->segment(2) == 'bulanan' && !request()->segment(3) ? 'active' : (request()->segment(3) == 'umum' ? 'active' : '') }}"
                                         role="tab">Umum</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.aktivitas') }}"
+                                    <a href="{{ route('laporan.bulanan.aktivitas') }}"
                                         class="nav-link {{ request()->segment(3) == 'aktivitas' ? 'active' : '' }}"
                                         role="tab">Aktivitas</a>
                                 </li>
                                 <li class="nav-item" role="presentation">
-                                    <a href="{{ route('laporan.harian.ringkasan') }}"
+                                    <a href="{{ route('laporan.bulanan.ringkasan') }}"
                                         class="nav-link {{ request()->segment(3) == 'ringkasan' ? 'active' : '' }}"
                                         role="tab">Ringkasan</a>
                                 </li>
