@@ -1,8 +1,9 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark"> <!--begin::Sidebar Brand-->
     <div class="sidebar-brand"> <!--begin::Brand Link--> <a href="{{ route('dashboard') }}" class="brand-link">
-            <!--begin::Brand Image--> <img src="{{ asset('assets/logo/logo.jpg') }}" alt="{{ config('app.name') }}"
-                class="brand-image opacity-75 shadow"> <!--end::Brand Image-->
-            <!--begin::Brand Text--> <span class="brand-text fw-light">{{ config('app.name') }}</span>
+            <!--begin::Brand Image--> <img src="{{ asset('assets/logo/logo.jpg') }}"
+                alt="{{ applikasi('nama_aplikasi')->value }}" class="brand-image opacity-75 shadow">
+            <!--end::Brand Image-->
+            <!--begin::Brand Text--> <span class="brand-text fw-light">{{ applikasi('nama_aplikasi')->value }}</span>
             <!--end::Brand Text-->
         </a>
         <!--end::Brand Link-->
@@ -83,8 +84,8 @@
                     </li>
 
                     {{-- pengaturan --}}
-                    <li class="nav-item @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen'])) menu-open @endif">
-                        <a href="#" class="nav-link @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen'])) active @endif">
+                    <li class="nav-item @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen', 'setting'])) menu-open @endif">
+                        <a href="#" class="nav-link @if (in_array(request()->segment(1), ['penyewa', 'kontrakan', 'usermanajemen', 'setting'])) active @endif">
                             <i class="nav-icon bi bi-gear"></i>
                             <p>
                                 Pengaturan
@@ -92,6 +93,12 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
+                            <li class="nav-item"> <a href="{{ route('setting') }}"
+                                    class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'setting' ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Umum</p>
+                                </a>
+                            </li>
                             <li class="nav-item"> <a href="{{ route('kontrakan') }}"
                                     class="nav-link {{ request()->segment(1) == '' || request()->segment(1) == 'kontrakan' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>

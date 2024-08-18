@@ -2,15 +2,17 @@
 
 namespace App\Helpers;
 
+use App\Models\Setting;
 use Exception;
 use Illuminate\Support\Facades\Log;
 
 class WhatsAppHelper
 {
-    public static function sendWhatsApp($target, $message)
+    public static function sendWhatsApp($target = null, $message = null)
     {
         $curl = curl_init();
-        $token = env('FONNTE_API_TOKEN');
+        $setting = Setting::where('key', 'token')->first();
+        $token = $setting->value;
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.fonnte.com/send',
@@ -40,7 +42,8 @@ class WhatsAppHelper
     public static function checkWhatsApp($target)
     {
         $curl = curl_init();
-        $token = env('FONNTE_API_TOKEN');
+        $setting = Setting::where('key', 'token')->first();
+        $token = $setting->value;
 
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.fonnte.com/validate',

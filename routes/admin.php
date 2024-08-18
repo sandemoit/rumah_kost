@@ -7,6 +7,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KontrakanController;
 use App\Http\Controllers\ManajemenController;
 use App\Http\Controllers\PenyewaController;
+use App\Http\Controllers\SettingController;
 use App\Http\Controllers\TransaksiController;
 
 Route::middleware('auth')->group(function () {
@@ -54,7 +55,9 @@ Route::middleware('auth')->group(function () {
     Route::put('/transaksi-masuk/update/{id}', [TransaksiController::class, 'update_masuk']);
     Route::put('/transaksi-keluar/update/{id}', [TransaksiController::class, 'update_keluar']);
 
-    Route::get('/aplikasi', [AplikasiController::class, 'index'])->name('aplikasi');
+    Route::get('/setting', [SettingController::class, 'index'])->name('setting');
+    Route::put('/setting/update', [SettingController::class, 'update'])->name('setting.update');
+    Route::get('/setting/test', [SettingController::class, 'test_wa'])->name('setting.test');
 });
 
 require __DIR__ . '/laporan.php';

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Kontrakan;
+use App\Models\Setting;
 use Carbon\Carbon;
 
 if (!function_exists('getAllKontrakan')) {
@@ -196,5 +197,35 @@ if (!function_exists('nominal')) {
     function nominal($angka)
     {
         return number_format($angka, 0, ',', '.');
+    }
+}
+
+if (!function_exists('applikasi')) {
+    /**
+     * Get model setting
+     *
+     * @return \App\Models\Aplikasi
+     */
+    function applikasi($value)
+    {
+        // Ambil semua setting yang dibutuhkan hanya sekali
+        $settings = Setting::whereIn('key', ['logo', 'nama_aplikasi', 'token', 'nowa', 'format_tagihan'])->get()->keyBy('key');
+
+        // Inisialisasi array $data dengan nilai-nilai yang diambil
+        $data = [
+            'logo' => $settings->get('logo'),
+            'nama_aplikasi' => $settings->get('nama_aplikasi'),
+            'token' => $settings->get('token'),
+            'nowa' => $settings->get('nowa'),
+            'format_tagihan' => $settings->get('format_tagihan'),
+        ];
+
+        // Jika parameter $value ada dan sesuai dengan key dalam array $data
+        if (array_key_exists($value, $data)) {
+            return $data[$value];
+        }
+
+        // Jika tidak ada parameter atau key tidak ditemukan, kembalikan semua data
+        return $data;
     }
 }

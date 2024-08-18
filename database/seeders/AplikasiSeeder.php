@@ -14,8 +14,10 @@ class AplikasiSeeder extends Seeder
     public function run(): void
     {
         Aplikasi::create([
-            'nama_aplikasi' => 'Catat Biz',
-            'nama_perusahaan' => 'Catat Biz',
+            'nama_aplikasi' => 'Catat.biz',
+            'nowa' => '123456789',
+            'token' => '123456789',
+            'format_tagihan' => 'Bayar tagihan dong {name} ke {var1}',
             'logo' => 'catatbiz.png',
         ]);
     }

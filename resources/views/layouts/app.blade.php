@@ -65,8 +65,8 @@
 
         <footer class="app-footer"> <!--begin::To the end-->
             <!--begin::Copyright--> <strong>
-                Copyright &copy; 2024&nbsp;
-                <a href="https://catat.biz" class="text-decoration-none">Catat.biz</a>.
+                Copyright &copy; {{ date('Y') }}&nbsp;
+                <a href="https://catat.biz" class="text-decoration-none">{{ applikasi('nama_aplikasi')->value }}</a>.
             </strong>
             All rights reserved.
             <!--end::Copyright-->
