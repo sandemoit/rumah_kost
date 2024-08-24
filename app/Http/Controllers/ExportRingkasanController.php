@@ -819,13 +819,14 @@ class ExportRingkasanController extends Controller
                     // daftar kamar
                     'kamar' => Penyewa::all()
                         ->where('id_kontrakan', $item->id)
-                        ->map(function ($item) use ($data, $dateParam, $transaksi) {
+                        ->map(function ($item) use ($data, $dateParam) {
                             $trx = [];
                             foreach ($data['dates'] as $d) {
                                 $trx[$d] = TransaksiList::where('id_penyewa', $item->id)
+                                    ->with('transaksiMasuk', 'penyewa')
+                                    ->where('id_kamar', 'like', "%[\"" . $item->kamar->id. "\"]%")
                                     ->whereHas('transaksiMasuk', function ($query) use ($item, $d) {
                                         return $query
-                                        ->where('id_penyewa', $item->id)
                                         ->where('periode_sewa', 'LIKE', $d . "%");
                                     })->first() ?? null;
                             }
