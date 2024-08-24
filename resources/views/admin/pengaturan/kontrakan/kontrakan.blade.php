@@ -13,12 +13,28 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
+                    @php
+                        $colors = ['text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger'];
+                    @endphp
                     @foreach ($kontrakan as $key)
+                        @php
+                            // Generate a random color in hex format
+                            $randomColor = sprintf('#%06X', mt_rand(0, 0xffffff));
+
+                            // Convert the hex color to RGB
+                            [$r, $g, $b] = sscanf($randomColor, '#%02x%02x%02x');
+
+                            // Calculate the luminance (perceived brightness)
+                            $luminance = 0.299 * $r + 0.587 * $g + 0.114 * $b;
+
+                            // Determine text color based on luminance
+                            $textColor = $luminance > 186 ? '#000000' : '#FFFFFF'; // Use black if light, white if dark
+                        @endphp
                         <div class="col-lg-3 col-6">
-                            <div class="small-box text-bg-primary">
+                            <div class="small-box" style="background-color: {{ $randomColor }};">
                                 <div class="inner">
-                                    <h3>{{ $key->nama_kontrakan }}</h3>
-                                    <p>{{ $key->count_kamar }} Pintu</p>
+                                    <h3 style="color: {{ $textColor }};">{{ $key->nama_kontrakan }}</h3>
+                                    <p style="color: {{ $textColor }};">{{ $key->count_kamar }} Pintu</p>
                                 </div>
                                 <div class="icon">
                                     <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"

@@ -340,9 +340,9 @@ class TransaksiController extends Controller
 
         DB::transaction(function () use ($validatedData) {
             // Buat transaksi masuk baru
-
-            $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
-            $penyewa = Kamar::findOrFail($kamar->id_kamar);
+            $penyewa = Penyewa::whereHas('kamar', function (Builder $query) use ($validatedData) {
+                $query->where('id_kamar', $validatedData['kamarPemasukan']);
+            })->first();
 
             $transaksiMasuk = TransaksiMasuk::create([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
