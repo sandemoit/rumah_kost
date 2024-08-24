@@ -102,7 +102,7 @@ class ExportRingkasanController extends Controller
 {
     public function harian(Request $request)
     {
-        $data = $this->get_harian($request->input('date'), $request->input('book'), 'harian');
+        $data = $this->getData($request->input('date'), $request->input('book'), 'harian');
         $spreadsheet = new Spreadsheet();
         $spreadsheet->removeSheetByIndex(0);
         $profit = [];
@@ -354,6 +354,7 @@ class ExportRingkasanController extends Controller
                 $char++;
 
             }
+            $workSheet->getStyle($char . $cursorRow)->applyFromArray(TABLE_HEADER);
             $workSheet->setCellValue($char++ . $cursorRow, '=' . $sheet . '!' . $charTotalPengeluaran . $rowTotalPengeluaran[$sheet]);
             $cursorRow++;
         }
@@ -437,7 +438,7 @@ class ExportRingkasanController extends Controller
 
     public function bulanan(Request $request)
     {
-        $data = $this->get_harian($request->input('date'), $request->input('book'), 'bulanan');
+        $data = $this->getData($request->input('date'), $request->input('book'), 'bulanan');
         $spreadsheet = new Spreadsheet();
         $spreadsheet->removeSheetByIndex(0);
         $profit = [];
@@ -689,6 +690,7 @@ class ExportRingkasanController extends Controller
                 $char++;
 
             }
+            $workSheet->getStyle($char . $cursorRow)->applyFromArray(TABLE_HEADER);
             $workSheet->setCellValue($char++ . $cursorRow, '=' . $sheet . '!' . $charTotalPengeluaran . $rowTotalPengeluaran[$sheet]);
             $cursorRow++;
         }
@@ -773,7 +775,7 @@ class ExportRingkasanController extends Controller
 
 
 
-    public function get_harian($date, $code_kontrakan, $type = 'harian')
+    public function getData($date, $code_kontrakan, $type = 'harian')
     {
 
 
