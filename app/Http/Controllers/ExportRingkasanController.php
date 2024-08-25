@@ -1049,9 +1049,11 @@ class ExportRingkasanController extends Controller
 
     public function exportExcel(Request $request)
     {
+        $kontrakan = Kontrakan::select('code_kontrakan', 'nama_kontrakan')->get();
 
         $data = [
             'pageTitle' => 'Export Laporan',
+            'kontrakan' => $kontrakan
         ];
 
         return view('admin.laporan.export', $data);
