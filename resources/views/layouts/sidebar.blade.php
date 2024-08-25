@@ -80,6 +80,13 @@
                                     <p>Custom</p>
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a href="{{ route('laporan.export') }}"
+                                    class="nav-link {{ request()->segment(2) == 'export' ? 'active' : '' }}">
+                                    <i class="nav-icon bi bi-circle-fill"></i>
+                                    <p>Export Excel</p>
+                                </a>
+                            </li>
                         </ul>
                     </li>
 

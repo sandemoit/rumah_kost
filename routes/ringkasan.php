@@ -16,4 +16,6 @@ Route::middleware('auth')->group(function () {
     Route::get('/ringkasan/harian/export', [ExportRingkasanController::class, 'harian'])->name('laporan.harian.ringkasan.exportExcel');
     Route::get('/ringkasan/bulanan/export', [ExportRingkasanController::class, 'bulanan'])->name('laporan.bulanan.ringkasan.exportExcel');
     Route::get('/ringkasan/tahun/export', [LaporanTahunanController::class, 'excel_ringkasan_tahun']);
+
+    Route::get('/laporan/export', [ExportRingkasanController::class, 'exportExcel'])->name('laporan.export');
 });

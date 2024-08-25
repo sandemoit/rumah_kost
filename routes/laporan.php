@@ -34,8 +34,4 @@ Route::middleware('auth')->group(function () {
     Route::get('/laporan/custom/umum', [LaporanCustomController::class, 'custom'])->name('laporan.custom.umum');
     Route::get('/laporan/custom/aktivitas', [LaporanCustomController::class, 'aktivitas'])->name('laporan.custom.aktivitas');
     Route::get('/laporan/custom/ringkasan', [LaporanCustomController::class, 'ringkasan'])->name('laporan.custom.ringkasan');
-
-
-
-
 });
