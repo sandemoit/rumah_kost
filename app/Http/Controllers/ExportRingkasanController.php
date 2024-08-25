@@ -254,6 +254,8 @@ class ExportRingkasanController extends Controller
 
             $rowTotalPemasukan[$kontrakan] = 3;
             $rowTotalPengeluaran[$kontrakan] = 6;
+            $rangeValueCell['pemasukan'][$kontrakan] = null;
+            $rangeValueCell['pengeluaran'][$kontrakan] = null;
         }
 
         // loop every sheets
@@ -287,18 +289,19 @@ class ExportRingkasanController extends Controller
             $workSheet->getStyle($char . '2')->applyFromArray(TABLE_HEADER);
             // set row 2 hegiht
             $workSheet->getRowDimension(2)->setRowHeight(24);
-
+            
             // set data table
             $cursorRow = 3;
+            $rangeValueCell['pemasukan'][$pemasukan['nama_kontrakan']] = $pemasukan['nama_kontrakan']."!E3:";
             foreach ($pemasukan['kamar'] as $p) {
                 $workSheet->getRowDimension($cursorRow)->setRowHeight(17);
                 $workSheet->getStyle("A$cursorRow:D$cursorRow")->applyFromArray(TABLE_BODY);
-
+                
                 $workSheet->setCellValue('A' . $cursorRow, $p['detail_kamar']->nama_kamar);
                 $workSheet->setCellValue('B' . $cursorRow, $p['detail_penyewa']->nama_penyewa);
                 $workSheet->setCellValue('C' . $cursorRow, dateIndo($p['detail_penyewa']->tanggal_masuk));
                 $workSheet->setCellValue('D' . $cursorRow, $p['detail_kamar']->harga_kamar);
-
+                
                 $char = 'E';
                 $prevChr = '';
                 foreach ($p['detail_transaksi'] as $d) {
@@ -314,6 +317,7 @@ class ExportRingkasanController extends Controller
 
                 $cursorRow++;
             }
+            $rangeValueCell['pemasukan'][$pemasukan['nama_kontrakan']] .= $cell;
             $workSheet->setCellValue('A' . $cursorRow, 'Total')->mergeCells('A' . $cursorRow . ':D' . $cursorRow);
             $char = 'E';
             $workSheet->getStyle("A$cursorRow:D$cursorRow")->applyFromArray(TABLE_FOOTER);
@@ -331,7 +335,6 @@ class ExportRingkasanController extends Controller
             $cursorRow += 2;
             $cur[$pemasukan['nama_kontrakan']] = $cursorRow;
         }
-
         // pengeluaran
         // prevent cursor out of bound
         foreach ($data['kontrakan'] as $kontrakan) {
@@ -366,6 +369,7 @@ class ExportRingkasanController extends Controller
 
             // set data table
             $cur[$pengeluaran['nama_kontrakan']]++;
+            $rangeValueCell['pengeluaran'][$pengeluaran['nama_kontrakan']] = $pengeluaran['nama_kontrakan'].'!E'.$cur[$pengeluaran['nama_kontrakan']].':';
             foreach ($pengeluaran['transaksi'] as $p) {
 
                 $workSheet->setCellValue('A' . $cur[$pengeluaran['nama_kontrakan']], $p['kamar']);
@@ -390,6 +394,7 @@ class ExportRingkasanController extends Controller
                 $workSheet->getStyle($char . $cur[$pengeluaran['nama_kontrakan']])->applyFromArray(TABLE_HEADER);
                 $cur[$pengeluaran['nama_kontrakan']]++;
             }
+            $rangeValueCell['pengeluaran'][$pengeluaran['nama_kontrakan']] .= $cell;
             $char = 'E';
             $workSheet->setCellValue('A' . $cur[$pengeluaran['nama_kontrakan']], 'Total');
             $workSheet->mergeCells('A' . $cur[$pengeluaran['nama_kontrakan']] . ':D' . $cur[$pengeluaran['nama_kontrakan']]);
@@ -404,6 +409,7 @@ class ExportRingkasanController extends Controller
             $workSheet->setCellValue($char . $cur[$pengeluaran['nama_kontrakan']], '=SUM(' . $char . ($cur[$pengeluaran['nama_kontrakan']] - count($pengeluaran['transaksi'])) . ':' . $char . ($cur[$pengeluaran['nama_kontrakan']] - 1) . ')');
             $workSheet->getStyle($char . $cur[$pengeluaran['nama_kontrakan']])->applyFromArray(TABLE_FOOTER);
         }
+
 
         $sheetNames = $spreadsheet->getSheetNames();
         // sum sheet
@@ -430,6 +436,7 @@ class ExportRingkasanController extends Controller
         $cursorRow = 3;
         foreach ($sheetNames as $sheet) {
             $workSheet->setCellValue('B' . $cursorRow, $sheet);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($sheet) { return $query->where('nama_kontrakan', $sheet); })->count());
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
             $char = 'D';
             $charTotalPemasukan = 'E';
@@ -447,8 +454,8 @@ class ExportRingkasanController extends Controller
         }
 
         // set footer table pemasukan
-        $workSheet->setCellValue('B' . $cursorRow, 'T O T A L')
-            ->mergeCells('B' . $cursorRow . ':C' . $cursorRow);
+        $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C3:C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_FOOTER);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -483,6 +490,7 @@ class ExportRingkasanController extends Controller
         $startRowPengeluaran = $cursorRow;
         foreach ($sheetNames as $sheet) {
             $workSheet->setCellValue('B' . $cursorRow, $sheet);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($sheet) { return $query->where('nama_kontrakan', $sheet); })->count());
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
             $char = 'D';
             $charTotalPengeluaran = 'E';
@@ -498,9 +506,9 @@ class ExportRingkasanController extends Controller
             $cursorRow++;
         }
 
-        // set footer table pemasukan
+        // set footer table pengeluaran
         $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
-        $workSheet->mergeCells('B' . $cursorRow . ':C' . $cursorRow);
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C' . $startRowPengeluaran . ':C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_FOOTER);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -538,6 +546,7 @@ class ExportRingkasanController extends Controller
         foreach ($profit as $key => $value) {
             $workSheet->setCellValue('B' . $cursorRow, $key);
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($key) { return $query->where('nama_kontrakan', $key); })->count());
             $char = 'D';
             $prevChar = '';
             foreach ($value as $pr) {
@@ -553,7 +562,7 @@ class ExportRingkasanController extends Controller
         };
         //set footer table profit
         $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
-        $workSheet->mergeCells('B' . $cursorRow . ':C' . $cursorRow);
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C' . $startRowProfit . ':C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_FOOTER);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -642,8 +651,8 @@ class ExportRingkasanController extends Controller
                     $char++;
                 }
                 $workSheet->setCellValue($char . $cursorRow, '=SUM(E' . $cursorRow . ':' . $prevChr . $cursorRow . ')');
-                $workSheet->getStyle($char . $cursorRow)->applyFromArray(TABLE_HEADER);
-
+                $workSheet->getStyle($char . $cursorRow)->applyFromArray(TABLE_HEADER); 
+                
                 $cursorRow++;
             }
 
@@ -672,7 +681,7 @@ class ExportRingkasanController extends Controller
                 $cur[$kontrakan] = 6;
             }
         }
-
+        
         foreach ($data['per_kontrakan']['pengeluaran'] as $pengeluaran) {
             $workSheet = $spreadsheet->getSheetByName($pengeluaran['nama_kontrakan']);
 
@@ -712,7 +721,7 @@ class ExportRingkasanController extends Controller
                 foreach ($data['dates'] as $d) {
                     $cell = $char . $cur[$pengeluaran['nama_kontrakan']];
                     $workSheet->getStyle($cell)->applyFromArray(TABLE_BODY);
-                    if ($p['tanggal_transaksi'] == $d) {
+                    if ( str_starts_with($p['tanggal_transaksi'], $d)) {
                         $workSheet->setCellValue($cell, $p['nominal']);
                     } else {
                         $workSheet->setCellValue($cell, '-');
@@ -720,6 +729,7 @@ class ExportRingkasanController extends Controller
                     $prevChr = $char;
                     $char++;
                 }
+                
                 $workSheet->setCellValue($char . $cur[$pengeluaran['nama_kontrakan']], '=SUM(E' . $cur[$pengeluaran['nama_kontrakan']] . ':' . $prevChr . $cur[$pengeluaran['nama_kontrakan']] . ')');
                 $workSheet->getStyle($char . $cur[$pengeluaran['nama_kontrakan']])->applyFromArray(TABLE_HEADER_PENGELUARAN);
                 $cur[$pengeluaran['nama_kontrakan']]++;
@@ -771,6 +781,7 @@ class ExportRingkasanController extends Controller
         foreach ($sheetNames as $sheet) {
             $workSheet->getRowDimension($cursorRow)->setRowHeight(20);
             $workSheet->setCellValue('B' . $cursorRow, $sheet);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($sheet) { return $query->where('nama_kontrakan', $sheet); })->count());
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
             $char = 'D';
             $charTotalPemasukan = 'E';
@@ -790,6 +801,7 @@ class ExportRingkasanController extends Controller
         // set footer table pemasukan
         $workSheet->getRowDimension($cursorRow)->setRowHeight(22);
         $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C3:C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_SUM_PEMASUKAN);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -828,6 +840,7 @@ class ExportRingkasanController extends Controller
         foreach ($sheetNames as $sheet) {
             $workSheet->getRowDimension($cursorRow, $sheet)->setRowHeight(20);
             $workSheet->setCellValue('B' . $cursorRow, $sheet);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($sheet) { return $query->where('nama_kontrakan', $sheet); })->count());
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
             $char = 'D';
             $charTotalPengeluaran = 'E';
@@ -846,6 +859,7 @@ class ExportRingkasanController extends Controller
         // set footer table pengeluaran
         $workSheet->getRowDimension($cursorRow)->setRowHeight(22);
         $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C' . $startRowPengeluaran . ':C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_SUM_PENGELUARAN);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -884,6 +898,7 @@ class ExportRingkasanController extends Controller
         foreach ($profit as $key => $value) {
             $workSheet->getRowDimension($cursorRow, $key)->setRowHeight(20);
             $workSheet->setCellValue('B' . $cursorRow, $key);
+            $workSheet->setCellValue('C' . $cursorRow, Kamar::whereHas('kontrakan', function($query) use ($key) { return $query->where('nama_kontrakan', $key); })->count());
             $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_BODY);
             $char = 'D';
             $prevChar = '';
@@ -901,6 +916,7 @@ class ExportRingkasanController extends Controller
         //set footer table profit
         $workSheet->getRowDimension($cursorRow)->setRowHeight(20);
         $workSheet->setCellValue('B' . $cursorRow, 'T O T A L');
+        $workSheet->setCellValue('C' . $cursorRow, '=SUM(C' . $startRowProfit . ':C' . ($cursorRow - 1) . ')');
         $workSheet->getStyle('B' . $cursorRow . ':C' . $cursorRow)->applyFromArray(TABLE_SUM_PROFIT);
         $char = 'D';
         foreach ($data['dates'] as $p) {
@@ -1000,7 +1016,7 @@ class ExportRingkasanController extends Controller
             ->where('tipe', 'keluar')
             ->groupBy('code_kontrakan')
             ->map(function ($item) use ($data, $date, $code_kontrakan) {
-
+              
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
                     'transaksi' => $item->map(function ($item) {
@@ -1015,7 +1031,6 @@ class ExportRingkasanController extends Controller
                 ];
             })
             ->values();
-
 
         return collect($data);
     }

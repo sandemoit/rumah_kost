@@ -205,7 +205,7 @@ class LaporanCustomController extends Controller
                     'id' => $item[0]->id,
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
                     'total' => $item->sum('nominal'),
-                    'transaksi' => $item->pluck('transaksiMasuk'),
+                    'transaksi' => $item->where('tipe', 'masuk')->pluck('transaksiMasuk'),
 
                 ];
             })->values();
@@ -276,6 +276,7 @@ class LaporanCustomController extends Controller
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
                             $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
                         })
+                        ->where('tipe', 'keluar')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $t->sum('nominal') ?? 0;
                 }
@@ -294,7 +295,8 @@ class LaporanCustomController extends Controller
             $t = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
                     $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
-                });
+                })
+                ->where('tipe', 'keluar');
             if (request('book') !== 'all' && request('book') !== null) {
                 $t = $t->where('code_kontrakan', $request->book);
             }
@@ -312,6 +314,7 @@ class LaporanCustomController extends Controller
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
                             $query->where('periode_sewa', 'like', Carbon::parse($date)->format('Y-m-d') . "%");
                         })
+                        ->where('tipe', 'masuk')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     if (request('book') !== 'all' && request('book') !== null) {
                         $t = $t->where('code_kontrakan', $item[0]->code_kontrakan);
@@ -333,7 +336,8 @@ class LaporanCustomController extends Controller
             $t = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->where('periode_sewa', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
-                });
+                })
+                ->where('tipe', 'masuk');
             if (request('book') !== 'all' && request('book') !== null) {
                 $t = $t->where('code_kontrakan', $request->book);
             }
@@ -352,11 +356,13 @@ class LaporanCustomController extends Controller
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
                             $query->where('periode_sewa', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
                         })
+                        ->where('tipe', 'masuk')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $tKeluar = TransaksiList::with(['transaksiKeluar'])
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                            $query->where('tanggal_transaksi', 'like', $date . '%');
+                            $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
                         })
+                        ->where('tipe', 'keluar')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
                 }
@@ -374,11 +380,13 @@ class LaporanCustomController extends Controller
             $tMasuk = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->where('periode_sewa', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
-                });
+                })
+                ->where('tipe', 'masuk');
             $tKeluar = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->where('tanggal_transaksi', 'like', $date . '%');
-                });
+                    $query->where('tanggal_transaksi', 'like', Carbon::parse($date)->format('Y-m-d') . '%');
+                })
+                ->where('tipe', 'keluar');
             if (request('book') !== 'all' && request('book') !== null) {
                 $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
                 $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
