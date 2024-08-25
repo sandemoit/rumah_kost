@@ -184,10 +184,10 @@ class LaporanController extends Controller
 
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('periode_sewa', Carbon::parse($date));
+                $query->where('periode_sewa', Carbon::parse($date)->format('Y-m-d'));
             })
             ->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', Carbon::parse($date));
+                $query->where('tanggal_transaksi', Carbon::parse($date));
             })
             ->get();
         if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
@@ -209,12 +209,12 @@ class LaporanController extends Controller
         $data['pemasukans'] = $transaksi
             ->where('tipe', 'masuk')
             ->groupBy('code_kontrakan')
-            ->map(function ($item) {
-                return [
+            ->map(function ($item) use ($date) {
+                 return [
                     'id' => $item[0]->id,
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
                     'total' => $item->sum('nominal'),
-                    'transaksi' => $item->pluck('transaksiMasuk'),
+                    'transaksi' => $item->where('periode_sewa', Carbon::parse($date)->format('Y-m-d'))->pluck('transaksiMasuk'),
 
                 ];
             })->values();

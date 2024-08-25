@@ -269,6 +269,7 @@ class LaporanTahunanController extends Controller
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
                             $query->where('tanggal_transaksi', 'like', $date . '%');
                         })
+                        ->where('tipe', 'keluar')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $t->sum('nominal') ?? 0;
                 }
@@ -286,7 +287,8 @@ class LaporanTahunanController extends Controller
             $t = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
                     $query->where('tanggal_transaksi', 'like', $date . '%');
-                });
+                })
+                ->where('tipe', 'keluar');
             if (request('book') !== 'all' && request('book') !== null) {
                 $t = $t->where('code_kontrakan', $request->book);
             }
@@ -303,6 +305,7 @@ class LaporanTahunanController extends Controller
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
                             $query->where('periode_sewa', 'like', $date . "%");
                         })
+                        ->where('tipe', 'masuk')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     if (request('book') !== 'all' && request('book') !== null) {
                         $t = $t->where('code_kontrakan', $item[0]->code_kontrakan);
@@ -324,7 +327,8 @@ class LaporanTahunanController extends Controller
             $t = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->where('periode_sewa', 'like', $date . '%');
-                });
+                })
+                ->where('tipe', 'masuk');
             if (request('book') !== 'all' && request('book') !== null) {
                 $t = $t->where('code_kontrakan', $request->book);
             }
@@ -340,11 +344,13 @@ class LaporanTahunanController extends Controller
                         ->whereHas('transaksiMasuk', function ($query) use ($date) {
                             $query->where('periode_sewa', 'like', $date . '%');
                         })
+                        ->where('tipe', 'masuk')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $tKeluar = TransaksiList::with(['transaksiKeluar'])
                         ->whereHas('transaksiKeluar', function ($query) use ($date) {
                             $query->where('tanggal_transaksi', 'like', $date . '%');
                         })
+                        ->where('tipe', 'keluar')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $tMasuk->sum('nominal') - $tKeluar->sum('nominal') ?? 0;
                 }
@@ -362,11 +368,13 @@ class LaporanTahunanController extends Controller
             $tMasuk = TransaksiList::with(['transaksiMasuk'])
                 ->whereHas('transaksiMasuk', function ($query) use ($date) {
                     $query->where('periode_sewa', 'like', $date . '%');
-                });
+                })
+                ->where('tipe', 'masuk');
             $tKeluar = TransaksiList::with(['transaksiKeluar'])
                 ->whereHas('transaksiKeluar', function ($query) use ($date) {
                     $query->where('tanggal_transaksi', 'like', $date . '%');
-                });
+                })
+                ->where('tipe', 'keluar');
             if (request('book') !== 'all' && request('book') !== null) {
                 $tMasuk = $tMasuk->where('code_kontrakan', $request->book);
                 $tKeluar = $tKeluar->where('code_kontrakan', $request->book);
