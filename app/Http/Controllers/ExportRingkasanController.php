@@ -971,8 +971,10 @@ class ExportRingkasanController extends Controller
         if ($code_kontrakan == 'all') {
             $data['kontrakan'] = Kontrakan::all()->pluck('nama_kontrakan');
         } else {
-            $data['kontrakan'] = Kontrakan::where('code_kontrakan', $code_kontrakan)->pluck('nama_kontrakan')->toArray();
+            $data['kontrakan'] = Kontrakan::where('code_kontrakan', $code_kontrakan)->pluck('nama_kontrakan');
         }
+
+
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->whereHas('transaksiMasuk', function ($query) use ($dateParam) {
                 $query->where('periode_sewa', 'like', $dateParam . "%");
@@ -984,8 +986,11 @@ class ExportRingkasanController extends Controller
         if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
             $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
         }
-
-        $data['per_kontrakan']['pemasukan'] = Kontrakan::all()
+        $kontrakan = Kontrakan::all();
+        if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
+            $kontrakan = $kontrakan->where('code_kontrakan', $code_kontrakan);
+        }
+        $data['per_kontrakan']['pemasukan'] = $kontrakan
             ->map(function ($item) use ($data, $dateParam, $transaksi) {
                 return [
                     //nama kontrakan
@@ -1024,6 +1029,10 @@ class ExportRingkasanController extends Controller
                 ];
             })
             ->values();
+
+        if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
+            $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
+        }
         $data['per_kontrakan']['pengeluaran'] = $transaksi
             ->where('tipe', 'keluar')
             ->groupBy('code_kontrakan')
