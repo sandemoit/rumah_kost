@@ -46,9 +46,6 @@
                     <div class="card">
                         <div class="card-header" id="cardTitle">
                             <i class="bi bi-journal-text"></i> Semua Buku Kas
-                            <a id="export" href="{{route('laporan.bulanan.ringkasan.exportExcel')}}" id="exportToExcel" class="float-end" title="Export to Excel">
-                                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export
-                            </a>
                         </div>
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
@@ -119,13 +116,13 @@
             </div>
         </div>
     </main>
-    @endsection
-    @push('custom-js')
+@endsection
+@push('custom-js')
     {{-- definie config --}}
-    
+
     <input type="hidden" id="endpoint" value="{{ env('APP_URL') }}">
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
     <script src="{{ asset('assets/js/datepicker.js') }}"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="{{ asset('assets/js/laporan/bulanan/ringkasan.js') }}"></script>
-    @endpush
+@endpush
