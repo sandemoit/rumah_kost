@@ -13,55 +13,57 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
-                    @php
-                        $colors = ['text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger'];
-                    @endphp
-                    @foreach ($kontrakan as $key)
-                        @php
-                            // Generate a random color in hex format
-                            $randomColor = sprintf('#%06X', mt_rand(0, 0xffffff));
+                    @if (count($kontrakan) == 0)
+                        <div class="alert alert-warning">Belum ada data kontrakan</div>
+                    @else
+                        @foreach ($kontrakan as $key)
+                            @php
+                                $colors = ['text-bg-primary', 'text-bg-success', 'text-bg-warning', 'text-bg-danger'];
+                                // Generate a random color in hex format
+                                $randomColor = sprintf('#%06X', mt_rand(0, 0xffffff));
 
-                            // Convert the hex color to RGB
-                            [$r, $g, $b] = sscanf($randomColor, '#%02x%02x%02x');
+                                // Convert the hex color to RGB
+                                [$r, $g, $b] = sscanf($randomColor, '#%02x%02x%02x');
 
-                            // Calculate the luminance (perceived brightness)
-                            $luminance = 0.299 * $r + 0.587 * $g + 0.114 * $b;
+                                // Calculate the luminance (perceived brightness)
+                                $luminance = 0.299 * $r + 0.587 * $g + 0.114 * $b;
 
-                            // Determine text color based on luminance
-                            $textColor = $luminance > 186 ? '#000000' : '#FFFFFF'; // Use black if light, white if dark
-                        @endphp
-                        <div class="col-lg-3 col-6">
-                            <div class="small-box" style="background-color: {{ $randomColor }};">
-                                <div class="inner">
-                                    <h3 style="color: {{ $textColor }};">{{ $key->nama_kontrakan }}</h3>
-                                    <p style="color: {{ $textColor }};">{{ $key->count_kamar }} Pintu</p>
-                                </div>
-                                <div class="icon">
-                                    <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
-                                        xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                        <path
-                                            d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13zm7 7v-5h4v5h-4zm2-15.586 6 6V15l.001 5H16v-5c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v5H6v-9.586l6-6z">
-                                        </path>
-                                    </svg>
-                                </div>
-                                <div class="small-box-footer">
-                                    <a href="{{ route('kontrakan.detail', Str::slug($key->code_kontrakan)) }}"
-                                        class="btn btn-sm btn-primary me-2">
-                                        kamar <i class="bi bi-arrow-right"></i>
-                                    </a>
-                                    <a href="javascript:void(0)" data-bs-toggle="modal"
-                                        data-bs-target="#editKontrakan_{{ $key->id }}"
-                                        class="btn btn-sm btn-warning me-2">
-                                        Ubah <i class="bi bi-pencil-square"></i>
-                                    </a>
-                                    <a href="{{ route('kontrakan.destroy', $key->id) }}" class="btn btn-sm btn-danger"
-                                        onclick="confirmDelete(event, this)">
-                                        Hapus <i class="bi bi-trash"></i>
-                                    </a>
+                                // Determine text color based on luminance
+                                $textColor = $luminance > 186 ? '#000000' : '#FFFFFF'; // Use black if light, white if dark
+                            @endphp
+                            <div class="col-lg-3 col-6">
+                                <div class="small-box" style="background-color: {{ $randomColor }};">
+                                    <div class="inner">
+                                        <h3 style="color: {{ $textColor }};">{{ $key->nama_kontrakan }}</h3>
+                                        <p style="color: {{ $textColor }};">{{ $key->count_kamar }} Pintu</p>
+                                    </div>
+                                    <div class="icon">
+                                        <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                            <path
+                                                d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13zm7 7v-5h4v5h-4zm2-15.586 6 6V15l.001 5H16v-5c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v5H6v-9.586l6-6z">
+                                            </path>
+                                        </svg>
+                                    </div>
+                                    <div class="small-box-footer">
+                                        <a href="{{ route('kontrakan.detail', Str::slug($key->code_kontrakan)) }}"
+                                            class="btn btn-sm btn-primary me-2">
+                                            kamar <i class="bi bi-arrow-right"></i>
+                                        </a>
+                                        <a href="javascript:void(0)" data-bs-toggle="modal"
+                                            data-bs-target="#editKontrakan_{{ $key->id }}"
+                                            class="btn btn-sm btn-warning me-2">
+                                            Ubah <i class="bi bi-pencil-square"></i>
+                                        </a>
+                                        <a href="{{ route('kontrakan.destroy', $key->id) }}" class="btn btn-sm btn-danger"
+                                            onclick="confirmDelete(event, this)">
+                                            Hapus <i class="bi bi-trash"></i>
+                                        </a>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    @endif
                 </div> <!--end::Row-->
             </div> <!--end::Container-->
         </div>

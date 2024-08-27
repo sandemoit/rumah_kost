@@ -46,7 +46,6 @@ class SendMonthlyReminders extends Command
 
             // Tanggal jatuh tempo untuk bulan ini
             $dueDate = $today->startOfMonth()->addDays($day - 1);
-            dd($dueDate);
 
             // Jika tanggal jatuh tempo sudah lewat, gunakan bulan depan
             if ($today->greaterThan($dueDate)) {

@@ -18,7 +18,8 @@ class TransaksiList extends Model
         'code_kontrakan',
         'id_kamar',
         'id_penyewa',
-        'id_tipe',
+        'id_keluar',
+        'id_masuk',
         'tipe',
         'nominal',
         'saldo',
@@ -27,12 +28,12 @@ class TransaksiList extends Model
 
     public function transaksiMasuk()
     {
-        return $this->hasOne(TransaksiMasuk::class, 'id', 'id_tipe');
+        return $this->hasOne(TransaksiMasuk::class, 'id', 'id_masuk');
     }
 
     public function transaksiKeluar()
     {
-        return $this->hasOne(TransaksiKeluar::class, 'id', 'id_tipe');
+        return $this->hasOne(TransaksiKeluar::class, 'id', 'id_keluar');
     }
 
     public function kamar(): BelongsTo

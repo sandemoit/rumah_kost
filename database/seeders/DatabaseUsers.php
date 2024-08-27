@@ -19,13 +19,14 @@ class DatabaseUsers extends Seeder
             'email' => 'admin@gmail.com',
             'password' => Hash::make('admin'),
             'role' => 'admin',
+            'image' => 'default.png'
         ]);
 
         User::create([
-            'name' => 'Pegawai',
-            'email' => 'pegawai@gmail.com',
-            'password' => Hash::make('pegawai'),
-            'role' => 'pegawai',
+            'name' => 'Karyawan',
+            'email' => 'karyawan@gmail.com',
+            'password' => Hash::make('karyawan'),
+            'role' => 'karyawan',
         ]);
     }
 }

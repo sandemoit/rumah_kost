@@ -22,6 +22,6 @@ class TransaksiMasuk extends Model
 
     public function transaksiList(): BelongsTo
     {
-        return $this->belongsTo(TransaksiList::class, 'id', 'id_tipe');
+        return $this->belongsTo(TransaksiList::class, 'id', 'id_masuk');
     }
 }

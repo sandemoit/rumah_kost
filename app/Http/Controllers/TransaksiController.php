@@ -52,7 +52,7 @@ class TransaksiController extends Controller
             // Periksa setiap transaksi untuk menentukan apakah periode sewa telah mencapai tanggal putus kontrak
             $periodeSewaTerakhir = null;
             foreach ($transaksiList as $transaksi) {
-                $transaksiMasuk = TransaksiMasuk::where('id', $transaksi->id_tipe)->latest('periode_sewa')->first();
+                $transaksiMasuk = TransaksiMasuk::where('id', $transaksi->id_masuk)->latest('periode_sewa')->first();
                 if ($transaksiMasuk) {
                     $periodeSewa = Carbon::parse($transaksiMasuk->periode_sewa)->startOfMonth();
                     $periodeSewaTerakhir = $periodeSewa;
@@ -139,7 +139,7 @@ class TransaksiController extends Controller
         $hargaKamar = Kamar::find($id)->harga_kamar;
 
         // Jika tidak ada transaksi, periksa apakah ada penyewa aktif di kamar tersebut
-        if (!$transaksi || !$transaksi->id_tipe) {
+        if (!$transaksi || !$transaksi->id_masuk) {
             $penyewa = Penyewa::where('id_kamar', $id)->where('status', 'aktif')->first();
 
             if ($penyewa) {
@@ -211,11 +211,11 @@ class TransaksiController extends Controller
             ->where('id_penyewa', $penyewaKeluar->id)
             ->where('code_kontrakan', $kontrakan->code_kontrakan)
             ->where('tipe', 'masuk')
-            ->latest('id_tipe')
+            ->latest('id_masuk')
             ->first();
 
-        // Jika tidak ada transaksi atau tidak ada id_tipe, tentukan bulan tunggakan pertama
-        if (empty($transaksi) || empty($transaksi->id_tipe)) {
+        // Jika tidak ada transaksi atau tidak ada id_masuk, tentukan bulan tunggakan pertama
+        if (empty($transaksi) || empty($transaksi->id_masuk)) {
             if (!empty($penyewaKeluar)) {
                 $periodeSewa = Carbon::parse($penyewaKeluar->tanggal_masuk)->format('Y-m-d');
 
@@ -358,7 +358,7 @@ class TransaksiController extends Controller
                 'code_kontrakan' => $validatedData['codeKontrakan'],
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'id_penyewa' => $penyewa->id,
-                'id_tipe' => $transaksiMasuk->id,
+                'id_masuk' => $transaksiMasuk->id,
                 'tipe' => 'masuk',
                 'nominal' => preg_replace('/\D/', '', $validatedData['nilaiSewa']),
                 'created_by' => Auth::user()->id,
@@ -410,7 +410,7 @@ class TransaksiController extends Controller
                     'code_transaksi' => $code_transaksi,
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
-                    'id_tipe' => $transaksiKeluar->id,
+                    'id_keluar' => $transaksiKeluar->id,
                     'id_penyewa' => 0,
                     'tipe' => 'keluar',
                     'nominal' => $validatedData['nominalPengeluaran'],
@@ -451,7 +451,7 @@ class TransaksiController extends Controller
             $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
             $penyewa = Kamar::findOrFail($kamar->id_kamar);
 
-            $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_tipe);
+            $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_masuk);
             $transaksiMasuk->update([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
                 'deskripsi' => $validatedData['deskripsi'],
@@ -491,7 +491,7 @@ class TransaksiController extends Controller
             $transaksi = TransaksiList::findOrFail($idTrx);
             $nominalKeluar = preg_replace('/\D/', '', $validatedData['nominalPengeluaran']);
 
-            $transaksiKeluar = TransaksiKeluar::findOrFail($transaksi->id_tipe);
+            $transaksiKeluar = TransaksiKeluar::findOrFail($transaksi->id_keluar);
             $transaksiKeluar->update([
                 'tanggal_transaksi' => $validatedData['tanggalPengeluaran'],
                 'deskripsi' => $validatedData['deskripsiPengeluaran'],
@@ -530,7 +530,7 @@ class TransaksiController extends Controller
             $transaksi = TransaksiList::where('id', $id)->firstOrFail();
 
             TransaksiList::where('id', $id)->delete();
-            TransaksiMasuk::findOrFail($transaksi->id_tipe)->delete();
+            TransaksiMasuk::findOrFail($transaksi->id_masuk)->delete();
 
             return response()->json(['status' => 'success', 'message' => 'Transaksi masuk berhasil dihapus.']);
         } catch (\Exception $e) {
@@ -544,7 +544,7 @@ class TransaksiController extends Controller
             $transaksi = TransaksiList::where('id', $id)->firstOrFail();
 
             TransaksiList::where('id', $id)->delete();
-            TransaksiKeluar::findOrFail($transaksi->id_tipe)->delete();
+            TransaksiKeluar::findOrFail($transaksi->id_keluar)->delete();
 
             return response()->json(['status' => 'success', 'message' => 'Transaksi keluar berhasil dihapus.']);
         } catch (\Exception $e) {
