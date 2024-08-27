@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kamar;
 use App\Models\Kontrakan;
 use App\Models\TransaksiList;
 use Carbon\Carbon;
@@ -282,7 +283,7 @@ class LaporanCustomController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => $item->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'total' => $item->sum('nominal'),
                     'transaksi' => $trx,
                 ];
@@ -323,7 +324,7 @@ class LaporanCustomController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => $item->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'total' => $item->sum('nominal'),
                     'transaksi' => $trx,
                 ];
@@ -368,7 +369,7 @@ class LaporanCustomController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => $item->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'transaksi' => $trx,
                 ];
             })
