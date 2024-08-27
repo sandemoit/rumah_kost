@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Kamar;
 use App\Models\Kontrakan;
 use App\Models\TransaksiList;
 use Carbon\Carbon;
@@ -299,13 +300,12 @@ class LaporanBulananController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => collect($trx)->where(function($item){ return $item>0;})->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'total' => collect($trx)->sum(),
                     'transaksi' => $trx,
                 ];
             })
             ->values();
-
 
         $data['grandTotalPengeluarans'] = [];
         foreach ($data['dates'] as $date) {
@@ -340,7 +340,7 @@ class LaporanBulananController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => $item->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'total' => $item->sum('nominal'),
                     'transaksi' => $trx,
                 ];
@@ -385,7 +385,7 @@ class LaporanBulananController extends Controller
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                    'qty' => $item->count(),
+                    'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
                     'transaksi' => $trx,
                 ];
             })
