@@ -51,7 +51,7 @@
                                         <label class="form-label">Format Pesan Tagihan</label>
                                         <a href="javascript:void(0);" class="text-danger" data-bs-toggle="tooltip"
                                             data-bs-placement="top" data-bs-custom-class="custom-tooltip"
-                                            data-bs-title="Gunakan {name} = Nama Penyewa, {var1} = Nominal Tagihan">
+                                            data-bs-title="Gunakan {name} = Nama Penyewa, {var1} = Nominal Tagihan, {var2} = Nama Kamar">
                                             <i class="bi bi-info-circle-fill"></i>
                                         </a>
                                         <textarea class="form-control @error('format_tagihan') is-invalid @enderror" name="format_tagihan" id="format_tagihan"

@@ -8,5 +8,5 @@ use Illuminate\Support\Facades\Artisan;
 //     $this->comment(Inspiring::quote());
 // })->purpose('Display an inspiring quote')->hourly();
 
-Schedule::command('reminders:send')->everyMinute();
+Schedule::command('reminders:send')->daily();
 // Schedule::command('backup:database')->daily();
