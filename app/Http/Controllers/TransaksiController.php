@@ -448,9 +448,6 @@ class TransaksiController extends Controller
             $transaksi = TransaksiList::findOrFail($idTrx);
             $nilaiSewa = preg_replace('/\D/', '', $validatedData['nilaiSewa']);
 
-            $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
-            $penyewa = Kamar::findOrFail($kamar->id_kamar);
-
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_masuk);
             $transaksiMasuk->update([
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
@@ -460,6 +457,12 @@ class TransaksiController extends Controller
                 'updated_at' => now(),
             ]);
 
+            $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
+            if (!$kamar) {
+                return response()->json(['status' => 'error', 'message' => 'Penyewa tidak ditemukan.'], 404);
+            }
+
+            $penyewa = Kamar::findOrFail($kamar->id_kamar);
             $transaksi->update([
                 'id_penyewa' => $penyewa->id,
                 'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
