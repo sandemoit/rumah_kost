@@ -450,23 +450,22 @@ class TransaksiController extends Controller
 
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_masuk);
             $transaksiMasuk->update([
-                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
+                'id_kamar' => $validatedData['kamarPemasukan'],
                 'deskripsi' => $validatedData['deskripsi'],
                 'tanggal_transaksi' => $validatedData['tanggalTerima'],
                 'periode_sewa' => $validatedData['periodeSewa'],
                 'updated_at' => now(),
             ]);
 
-            $penyewa = Penyewa::findOrFail($validatedData['kamarPemasukan']);
-            $kamar = $penyewa->kamar;
-            // Memeriksa apakah id kamar dari penyewa sesuai dengan kamar yang dimasukkan dalam request
-            if ($kamar->id !== $penyewa->id_kamar) {
-                return response()->json(['status' => 'error', 'message' => 'Kamar tidak sesuai dengan penyewa.'], 422);
-            }
+            // Cari penyewa berdasarkan ID kamar
+            $penyewa = Penyewa::where('id_kamar', $validatedData['kamarPemasukan'])
+                ->where('status', 'aktif') // Pastikan penyewa yang aktif
+                ->firstOrFail();
 
+            // Update data transaksi dengan ID penyewa dan kamar yang terkait
             $transaksi->update([
                 'id_penyewa' => $penyewa->id,
-                'id_kamar' => json_encode([$kamar->id]),
+                'id_kamar' => $validatedData['kamarPemasukan'],
                 'nominal' => $nilaiSewa,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
