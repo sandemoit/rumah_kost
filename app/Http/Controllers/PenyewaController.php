@@ -28,10 +28,13 @@ class PenyewaController extends Controller
         $kamarTerisi = Penyewa::where('status', 'aktif')->pluck('id_kamar')->toArray();
 
         $keyword = $request->input('search');
-        $penyewa = Penyewa::when($keyword, function ($query, $keyword) {
+        $penyewa = Penyewa::with('kamar')->when($keyword, function ($query, $keyword) {
             return $query->where(function ($query) use ($keyword) {
                 $query->where('nama_penyewa', 'LIKE', "%$keyword%")
-                    ->orWhere('nomor_wa', 'LIKE', "%$keyword%");
+                    ->orWhere('nomor_wa', 'LIKE', "%$keyword%")
+                    ->orWhereHas('kamar', function ($query) use ($keyword) {
+                        $query->where('nama_kamar', 'LIKE', "%$keyword%");
+                    });
             });
         })->paginate(10);
 
