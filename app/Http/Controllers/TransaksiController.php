@@ -10,9 +10,11 @@ use App\Models\TransaksiList;
 use App\Models\TransaksiMasuk;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Json;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Js;
 
 class TransaksiController extends Controller
 {
@@ -450,7 +452,7 @@ class TransaksiController extends Controller
 
             $transaksiMasuk = TransaksiMasuk::findOrFail($transaksi->id_masuk);
             $transaksiMasuk->update([
-                'id_kamar' => $validatedData['kamarPemasukan'],
+                'id_kamar' => Json::encode([$validatedData['kamarPemasukan']]),
                 'deskripsi' => $validatedData['deskripsi'],
                 'tanggal_transaksi' => $validatedData['tanggalTerima'],
                 'periode_sewa' => $validatedData['periodeSewa'],
@@ -465,7 +467,7 @@ class TransaksiController extends Controller
             // Update data transaksi dengan ID penyewa dan kamar yang terkait
             $transaksi->update([
                 'id_penyewa' => $penyewa->id,
-                'id_kamar' => $validatedData['kamarPemasukan'],
+                'id_kamar' => Json::encode([$validatedData['kamarPemasukan']]),
                 'nominal' => $nilaiSewa,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
