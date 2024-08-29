@@ -47,6 +47,10 @@
                         <div class="card-header" id="cardTitle">
                             <i class="bi bi-journal-text"></i> Semua Buku Kas
                         </div>
+                        <a href="#" id="export" title="Export to Excel" class="btn btn-success"><i
+                                class="bi bi-file-earmark-arrow-down"></i>
+                            Download Excel
+                        </a>
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
