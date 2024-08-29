@@ -46,11 +46,11 @@
                     <div class="card">
                         <div class="card-header" id="cardTitle">
                             <i class="bi bi-journal-text"></i> Semua Buku Kas
+                            <a id="export" href="{{ route('laporan.bulanan.ringkasan.exportExcel') }}" id="exportToExcel"
+                                class="float-end" title="Export to Excel">
+                                <i class="bi bi-file-earmark-spreadsheet-fill"></i> Export
+                            </a>
                         </div>
-                        <a href="#" id="export" title="Export to Excel" class="btn btn-success"><i
-                                class="bi bi-file-earmark-arrow-down"></i>
-                            Download Excel
-                        </a>
                         <div class="card-body">
                             <ul class="nav nav-pills" role="tablist">
                                 <li class="nav-item" role="presentation">
