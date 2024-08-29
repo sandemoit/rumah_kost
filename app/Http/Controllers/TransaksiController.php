@@ -457,15 +457,16 @@ class TransaksiController extends Controller
                 'updated_at' => now(),
             ]);
 
-            $kamar = Penyewa::findOrFail($validatedData['kamarPemasukan']);
-            if (!$kamar) {
-                return response()->json(['status' => 'error', 'message' => 'Penyewa tidak ditemukan.'], 404);
+            $penyewa = Penyewa::findOrFail($validatedData['kamarPemasukan']);
+            $kamar = $penyewa->kamar;
+            // Memeriksa apakah id kamar dari penyewa sesuai dengan kamar yang dimasukkan dalam request
+            if ($kamar->id !== $penyewa->id_kamar) {
+                return response()->json(['status' => 'error', 'message' => 'Kamar tidak sesuai dengan penyewa.'], 422);
             }
 
-            $penyewa = Kamar::findOrFail($kamar->id_kamar);
             $transaksi->update([
                 'id_penyewa' => $penyewa->id,
-                'id_kamar' => json_encode([$validatedData['kamarPemasukan']]),
+                'id_kamar' => json_encode([$kamar->id]),
                 'nominal' => $nilaiSewa,
                 'created_by' => Auth::user()->id,
                 'updated_at' => now(),
