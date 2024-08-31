@@ -169,9 +169,6 @@ class TransaksiController extends Controller
 
         // Cari transaksi masuk terakhir berdasarkan periode_sewa dengan penyewa aktif
         $transaksiTerakhir = TransaksiMasuk::where('id_kamar', 'LIKE', '%"' . $id . '"%')
-            ->whereHas('penyewa', function ($query) {
-                $query->where('status', 'aktif');
-            })
             ->select('periode_sewa')
             ->latest('periode_sewa')
             ->first();
