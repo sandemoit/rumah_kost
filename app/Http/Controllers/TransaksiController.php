@@ -131,8 +131,12 @@ class TransaksiController extends Controller
 
     public function getKamarData($id)
     {
-        // Cari transaksi terkait kamar
-        $transaksi = TransaksiList::whereJsonContains('id_kamar', $id)->first();
+        // Cari transaksi terkait kamar berdasarkan penyewa aktif
+        $transaksi = TransaksiList::whereJsonContains('id_kamar', $id)
+            ->whereHas('penyewa', function ($query) {
+                $query->where('status', 'aktif');
+            })
+            ->first();
 
         // Cari kontrakan berdasarkan id_kamar tersebut
         $kontrakan = Kamar::find($id)->kontrakan;
@@ -140,8 +144,8 @@ class TransaksiController extends Controller
         // Cari harga kamar
         $hargaKamar = Kamar::find($id)->harga_kamar;
 
-        // Jika tidak ada transaksi, periksa apakah ada penyewa aktif di kamar tersebut
-        if (!$transaksi || !$transaksi->id_masuk) {
+        // Jika tidak ada transaksi aktif, periksa apakah ada penyewa aktif di kamar tersebut
+        if (!$transaksi) {
             $penyewa = Penyewa::where('id_kamar', $id)->where('status', 'aktif')->first();
 
             if ($penyewa) {
@@ -163,8 +167,11 @@ class TransaksiController extends Controller
             }
         }
 
-        // Cari transaksi masuk terakhir berdasarkan periode_sewa
+        // Cari transaksi masuk terakhir berdasarkan periode_sewa dengan penyewa aktif
         $transaksiTerakhir = TransaksiMasuk::where('id_kamar', 'LIKE', '%"' . $id . '"%')
+            ->whereHas('penyewa', function ($query) {
+                $query->where('status', 'aktif');
+            })
             ->select('periode_sewa')
             ->latest('periode_sewa')
             ->first();
@@ -194,6 +201,7 @@ class TransaksiController extends Controller
             ]);
         }
     }
+
 
     public function getTunggakan($id)
     {
