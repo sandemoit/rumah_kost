@@ -189,7 +189,7 @@ class LaporanTahunanController extends Controller
         $code_kontrakan = $request->input('book');
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->where('tanggal_transaksi', 'like', $date . "%");
+                $query->where('periode_sewa', 'like', $date . "%");
             })
             ->orWhereHas('transaksiKeluar', function ($query) use ($date) {
                 $query->where('tanggal_transaksi', 'like', $date . "%");
