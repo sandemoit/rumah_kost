@@ -41,7 +41,7 @@ class LaporanCustomController extends Controller
         $saldoAwalCustomQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($date) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('periode_sewa', '<', $date);
+                    $query->whereDate('tanggal_transaksi', '<', $date);
                 })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
                     $query->whereDate('tanggal_transaksi', '<', $date);
                 });
@@ -58,7 +58,7 @@ class LaporanCustomController extends Controller
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->where(function ($query) use ($date, $code_kontrakan) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('periode_sewa', '=', $date);
+                    $query->whereDate('tanggal_transaksi', '=', $date);
                 })
                     ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
                         $query->where('code_kontrakan', $code_kontrakan);
@@ -163,11 +163,11 @@ class LaporanCustomController extends Controller
     // nse
     public function get_aktivitas_custom(Request $request)
     {
-        if(!empty($request->date)) {
+        if (!empty($request->date)) {
             $date = explode(' - ', $request->input('date'));
             $dateStart = Carbon::createFromFormat('m/d/Y', $date[0])->startOfDay();
             $dateEnd = Carbon::createFromFormat('m/d/Y', $date[1])->endOfDay();
-        }else{
+        } else {
             $dateStart = Carbon::now()->startOfDay();
             $dateEnd = Carbon::now()->endOfDay();
         }
@@ -232,11 +232,11 @@ class LaporanCustomController extends Controller
 
     public function get_ringkasan_custom(Request $request)
     {
-        if(!empty($request->date)) {
+        if (!empty($request->date)) {
             $date = explode(' - ', $request->input('date'));
             $dateStart = Carbon::createFromFormat('m/d/Y', $date[0])->startOfDay();
             $dateEnd = Carbon::createFromFormat('m/d/Y', $date[1])->endOfDay();
-        }else{
+        } else {
             $dateStart = Carbon::now()->startOfDay();
             $dateEnd = Carbon::now()->endOfDay();
         }
@@ -248,7 +248,7 @@ class LaporanCustomController extends Controller
         $startDate = Carbon::createFromFormat('Y-m-d', $dateStart->format('Y-m-d'));
         $endDate = Carbon::createFromFormat('Y-m-d', $dateEnd->format('Y-m-d'));
         $dates = [];
-        for($dateI = $startDate; $dateI->lte($endDate); $dateI->addDay()) { 
+        for ($dateI = $startDate; $dateI->lte($endDate); $dateI->addDay()) {
             $dates[] = $dateI->format('d M y');
         }
         $data['dates'] = $dates;
@@ -267,10 +267,10 @@ class LaporanCustomController extends Controller
 
 
         $data['pengeluarans'] = $transaksi
-        ->where('tipe', 'keluar')
-        ->groupBy('code_kontrakan')
-        ->map(function ($item) use ($data) {
-                
+            ->where('tipe', 'keluar')
+            ->groupBy('code_kontrakan')
+            ->map(function ($item) use ($data) {
+
                 $trx = [];
                 foreach ($data['dates'] as $date) {
                     $t = TransaksiList::with(['transaksiKeluar'])

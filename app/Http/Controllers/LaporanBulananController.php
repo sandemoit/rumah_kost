@@ -63,10 +63,10 @@ class LaporanBulananController extends Controller
         $saldoAwalBulanQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($year, $month) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
-                    $query->whereYear('periode_sewa', '<', $year)
+                    $query->whereYear('tanggal_transaksi', '<', $year)
                         ->orWhere(function ($query) use ($year, $month) {
-                            $query->whereYear('periode_sewa', '=', $year)
-                                ->whereMonth('periode_sewa', '<', $month);
+                            $query->whereYear('tanggal_transaksi', '=', $year)
+                                ->whereMonth('tanggal_transaksi', '<', $month);
                         });
                 })->orWhereHas('transaksiKeluar', function ($query) use ($year, $month) {
                     $query->whereYear('tanggal_transaksi', '<', $year)
@@ -88,8 +88,8 @@ class LaporanBulananController extends Controller
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->where(function ($query) use ($month, $year) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
-                    $query->whereYear('periode_sewa', '=', $year)
-                        ->whereMonth('periode_sewa', '=', $month);
+                    $query->whereYear('tanggal_transaksi', '=', $year)
+                        ->whereMonth('tanggal_transaksi', '=', $month);
                 })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
                     $query->whereYear('tanggal_transaksi', '=', $year)
                         ->whereMonth('tanggal_transaksi', '=', $month);
@@ -144,8 +144,8 @@ class LaporanBulananController extends Controller
 
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
-                $query->whereYear('periode_sewa', $year)
-                    ->whereMonth('periode_sewa', $month);
+                $query->whereYear('tanggal_transaksi', $year)
+                    ->whereMonth('tanggal_transaksi', $month);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -296,7 +296,6 @@ class LaporanBulananController extends Controller
                         ->where('tipe', 'keluar')
                         ->where('code_kontrakan', $item[0]->code_kontrakan);
                     $trx[$date] = $t->sum('nominal') ?? 0;
-                    
                 }
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',

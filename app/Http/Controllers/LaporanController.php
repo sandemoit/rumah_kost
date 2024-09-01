@@ -45,7 +45,7 @@ class LaporanController extends Controller
         $saldoAwalHariQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($date) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('periode_sewa', '<', $date);
+                    $query->whereDate('tanggal_transaksi', '<', $date);
                 })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
                     $query->whereDate('tanggal_transaksi', '<', $date);
                 });
@@ -62,7 +62,7 @@ class LaporanController extends Controller
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
             ->where(function ($query) use ($date, $code_kontrakan) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('periode_sewa', '=', $date);
+                    $query->whereDate('tanggal_transaksi', '=', $date);
                 })
                     ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
                         $query->where('code_kontrakan', $code_kontrakan);
@@ -115,7 +115,7 @@ class LaporanController extends Controller
 
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('periode_sewa', $date);
+                $query->whereDate('tanggal_transaksi', $date);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -210,7 +210,7 @@ class LaporanController extends Controller
             ->where('tipe', 'masuk')
             ->groupBy('code_kontrakan')
             ->map(function ($item) use ($date) {
-                 return [
+                return [
                     'id' => $item[0]->id,
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
                     'total' => $item->sum('nominal'),
