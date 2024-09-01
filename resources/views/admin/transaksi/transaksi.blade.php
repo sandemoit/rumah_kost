@@ -287,7 +287,7 @@
                             </div>
                             <!-- Pagination Links -->
                             <div class="card-footer clearfix">
-                                {{ $transaksiList->links() }}
+                                {{ $transaksiList->appends(request()->query())->links() }}
                             </div>
                         </div>
                     </div>

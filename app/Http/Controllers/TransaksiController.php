@@ -86,8 +86,8 @@ class TransaksiController extends Controller
 
         // Mengambil transaksi berdasarkan bulan dan tahun
         $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)
-            // ->orderBy('id', 'desc')
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(['month' => $month, 'year' => $year]); // tambahkan ini
 
         // Inisialisasi saldo awal
         $saldo = 0;
@@ -393,7 +393,6 @@ class TransaksiController extends Controller
                     'code_kontrakan' => $validatedData['codeKontrakanKeluar'],
                     'id_kamar' => $id_kamar_json,
                     'id_keluar' => $transaksiKeluar->id,
-                    'id_penyewa' => 0,
                     'tipe' => 'keluar',
                     'nominal' => $validatedData['nominalPengeluaran'],
                     'created_by' => Auth::user()->id,
