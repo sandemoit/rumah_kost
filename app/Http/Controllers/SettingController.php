@@ -57,10 +57,11 @@ class SettingController extends Controller
             $format_tagihan = Setting::where('key', 'format_tagihan')->first();
             $format_tagihan = $format_tagihan->value;
 
-            $name = 'Roni';
-            $var1 = 'Rp. 100.000';
+            $name = '*Roni*';
+            $var1 = '*Rp. 100.000*';
+            $var2 = '*Kamar 1*';
 
-            $target = "{$nowa}|{$name}|{$var1}";
+            $target = "{$nowa}|{$name}|{$var1}|{$var2}";
             $message = $format_tagihan;
             $response = WhatsAppHelper::sendWhatsApp($target, $message);
             $decodedResponse = json_decode($response, true);

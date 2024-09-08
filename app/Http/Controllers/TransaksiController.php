@@ -84,39 +84,15 @@ class TransaksiController extends Controller
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = $request->input('search');
 
-        // Hitung saldo awal dari semua transaksi sebelum bulan dan tahun yang dipilih
-        $saldoAwal = TransaksiList::where('code_kontrakan', $code_kontrakan)
-            ->where(function ($query) use ($year, $month) {
-                $query->whereYear('created_at', '<', $year)
-                    ->orWhere(function ($query) use ($year, $month) {
-                        $query->whereYear('created_at', $year)
-                            ->whereMonth('created_at', '<', $month);
-                    });
-            })
-            ->get()
-            ->reduce(function ($carry, $item) {
-                return $item->tipe === 'masuk' ? $carry + $item->nominal : $carry - $item->nominal;
-            }, 0);
-
-        // Mengambil semua transaksi pada bulan dan tahun saat ini untuk menghitung saldo sebelum paginasi
-        $transaksiSebelumHalamanIni = TransaksiList::where('code_kontrakan', $code_kontrakan)
-            ->whereYear('created_at', $year)
-            ->whereMonth('created_at', $month)
-            ->orderBy('created_at', 'asc')
-            ->take(($request->input('page', 1) - 1) * 10)
-            ->get();
-
-        // Tambahkan saldo dari transaksi sebelum halaman saat ini
-        $saldo = $transaksiSebelumHalamanIni->reduce(function ($carry, $item) {
-            return $item->tipe === 'masuk' ? $carry + $item->nominal : $carry - $item->nominal;
-        }, $saldoAwal);
-
-        // Mengambil transaksi berdasarkan bulan, tahun, dan halaman saat ini
+        // Mengambil transaksi berdasarkan bulan dan tahun
         $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)
             ->paginate(10)
-            ->appends(['month' => $month, 'year' => $year]);
+            ->appends(['month' => $month, 'year' => $year]); // tambahkan ini
 
-        // Iterasi transaksi untuk halaman saat ini dan update saldo
+        // Inisialisasi saldo awal
+        $saldo = 0;
+
+        // Iterasi transaksi
         foreach ($transaksiList as $transaksi) {
             // Uraikan JSON id_kamar dan dapatkan nama kamar
             $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];

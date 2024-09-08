@@ -96,26 +96,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 let totalPengeluaran = 0;
                 let totalPemasukan = 0;
 
-                data.transaksiKeluar.forEach(transaksi => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                // Loop melalui setiap code_kontrakan di dalam data yang diterima
+                Object.values(data.data).forEach(transaksi => {
+                    // Menambah baris pemasukan untuk setiap kontrakan
+                    const pemasukanRow = document.createElement('tr');
+                    pemasukanRow.innerHTML = `
                         <td>${transaksi.nama_kontrakan}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                        <td class="right tduang">${transaksi.total_masuk.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
                     `;
-                    exinElement.appendChild(row);
-                    totalPengeluaran += transaksi.nominal;
-                });
+                    inexinElement.appendChild(pemasukanRow);
+                    totalPemasukan += transaksi.total_masuk;
 
-                data.transaksiMasuk.forEach(transaksi => {
-                    const row = document.createElement('tr');
-                    row.innerHTML = `
+                    // Menambah baris pengeluaran untuk setiap kontrakan
+                    const pengeluaranRow = document.createElement('tr');
+                    pengeluaranRow.innerHTML = `
                         <td>${transaksi.nama_kontrakan}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                        <td class="right tduang">${transaksi.total_keluar.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
                     `;
-                    inexinElement.appendChild(row);
-                    totalPemasukan += transaksi.nominal;
+                    exinElement.appendChild(pengeluaranRow);
+                    totalPengeluaran += transaksi.total_keluar;
                 });
 
                 // Menambahkan baris total pengeluaran
@@ -136,11 +137,12 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 inexinElement.appendChild(totalPemasukanRow);
 
-                // Memperbarui chart dengan data baru
+                // Memperbarui chart dengan data baru (jika ada fungsi chart)
                 updateChart(totalPemasukan, totalPengeluaran);
             })
             .catch(error => console.error('Error:', error));
     };
+
 
     const updateChart = (pemasukan, pengeluaran) => {
         reportChart.data.datasets[0].data = [pemasukan, pengeluaran];
