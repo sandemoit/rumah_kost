@@ -99,7 +99,7 @@ class LaporanCustomController extends Controller
         $date = $request->query('date');
         $code_kontrakan = $request->query('book', 'all');
 
-        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal Custom ini
+        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
         if (!$date) {
             $date = Carbon::now()->format('Y-m-d');
         } else {
@@ -107,18 +107,10 @@ class LaporanCustomController extends Controller
             $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
         }
 
-        $code_kontrakan = $request->input('book', 'all');
-
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('periode_sewa', $date);
+                $query->whereDate('tanggal_transaksi', $date);
             });
-
-        if ($code_kontrakan !== 'all') {
-            $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
-        }
-
-        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
 
         $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
             ->whereHas('transaksiKeluar', function ($query) use ($date) {
@@ -126,24 +118,55 @@ class LaporanCustomController extends Controller
             });
 
         if ($code_kontrakan !== 'all') {
+            $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
             $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
         }
 
         $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
+        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
 
-        foreach ($transaksiMasuk as $transaksi) {
-            $kontrakan = Kontrakan::where('code_kontrakan', $transaksi->code_kontrakan)->first();
-            $transaksi->nama_kontrakan = $kontrakan->nama_kontrakan ?? 'Unknown';
+        // Mengelompokkan transaksi masuk berdasarkan code_kontrakan dan menghitung total pemasukan
+        $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
+            return [
+                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                'total_masuk' => $items->sum('nominal')
+            ];
+        });
+
+        // Mengelompokkan transaksi keluar berdasarkan code_kontrakan dan menghitung total pengeluaran
+        $groupedKeluar = $transaksiKeluar->groupBy('code_kontrakan')->map(function ($items) {
+            return [
+                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                'total_keluar' => $items->sum('nominal')
+            ];
+        });
+
+        // Persiapan data yang akan diparsing dan dikirimkan dalam response JSON
+        $result = [];
+
+        // Loop pertama: Proses data pemasukan dan pengeluaran
+        foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
+            $result[$code_kontrakan] = [
+                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
+                'total_masuk' => $dataMasuk['total_masuk'],
+                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
+            ];
         }
 
-        foreach ($transaksiKeluar as $transaksi) {
-            $kontrakan = Kontrakan::where('code_kontrakan', $transaksi->code_kontrakan)->first();
-            $transaksi->nama_kontrakan = $kontrakan->nama_kontrakan ?? 'Unknown';
+        // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
+        foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
+            if (!isset($result[$code_kontrakan])) {
+                $result[$code_kontrakan] = [
+                    'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
+                    'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0
+                    'total_keluar' => $dataKeluar['total_keluar']
+                ];
+            }
         }
 
+        // Mengembalikan data yang sudah dikelompokkan dalam bentuk JSON
         return response()->json([
-            'transaksiMasuk' => $transaksiMasuk,
-            'transaksiKeluar' => $transaksiKeluar,
+            'data' => $result
         ]);
     }
 

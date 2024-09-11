@@ -46,13 +46,6 @@ class LaporanBulananController extends Controller
         // Jika tidak ada parameter 'date' yang diberikan, gunakan bulan dan tahun saat ini
         if (!$date) {
             $date = Carbon::now()->format('Y-m');
-        } else {
-            try {
-                // Ubah format tanggal dari 'Y-m' ke 'Y-m'
-                $date = Carbon::createFromFormat('Y-m', $date)->format('Y-m');
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid date format. Please use Y-m format.'], 400);
-            }
         }
 
         // Pisahkan tahun dan bulan dari parameter 'date'
@@ -126,45 +119,31 @@ class LaporanBulananController extends Controller
         $date = $request->query('date');
         $code_kontrakan = $request->query('book', 'all');
 
-        // Jika tidak ada parameter 'date' yang diberikan, gunakan bulan dan tahun saat ini
+        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
         if (!$date) {
-            $date = Carbon::now()->format('Y-m');
+            $date = Carbon::now()->format('Y-m-d');
         } else {
-            try {
-                // Validasi format tanggal 'Y-m'
-                $date = Carbon::createFromFormat('Y-m', $date)->format('Y-m');
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid date format. Please use Y-m format.'], 400);
-            }
+            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
+            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
         }
 
-        // Pisahkan tahun dan bulan dari parameter 'date'
-        $year = Carbon::createFromFormat('Y-m', $date)->year;
-        $month = Carbon::createFromFormat('Y-m', $date)->month;
-
-        // Query untuk transaksi masuk
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
-            ->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
-                $query->whereYear('periode_sewa', $year)
-                    ->whereMonth('periode_sewa', $month);
+            ->whereHas('transaksiMasuk', function ($query) use ($date) {
+                $query->whereDate('tanggal_transaksi', $date);
             });
 
-        // Query untuk transaksi keluar
         $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
-            ->whereHas('transaksiKeluar', function ($query) use ($year, $month) {
-                $query->whereYear('tanggal_transaksi', $year)
-                    ->whereMonth('tanggal_transaksi', $month);
+            ->whereHas('transaksiKeluar', function ($query) use ($date) {
+                $query->whereDate('tanggal_transaksi', $date);
             });
 
-        // Filter berdasarkan code_kontrakan jika diberikan dan bukan 'all'
         if ($code_kontrakan !== 'all') {
             $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
             $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
         }
 
-        // Ambil data transaksi masuk dan keluar
-        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
         $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
+        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
 
         // Mengelompokkan transaksi masuk berdasarkan code_kontrakan dan menghitung total pemasukan
         $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
@@ -184,20 +163,22 @@ class LaporanBulananController extends Controller
 
         // Persiapan data yang akan diparsing dan dikirimkan dalam response JSON
         $result = [];
+
+        // Loop pertama: Proses data pemasukan dan pengeluaran
         foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
             $result[$code_kontrakan] = [
                 'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
                 'total_masuk' => $dataMasuk['total_masuk'],
-                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0
+                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
             ];
         }
 
-        // Tambahkan kontrakan yang hanya memiliki pengeluaran dan tidak ada pemasukan
+        // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
         foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
             if (!isset($result[$code_kontrakan])) {
                 $result[$code_kontrakan] = [
                     'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
-                    'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Jika tidak ada pemasukan, default ke 0
+                    'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0
                     'total_keluar' => $dataKeluar['total_keluar']
                 ];
             }
@@ -209,10 +190,8 @@ class LaporanBulananController extends Controller
         ]);
     }
 
-
     public function aktivitas()
     {
-
         $kontrakan = Kontrakan::select('code_kontrakan', 'nama_kontrakan')->get();
 
         $data = [
