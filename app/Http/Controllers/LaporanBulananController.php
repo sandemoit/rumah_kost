@@ -115,16 +115,21 @@ class LaporanBulananController extends Controller
 
     public function getAllExIn(Request $request)
     {
+
         // Mengambil parameter 'date' dan 'book' dari query string
         $date = $request->query('date');
         $code_kontrakan = $request->query('book', 'all');
 
         // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
         if (!$date) {
-            $date = Carbon::now()->format('Y-m-d');
+            $date = Carbon::now()->format('Y-m');
         } else {
-            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
-            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+            try {
+                // Ubah format tanggal dari 'Y-m' ke 'Y-m'
+                $date = Carbon::createFromFormat('Y-m', $date)->format('Y-m');
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid date format. Please use Y-m format.'], 400);
+            }
         }
 
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')

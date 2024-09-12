@@ -104,7 +104,12 @@ class LaporanCustomController extends Controller
             $date = Carbon::now()->format('Y-m-d');
         } else {
             // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
-            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+            try {
+                // Ubah format tanggal dari 'Y-m' ke 'Y-m'
+                $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+            } catch (\Exception $e) {
+                return response()->json(['error' => 'Invalid date format. Please use Y-m-d format.'], 400);
+            }
         }
 
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
