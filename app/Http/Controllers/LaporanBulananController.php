@@ -132,14 +132,20 @@ class LaporanBulananController extends Controller
             }
         }
 
+        // Pisahkan tahun dan bulan dari parameter 'date'
+        $year = Carbon::createFromFormat('Y-m', $date)->year;
+        $month = Carbon::createFromFormat('Y-m', $date)->month;
+
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
-            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
+            ->whereHas('transaksiMasuk', function ($query) use ($year, $month) {
+                $query->whereYear('tanggal_transaksi', $year)
+                    ->whereMonth('tanggal_transaksi', $month);
             });
 
         $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
-            ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
+            ->whereHas('transaksiKeluar', function ($query) use ($year, $month) {
+                $query->whereYear('tanggal_transaksi', $year)
+                    ->whereMonth('tanggal_transaksi', $month);
             });
 
         if ($code_kontrakan !== 'all') {
@@ -171,16 +177,18 @@ class LaporanBulananController extends Controller
 
         // Loop pertama: Proses data pemasukan dan pengeluaran
         foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
-            $result[$code_kontrakan] = [
-                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
-                'total_masuk' => $dataMasuk['total_masuk'],
-                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
-            ];
+            if ($dataMasuk['total_masuk'] > 0 || (isset($groupedKeluar[$code_kontrakan]) && $groupedKeluar[$code_kontrakan]['total_keluar'] > 0)) {
+                $result[$code_kontrakan] = [
+                    'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
+                    'total_masuk' => $dataMasuk['total_masuk'],
+                    'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
+                ];
+            }
         }
 
         // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
         foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
-            if (!isset($result[$code_kontrakan])) {
+            if (!isset($result[$code_kontrakan]) && $dataKeluar['total_keluar'] > 0) {
                 $result[$code_kontrakan] = [
                     'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
                     'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0

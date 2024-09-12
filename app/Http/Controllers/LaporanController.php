@@ -116,6 +116,13 @@ class LaporanController extends Controller
             }
         }
 
+        // Validasi jika tidak ada book yang ditentukan
+        if ($code_kontrakan !== 'all' && !Kontrakan::where('code_kontrakan', $code_kontrakan)->exists()) {
+            return response()->json([
+                'data' => []
+            ]);
+        }
+
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($date) {
                 $query->whereDate('tanggal_transaksi', $date);
@@ -134,7 +141,10 @@ class LaporanController extends Controller
         $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
         $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
 
-        // Mengelompokkan transaksi masuk berdasarkan code_kontrakan dan menghitung total pemasukan
+        // Ambil semua kontrakan
+        $allKontrakan = Kontrakan::all();
+
+        // Group pemasukan dan pengeluaran berdasarkan 'code_kontrakan'
         $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
             return [
                 'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
@@ -142,7 +152,6 @@ class LaporanController extends Controller
             ];
         });
 
-        // Mengelompokkan transaksi keluar berdasarkan code_kontrakan dan menghitung total pengeluaran
         $groupedKeluar = $transaksiKeluar->groupBy('code_kontrakan')->map(function ($items) {
             return [
                 'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
@@ -150,21 +159,34 @@ class LaporanController extends Controller
             ];
         });
 
+        // Persiapkan result default untuk semua kontrakan
+        $result = [];
+        foreach ($allKontrakan as $kontrakan) {
+            $code_kontrakan = $kontrakan->code_kontrakan;
+            $result[$code_kontrakan] = [
+                'nama_kontrakan' => $kontrakan->nama_kontrakan ?? 'Unknown',
+                'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0,
+                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0,
+            ];
+        }
+
         // Persiapan data yang akan diparsing dan dikirimkan dalam response JSON
         $result = [];
 
         // Loop pertama: Proses data pemasukan dan pengeluaran
         foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
-            $result[$code_kontrakan] = [
-                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
-                'total_masuk' => $dataMasuk['total_masuk'],
-                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
-            ];
+            if ($dataMasuk['total_masuk'] > 0 || (isset($groupedKeluar[$code_kontrakan]) && $groupedKeluar[$code_kontrakan]['total_keluar'] > 0)) {
+                $result[$code_kontrakan] = [
+                    'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
+                    'total_masuk' => $dataMasuk['total_masuk'],
+                    'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
+                ];
+            }
         }
 
         // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
         foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
-            if (!isset($result[$code_kontrakan])) {
+            if (!isset($result[$code_kontrakan]) && $dataKeluar['total_keluar'] > 0) {
                 $result[$code_kontrakan] = [
                     'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
                     'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0
