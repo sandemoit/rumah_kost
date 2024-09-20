@@ -98,23 +98,20 @@ class TransaksiController extends Controller
         foreach ($transaksiList as $transaksi) {
             // Uraikan JSON id_kamar dan dapatkan nama kamar
             $idKamarArray = is_string($transaksi->id_kamar) ? json_decode($transaksi->id_kamar, true) : [$transaksi->id_kamar];
+
             if (is_array($idKamarArray)) {
-                $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
-                $transaksi->nama_kamar = $namaKamar;
+                // Jika jumlah id_kamar pada transaksi sama dengan jumlah total kamar, set nama kamar ke "All"
+                if (count($idKamarArray) == $countKontrakan) {
+                    $transaksi->nama_kamar = 'All';
+                } else {
+                    // Ambil nama kamar dari id_kamar dan gabungkan dengan koma
+                    $namaKamar = Kamar::whereIn('id', $idKamarArray)->pluck('nama_kamar')->implode(', ');
+                    $transaksi->nama_kamar = $namaKamar;
+                }
                 $transaksi->kamar_nama_list = $idKamarArray;
             } else {
                 $transaksi->nama_kamar = 'Undefined';
             }
-
-            // // Hitung saldo berdasarkan tipe transaksi
-            // if ($transaksi->tipe === 'masuk') {
-            //     $saldo += $transaksi->nominal;
-            // } elseif ($transaksi->tipe === 'keluar') {
-            //     $saldo -= $transaksi->nominal;
-            // }
-
-            // // Set saldo pada transaksi saat ini
-            // $transaksi->saldo = $saldo;
         }
 
         // Menyiapkan data untuk dikirim ke view

@@ -1,21 +1,6 @@
 @if ($paginator->hasPages())
     <div class="d-none flex-sm-fill d-sm-flex align-items-sm-center justify-content-sm-between">
         <div class="d-flex">
-            <div>
-                <form method="GET" action="{{ url()->current() }}" class="form-inline">
-                    <select name="per_page" id="per_page" class="form-select form-select-sm mx-2"
-                        onchange="this.form.submit()">
-                        <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25</option>
-                        <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
-                        <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100</option>
-                    </select>
-
-                    {{-- Menjaga query parameter lainnya --}}
-                    @foreach (request()->except('per_page', 'page') as $key => $value)
-                        <input type="hidden" name="{{ $key }}" value="{{ $value }}">
-                    @endforeach
-                </form>
-            </div>
             <div style="margin-left: 1rem; margin-top: 5px;">
                 <p class="small text-muted">
                     {!! __('Menampilkan') !!}
