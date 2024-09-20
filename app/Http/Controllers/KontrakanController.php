@@ -31,6 +31,7 @@ class KontrakanController extends Controller
     public function detail(Request $request, string $code_kontrakan)
     {
         $keyword = $request->query('search');
+        $perPage = $request->query('per_page', 25);
 
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
 
@@ -42,8 +43,8 @@ class KontrakanController extends Controller
                         ->orWhere('keterangan', 'LIKE', "%$keyword%");
                 });
             })
-            ->paginate(10)
-            ->appends(['search' => $keyword]);
+            ->paginate($perPage)
+            ->appends(['search' => $keyword, 'per_page' => $perPage]);
 
         return view('admin.pengaturan.kontrakan.detail', [
             'kamar' => $kamar,
