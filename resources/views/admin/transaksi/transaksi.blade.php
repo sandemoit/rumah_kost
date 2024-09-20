@@ -16,7 +16,7 @@
                     <div class="col-sm-6 text-end">
                         <strong>Saldo</strong>
                         <h3 class="mb-0" id="saldoKontrakan">Loading...</h3>
-                        <span class="smallsaldo">Semua Buku Kas: <span id="totalSaldo">Loading...</span></span>
+                        <span class="smallsaldo">Saldo 1 Tahun: <span id="totalSaldo">Loading...</span></span>
                     </div>
                 </div> <!--end::Row-->
             </div>
@@ -37,6 +37,7 @@
                                         @php
                                             $nowMonth = request()->input('month', date('m'));
                                         @endphp
+                                        <option value="all" {{ $nowMonth == 'all' ? 'selected' : '' }}>All</option>
                                         <option value="1" {{ $nowMonth == '01' ? 'selected' : '' }}>Januari</option>
                                         <option value="2" {{ $nowMonth == '02' ? 'selected' : '' }}>Februari</option>
                                         <option value="3" {{ $nowMonth == '03' ? 'selected' : '' }}>Maret</option>
@@ -216,7 +217,7 @@
                                             <th class="center">Kamar</th>
                                             <th class="center deskripsikas-column">Deskripsi</th>
                                             <th class="right">Nominal</th>
-                                            <th class="right saldo-column">Saldo</th>
+                                            {{-- <th class="right saldo-column">Saldo</th> --}}
                                             <th class="center">Edit</th>
                                         </tr>
                                     </thead>
@@ -260,8 +261,8 @@
                                                 </td>
                                                 <td class="nominalkas right" data-label="Nominal">
                                                     {{ rupiah($transaksi->nominal) }}</td>
-                                                <td class="nominalkas right saldo-column" data-label="Saldo">
-                                                    {{ rupiah($transaksi->saldo) }}</td>
+                                                {{-- <td class="nominalkas right saldo-column" data-label="Saldo">
+                                                    {{ rupiah($transaksi->saldo) }}</td> --}}
                                                 <td class="center editkas">
                                                     <input type="hidden" id="transaksi-id"
                                                         value="{{ $transaksi->id }}">
@@ -279,16 +280,18 @@
                                             </tr>
                                         @empty
                                             <tr>
-                                                <td colspan="7" class="text-center">Tidak ditemukan</td>
+                                                <td colspan="6" class="text-center">Tidak ditemukan</td>
                                             </tr>
                                         @endforelse
                                     </tbody>
                                 </table>
                             </div>
                             <!-- Pagination Links -->
-                            <div class="card-footer clearfix">
-                                {{ $transaksiList->appends(request()->query())->links() }}
-                            </div>
+                            @if ($transaksiList->hasPages() || $transaksiList->total() > 0)
+                                <div class="card-footer clearfix">
+                                    {{ $transaksiList->appends(request()->query())->links() }}
+                                </div>
+                            @endif
                         </div>
                     </div>
                 </div>

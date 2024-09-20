@@ -78,19 +78,21 @@ class TransaksiController extends Controller
         })->filter()->flatten()->unique('id');
 
         // Mengambil bulan dan tahun dari URL
-        $month = $request->input('month', now()->month);
-        $year = $request->input('year', now()->year);
+        $month = request('month', now()->month);
+        $year = request('year', now()->year);
 
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
-        $keyword = $request->input('search');
+        $keyword = request('search');
+        $perPage = request('per_page', 25); // Default to 10 per page
 
-        // Mengambil transaksi berdasarkan bulan dan tahun
+        // Mengambil transaksi berdasarkan bulan, tahun, dan keyword
         $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)
-            ->paginate(10)
-            ->appends(['month' => $month, 'year' => $year]); // tambahkan ini
+            ->paginate($perPage)
+            ->appends(['month' => $month, 'year' => $year, 'search' => $keyword, 'per_page' => $perPage])
+            ->withQueryString();
 
         // Inisialisasi saldo awal
-        $saldo = 0;
+        // $saldo = 0;
 
         // Iterasi transaksi
         foreach ($transaksiList as $transaksi) {
@@ -104,15 +106,15 @@ class TransaksiController extends Controller
                 $transaksi->nama_kamar = 'Undefined';
             }
 
-            // Hitung saldo berdasarkan tipe transaksi
-            if ($transaksi->tipe === 'masuk') {
-                $saldo += $transaksi->nominal;
-            } elseif ($transaksi->tipe === 'keluar') {
-                $saldo -= $transaksi->nominal;
-            }
+            // // Hitung saldo berdasarkan tipe transaksi
+            // if ($transaksi->tipe === 'masuk') {
+            //     $saldo += $transaksi->nominal;
+            // } elseif ($transaksi->tipe === 'keluar') {
+            //     $saldo -= $transaksi->nominal;
+            // }
 
-            // Set saldo pada transaksi saat ini
-            $transaksi->saldo = $saldo;
+            // // Set saldo pada transaksi saat ini
+            // $transaksi->saldo = $saldo;
         }
 
         // Menyiapkan data untuk dikirim ke view
@@ -243,10 +245,32 @@ class TransaksiController extends Controller
         }
     }
 
-    public function getSaldoKontrakan($code_kontrakan)
+    public function getSaldoKontrakan(Request $request, $code_kontrakan)
     {
-        // Ambil semua transaksi yang terkait dengan code_kontrakan ini
-        $transaksiList = TransaksiList::where('code_kontrakan', $code_kontrakan)->get();
+        // Mengambil bulan dan tahun dari URL
+        $month = $request->query('month', now()->month);
+        $year = $request->query('year', now()->year);
+
+        // Ambil semua transaksi yang terkait dengan code_kontrakan ini dan bulan serta tahun yang dikirim
+        $transaksiList = TransaksiList::where('code_kontrakan', $code_kontrakan)
+            ->where(function ($query) use ($month, $year) {
+                if ($month == 'all') {
+                    $query->whereHas('transaksiMasuk', function ($query) use ($year) {
+                        $query->whereYear('tanggal_transaksi', $year);
+                    })->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+                        $query->whereYear('tanggal_transaksi', $year);
+                    });
+                } else {
+                    $query->whereHas('transaksiMasuk', function ($query) use ($month, $year) {
+                        $query->whereMonth('tanggal_transaksi', $month)
+                            ->whereYear('tanggal_transaksi', $year);
+                    })->orWhereHas('transaksiKeluar', function ($query) use ($month, $year) {
+                        $query->whereMonth('tanggal_transaksi', $month)
+                            ->whereYear('tanggal_transaksi', $year);
+                    });
+                }
+            })
+            ->get();
 
         // Kalkulasi saldo berdasarkan nominal yang masuk dan keluar
         $saldo = $transaksiList->reduce(function ($carry, $transaksi) {
@@ -263,15 +287,24 @@ class TransaksiController extends Controller
         ]);
     }
 
-    public function getAllSaldo()
+    public function getSaldoTahun(Request $request, $code_kontrakan)
     {
+        $year = $request->query('year', now()->year);
+
+        $transaksiList = TransaksiList::where('code_kontrakan', $code_kontrakan)
+            ->whereHas('transaksiMasuk', function ($query) use ($year) {
+                $query->whereYear('tanggal_transaksi', $year);
+            })
+            ->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+                $query->whereYear('tanggal_transaksi', $year);
+            })
+            ->get();
+
         // Menghitung total pemasukan
-        $totalPemasukan = TransaksiList::where('tipe', 'masuk')
-            ->sum('nominal');
+        $totalPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
 
         // Menghitung total pengeluaran
-        $totalPengeluaran = TransaksiList::where('tipe', 'keluar')
-            ->sum('nominal');
+        $totalPengeluaran = $transaksiList->where('tipe', 'keluar')->sum('nominal');
 
         // Menghitung total saldo (pemasukan - pengeluaran)
         $totalSaldo = $totalPemasukan - $totalPengeluaran;

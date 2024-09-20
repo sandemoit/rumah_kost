@@ -105,11 +105,11 @@ class LaporanBulananController extends Controller
         // Mengembalikan data dalam format JSON
         return response()->json([
             'date' => $date,
-            'saldoAwalBulan' => rupiah($saldoAwalBulan),
+            // 'saldoAwalBulan' => rupiah($saldoAwalBulan),
             'semuaPemasukan' => rupiah($semuaPemasukan),
             'semuaPengeluaran' => rupiah($semuaPengeluaran),
             'akumulasi' => rupiah($akumulasi),
-            'saldoAkhirBulan' => rupiah($saldoAkhirBulan),
+            // 'saldoAkhirBulan' => rupiah($saldoAkhirBulan),
         ]);
     }
 

@@ -22,4 +22,9 @@ class Kontrakan extends Model
     {
         return $this->hasMany(Kamar::class, 'id_kontrakan');
     }
+
+    public function penyewa()
+    {
+        return $this->hasMany(Penyewa::class, 'id_kontrakan');
+    }
 }

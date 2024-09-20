@@ -129,6 +129,11 @@ small {
 
 .bukutengah .deskripsikas {
     line-height: 16px;
+    text-align: center;
+}
+.kamarkas {
+    line-height: 16px;
+    text-align: center;
 }
 
 @media (min-width: 768px) {

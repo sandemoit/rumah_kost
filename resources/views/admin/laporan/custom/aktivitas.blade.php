@@ -21,7 +21,7 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
-                    <div class="col-md-6 reportSelect">
+                    <div class="col-lg-10 text-md-6 reportSelect">
                         <div class="form-group" id="pilihBukuKas">
                             <label for="selectReport" class="labelSelect">Pilih Buku Kas</label>
                             <select class="form-select" id="selectReportActivity">
@@ -32,8 +32,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <input type="text" name="date" class="form-control" id="daterange" >
+                    <div class="col-lg-2 text-md-6 text-end">
+                        <input type="text" name="date" class="form-control" id="daterange">
                     </div>
                 </div>
 
@@ -118,7 +118,7 @@
 
     <input type="hidden" id="endpoint" value="{{ env('APP_URL') }}">
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    
+
     <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>

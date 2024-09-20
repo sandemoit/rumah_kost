@@ -3,6 +3,26 @@ function submitFilter() {
     form.submit();
 }
 
+// Fungsi untuk memformat angka ke dalam format rupiah
+function formatRupiah(angka) {
+    var number_string = angka.toString(),
+        sisa = number_string.length % 3,
+        rupiah = number_string.substr(0, sisa),
+        ribuan = number_string.substr(sisa).match(/\d{3}/g);
+
+    if (ribuan) {
+        var separator = sisa ? '.' : '';
+        rupiah += separator + ribuan.join('.');
+    }
+
+    return 'Rp ' + rupiah;
+}
+
+function getQueryParameter(name) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(name);
+}
+
 // slide down and up form input trx
 $(document).ready(function() {
     function resetForm() {
@@ -249,9 +269,16 @@ $(document).ready(function() {
 
     // Fungsi untuk mengambil saldo kontrakan berdasarkan code_kontrakan
     function fetchSaldoKontrakan(codeKontrakan) {
+        const year = getQueryParameter('year');
+        const month = getQueryParameter('month');
+
         $.ajax({
-            url: '/getSaldoKontrakan/' + codeKontrakan,
+            url: `/getSaldoKontrakan/${codeKontrakan}`,
             type: 'GET',
+            data: {
+                month: month,    // Kirim tahun dari URL
+                year: year    // Kirim tahun dari URL
+            },
             success: function(data) {
                 var saldo = data.saldo || 0; // Jika saldo null atau undefined, set ke 0
                 $('#saldoKontrakan').text(`Rp ${saldo}`);
@@ -262,10 +289,32 @@ $(document).ready(function() {
             }
         });
     }
+    function fetchSaldoTahun(codeKontrakan) {
+        const year = getQueryParameter('year');
+
+        $.ajax({
+            url: '/getSaldoTahun/' + codeKontrakan, // Sesuaikan dengan route
+            type: 'GET',
+            data: {
+                year: year    // Kirim tahun dari URL
+            },
+            success: function(data) {
+                // Format saldo menjadi rupiah dan tampilkan
+                const formattedSaldo = formatRupiah(data.totalSaldo);
+                document.getElementById('totalSaldo').innerText = formattedSaldo;
+            },
+            error: function(error) {
+                console.error('Error fetching total saldo:', error);
+                document.getElementById('totalSaldo').innerText = "Error";
+            }
+        });
+    }
+
 
     // Mengambil code_kontrakan dari segment URL
     var codeKontrakan = window.location.pathname.split('/')[2];
     fetchSaldoKontrakan(codeKontrakan);
+    fetchSaldoTahun(codeKontrakan);
 });
 
 function edit_exin(element) {
@@ -401,32 +450,3 @@ function changeMonth(offset) {
     document.getElementById('filterForm').submit();
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    // Lakukan fetch ke controller untuk mendapatkan total saldo
-    fetch('/getAllSaldo')
-        .then(response => response.json())
-        .then(data => {
-            // Format saldo menjadi rupiah dan tampilkan
-            const formattedSaldo = formatRupiah(data.totalSaldo);
-            document.getElementById('totalSaldo').innerText = formattedSaldo;
-        })
-        .catch(error => {
-            console.error('Error fetching total saldo:', error);
-            document.getElementById('totalSaldo').innerText = "Error";
-        });
-});
-
-// Fungsi untuk memformat angka ke dalam format rupiah
-function formatRupiah(angka) {
-    var number_string = angka.toString(),
-        sisa = number_string.length % 3,
-        rupiah = number_string.substr(0, sisa),
-        ribuan = number_string.substr(sisa).match(/\d{3}/g);
-
-    if (ribuan) {
-        var separator = sisa ? '.' : '';
-        rupiah += separator + ribuan.join('.');
-    }
-
-    return 'Rp ' + rupiah;
-}

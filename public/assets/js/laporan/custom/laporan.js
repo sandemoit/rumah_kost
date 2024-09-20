@@ -48,17 +48,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/custom/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
-                const saldoAwalCustom = document.querySelector('#saldo_awal_custom');
+                // const saldoAwalCustom = document.querySelector('#saldo_awal_custom');
                 const semuaPemasukan = document.querySelector('#semua_pemasukan');
                 const semuaPengeluaran = document.querySelector('#semua_pengeluaran');
                 const akumulasi = document.querySelector('#akumulasi');
-                const saldoAkhirCustom = document.querySelector('#saldo_akhir_custom');
+                // const saldoAkhirCustom = document.querySelector('#saldo_akhir_custom');
 
-                saldoAwalCustom.innerText = `${data.saldoAwalCustom}`;
+                // saldoAwalCustom.innerText = `${data.saldoAwalCustom}`;
                 semuaPemasukan.innerText = `${data.semuaPemasukan}`;
                 semuaPengeluaran.innerText = `${data.semuaPengeluaran}`;
                 akumulasi.innerText = `${data.akumulasi}`;
-                saldoAkhirCustom.innerText = `${data.saldoAkhirCustom}`;
+                // saldoAkhirCustom.innerText = `${data.saldoAkhirCustom}`;
             })
             .catch(error => console.error('Error:', error));
     };
@@ -178,6 +178,7 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const todayDate = document.querySelector('.datepicker').value;
+   
     updateBukuKas(todayDate);
     updateExIn(todayDate);}
 });

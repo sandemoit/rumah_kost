@@ -68,17 +68,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/bulanan/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
-                const saldoAwalBulan = document.querySelector('#saldo_awal_bulan');
+                // const saldoAwalBulan = document.querySelector('#saldo_awal_bulan');
                 const semuaPemasukan = document.querySelector('#semua_pemasukan');
                 const semuaPengeluaran = document.querySelector('#semua_pengeluaran');
                 const akumulasi = document.querySelector('#akumulasi');
-                const saldoAkhirBulan = document.querySelector('#saldo_akhir_bulan');
+                // const saldoAkhirBulan = document.querySelector('#saldo_akhir_bulan');
 
-                saldoAwalBulan.innerText = `${data.saldoAwalBulan}`;
+                // saldoAwalBulan.innerText = `${data.saldoAwalBulan}`;
                 semuaPemasukan.innerText = `${data.semuaPemasukan}`;
                 semuaPengeluaran.innerText = `${data.semuaPengeluaran}`;
                 akumulasi.innerText = `${data.akumulasi}`;
-                saldoAkhirBulan.innerText = `${data.saldoAkhirBulan}`;
+                // saldoAkhirBulan.innerText = `${data.saldoAkhirBulan}`;
             })
             .catch(error => console.error('Error:', error));
     };

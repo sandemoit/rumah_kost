@@ -54,8 +54,8 @@ document.addEventListener('DOMContentLoaded', function() {
     $('#daterange').on('apply.daterangepicker', function(ev, picker) {
         //do something, like clearing an input
         drawPage();
-      });
-      
+    });
+    
     $('#selectReportActivity').on('change', function() {
         drawPage();
     });

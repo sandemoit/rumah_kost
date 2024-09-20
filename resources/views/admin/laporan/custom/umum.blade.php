@@ -1,6 +1,7 @@
 @push('load-css')
     <link rel="stylesheet" href="{{ asset('assets/css/laporan.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 @endpush
 @extends('layouts.app')
 @section('content')
@@ -19,7 +20,7 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
-                    <div class="col-md-6 reportSelect">
+                    <div class="col-lg-10 text-md-6 reportSelect">
                         <div class="form-group" id="pilihBukuKas">
                             <label for="selectReport" class="labelSelect">Pilih Buku Kas</label>
                             <select class="form-select" id="selectReport">
@@ -30,10 +31,8 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-6 text-end">
-                        <input type="hidden" id="monthlinkkas" value="">
-                        <input type="text" name="lap_tgl" class="lap_tgl datepicker mt-4" id="lap_tgl" size="15"
-                            title="Klik untuk mengganti tanggal" value="{{ date('d-m-Y') }}" onchange="changedate()">
+                    <div class="col-lg-2 text-md-6 text-end">
+                        <input type="text" name="date" class="form-control" id="daterange">
                     </div>
                 </div>
 
@@ -121,7 +120,9 @@
 @endsection
 @push('custom-js')
     <script src="{{ asset('assets/js/jquery-ui.min.js') }}"></script>
-    <script src="{{ asset('assets/js/datepicker.js') }}"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <script src="{{ asset('assets/js/laporan/custom/laporan.js') }}"></script>
 @endpush

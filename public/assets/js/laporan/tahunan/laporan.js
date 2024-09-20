@@ -54,17 +54,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/tahunan/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
-                const saldoAwalTahun = document.querySelector('#saldo_awal_tahun');
+                // const saldoAwalTahun = document.querySelector('#saldo_awal_tahun');
                 const semuaPemasukan = document.querySelector('#semua_pemasukan');
                 const semuaPengeluaran = document.querySelector('#semua_pengeluaran');
                 const akumulasi = document.querySelector('#akumulasi');
-                const saldoAkhirTahun = document.querySelector('#saldo_akhir_tahun');
+                // const saldoAkhirTahun = document.querySelector('#saldo_akhir_tahun');
 
-                saldoAwalTahun.innerText = `${data.saldoAwalTahun}`;
+                // saldoAwalTahun.innerText = `${data.saldoAwalTahun}`;
                 semuaPemasukan.innerText = `${data.semuaPemasukan}`;
                 semuaPengeluaran.innerText = `${data.semuaPengeluaran}`;
                 akumulasi.innerText = `${data.akumulasi}`;
-                saldoAkhirTahun.innerText = `${data.saldoAkhirTahun}`;
+                // saldoAkhirTahun.innerText = `${data.saldoAkhirTahun}`;
             })
             .catch(error => console.error('Error:', error));
     };

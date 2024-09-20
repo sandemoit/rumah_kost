@@ -4,12 +4,12 @@
         <div class="col-md-12 col-lg-6 col-sm-12">
             <table class="table table-bordered">
                 <tbody>
-                    <tr>
+                    {{-- <tr>
                         <td class="tdgray">Saldo Awal Bulan</td>
                         <td class="center tdplusmin tdgray">&nbsp;</td>
                         <td class="right tdmatauang tdgray">Rp</td>
                         <td class="right tduang tdgray" id="saldo_awal_bulan">0,00</td>
-                    </tr>
+                    </tr> --}}
                     <tr>
                         <td>&nbsp;</td>
                         <td class="center tdplusmin">&nbsp;</td>
@@ -40,12 +40,12 @@
                         <td class="right tdmatauang">&nbsp;</td>
                         <td class="right tduang">&nbsp;</td>
                     </tr>
-                    <tr>
+                    {{-- <tr>
                         <td class="tdgray">Saldo Akhir Bulan</td>
                         <td class="tdgray">&nbsp;</td>
                         <td class="right tdmatauang tdgray">Rp</td>
                         <td class="right tduang tdgray" id="saldo_akhir_bulan">0,00</td>
-                    </tr>
+                    </tr> --}}
                 </tbody>
             </table>
         </div>

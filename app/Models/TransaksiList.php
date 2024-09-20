@@ -51,23 +51,31 @@ class TransaksiList extends Model
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function scopeWithTransactions(Builder $query, $code_kontrakan, $month, $year, $keyword = null)
+    public function scopeWithTransactions(Builder $query, $code_kontrakan, $month = false, $year = false, $keyword = false): void
     {
-        return $query->with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where('code_kontrakan', $code_kontrakan)
+        $query->with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
             ->when($keyword, function (Builder $query, $keyword) {
-                return $query->whereHas('kamar', function (Builder $query) use ($keyword) {
+                $query->whereHas('kamar', function (Builder $query) use ($keyword) {
                     $query->where('nama_kamar', 'LIKE', "%$keyword%");
                 });
             })
             ->where(function (Builder $query) use ($month, $year) {
-                $query->whereHas('transaksiMasuk', function (Builder $query) use ($month, $year) {
-                    $query->whereMonth('tanggal_transaksi', $month)
-                        ->whereYear('tanggal_transaksi', $year);
-                })->orWhereHas('transaksiKeluar', function (Builder $query) use ($month, $year) {
-                    $query->whereMonth('tanggal_transaksi', $month)
-                        ->whereYear('tanggal_transaksi', $year);
-                });
-            });
+                if ($month == 'all') {
+                    $query->whereHas('transaksiMasuk', function (Builder $query) use ($year) {
+                        $query->whereYear('tanggal_transaksi', $year);
+                    })->orWhereHas('transaksiKeluar', function (Builder $query) use ($year) {
+                        $query->whereYear('tanggal_transaksi', $year);
+                    });
+                } else {
+                    $query->whereHas('transaksiMasuk', function (Builder $query) use ($month, $year) {
+                        $query->whereMonth('tanggal_transaksi', $month)
+                            ->whereYear('tanggal_transaksi', $year);
+                    })->orWhereHas('transaksiKeluar', function (Builder $query) use ($month, $year) {
+                        $query->whereMonth('tanggal_transaksi', $month)
+                            ->whereYear('tanggal_transaksi', $year);
+                    });
+                }
+            })
+            ->where('code_kontrakan', $code_kontrakan);
     }
 }

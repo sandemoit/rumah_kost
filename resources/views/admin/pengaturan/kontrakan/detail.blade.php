@@ -18,7 +18,7 @@
                             <div class="card-header">
                                 <h3 class="card-title">Kamar Table</h3>
                                 <div class="card-tools">
-                                    <form action="{{ route('kontrakan.detail', Str::slug($kontrakan->nama_kontrakan)) }}"
+                                    <form action="{{ route('kontrakan.detail', Str::slug($kontrakan->code_kontrakan)) }}"
                                         method="GET">
                                         <div class="input-group input-group-sm" style="width: 150px;">
                                             <input type="text" name="search" id="search"

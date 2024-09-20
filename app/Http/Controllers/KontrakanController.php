@@ -42,7 +42,8 @@ class KontrakanController extends Controller
                         ->orWhere('keterangan', 'LIKE', "%$keyword%");
                 });
             })
-            ->paginate(10);
+            ->paginate(10)
+            ->appends(['search' => $keyword]);
 
         return view('admin.pengaturan.kontrakan.detail', [
             'kamar' => $kamar,

@@ -48,17 +48,17 @@ document.addEventListener('DOMContentLoaded', function () {
         fetch(`/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
-                const saldoAwalHari = document.querySelector('#saldo_awal_hari');
+                // const saldoAwalHari = document.querySelector('#saldo_awal_hari');
                 const semuaPemasukan = document.querySelector('#semua_pemasukan');
                 const semuaPengeluaran = document.querySelector('#semua_pengeluaran');
                 const akumulasi = document.querySelector('#akumulasi');
-                const saldoAkhirHari = document.querySelector('#saldo_akhir_hari');
+                // const saldoAkhirHari = document.querySelector('#saldo_akhir_hari');
 
-                saldoAwalHari.innerText = `${data.saldoAwalHari}`;
+                // saldoAwalHari.innerText = `${data.saldoAwalHari}`;
                 semuaPemasukan.innerText = `${data.semuaPemasukan}`;
                 semuaPengeluaran.innerText = `${data.semuaPengeluaran}`;
                 akumulasi.innerText = `${data.akumulasi}`;
-                saldoAkhirHari.innerText = `${data.saldoAkhirHari}`;
+                // saldoAkhirHari.innerText = `${data.saldoAkhirHari}`;
             })
             .catch(error => console.error('Error:', error));
     };

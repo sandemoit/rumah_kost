@@ -106,3 +106,6 @@
         padding-left: calc(var(--bs-gutter-x) * 0.2);
     }
 }
+.inner p {
+    margin-bottom: 0;
+}

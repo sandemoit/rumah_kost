@@ -27,6 +27,11 @@ class Penyewa extends Model
         return $this->belongsTo(Kamar::class, 'id_kamar');
     }
 
+    public function kontrakan(): BelongsTo
+    {
+        return $this->belongsTo(Kontrakan::class, 'id_kontrakan');
+    }
+
     public function transaksiList()
     {
         return $this->hasMany(TransaksiList::class, 'id_penyewa');
