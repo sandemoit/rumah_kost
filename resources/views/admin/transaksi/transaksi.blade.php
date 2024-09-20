@@ -195,7 +195,8 @@
                     <div class="col-lg-12 col-md-12 col-sm-12">
                         <div class="card mb-4">
                             <div class="card-header">
-                                <div style="float: left;">
+                                <div style="float: left;" class="d-flex">
+                                    <label for="per_page">Tampilkan </label>
                                     <form method="GET" action="{{ url()->current() }}" class="form-inline">
                                         <select name="per_page" id="per_page" class="form-select form-select-sm mx-2"
                                             onchange="this.form.submit()">
@@ -213,6 +214,7 @@
                                                 value="{{ $value }}">
                                         @endforeach
                                     </form>
+                                    <label for="per_page" style="margin-left: 1rem;">activitas</label>
                                 </div>
                                 <div class="card-tools">
                                     <form action="{{ route('transaksi.kontrakan', $code_kontrakan) }}" method="GET">
