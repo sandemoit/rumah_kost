@@ -289,32 +289,33 @@ $(document).ready(function() {
             }
         });
     }
-    function fetchSaldoTahun(codeKontrakan) {
-        const year = getQueryParameter('year');
 
-        $.ajax({
-            url: '/getSaldoTahun/' + codeKontrakan, // Sesuaikan dengan route
-            type: 'GET',
-            data: {
-                year: year    // Kirim tahun dari URL
-            },
-            success: function(data) {
-                // Format saldo menjadi rupiah dan tampilkan
-                const formattedSaldo = formatRupiah(data.totalSaldo);
-                document.getElementById('totalSaldo').innerText = formattedSaldo;
-            },
-            error: function(error) {
-                console.error('Error fetching total saldo:', error);
-                document.getElementById('totalSaldo').innerText = "Error";
-            }
-        });
-    }
+    // function fetchSaldoTahun(codeKontrakan) {
+    //     const year = getQueryParameter('year');
+
+    //     $.ajax({
+    //         url: '/getSaldoTahun/' + codeKontrakan, // Sesuaikan dengan route
+    //         type: 'GET',
+    //         data: {
+    //             year: year    // Kirim tahun dari URL
+    //         },
+    //         success: function(data) {
+    //             // Format saldo menjadi rupiah dan tampilkan
+    //             const formattedSaldo = formatRupiah(data.totalSaldo);
+    //             document.getElementById('totalSaldo').innerText = formattedSaldo;
+    //         },
+    //         error: function(error) {
+    //             console.error('Error fetching total saldo:', error);
+    //             document.getElementById('totalSaldo').innerText = "Error";
+    //         }
+    //     });
+    // }
 
 
     // Mengambil code_kontrakan dari segment URL
     var codeKontrakan = window.location.pathname.split('/')[2];
     fetchSaldoKontrakan(codeKontrakan);
-    fetchSaldoTahun(codeKontrakan);
+    // fetchSaldoTahun(codeKontrakan);
 });
 
 function edit_exin(element) {

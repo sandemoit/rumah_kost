@@ -284,33 +284,33 @@ class TransaksiController extends Controller
         ]);
     }
 
-    public function getSaldoTahun(Request $request, $code_kontrakan)
-    {
-        $year = $request->query('year', now()->year);
+    // public function getSaldoTahun(Request $request, $code_kontrakan)
+    // {
+    //     $year = $request->query('year', now()->year);
 
-        $transaksiList = TransaksiList::where('code_kontrakan', $code_kontrakan)
-            ->whereHas('transaksiMasuk', function ($query) use ($year) {
-                $query->whereYear('tanggal_transaksi', $year);
-            })
-            ->orWhereHas('transaksiKeluar', function ($query) use ($year) {
-                $query->whereYear('tanggal_transaksi', $year);
-            })
-            ->get();
+    //     $transaksiList = TransaksiList::where('code_kontrakan', $code_kontrakan)
+    //         ->whereHas('transaksiMasuk', function ($query) use ($year) {
+    //             $query->whereYear('tanggal_transaksi', $year);
+    //         })
+    //         ->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+    //             $query->whereYear('tanggal_transaksi', $year);
+    //         })
+    //         ->get();
 
-        // Menghitung total pemasukan
-        $totalPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
+    //     // Menghitung total pemasukan
+    //     $totalPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
 
-        // Menghitung total pengeluaran
-        $totalPengeluaran = $transaksiList->where('tipe', 'keluar')->sum('nominal');
+    //     // Menghitung total pengeluaran
+    //     $totalPengeluaran = $transaksiList->where('tipe', 'keluar')->sum('nominal');
 
-        // Menghitung total saldo (pemasukan - pengeluaran)
-        $totalSaldo = $totalPemasukan - $totalPengeluaran;
+    //     // Menghitung total saldo (pemasukan - pengeluaran)
+    //     $totalSaldo = $totalPemasukan - $totalPengeluaran;
 
-        // Mengembalikan response JSON dengan total saldo
-        return response()->json([
-            'totalSaldo' => $totalSaldo,
-        ]);
-    }
+    //     // Mengembalikan response JSON dengan total saldo
+    //     return response()->json([
+    //         'totalSaldo' => $totalSaldo,
+    //     ]);
+    // }
 
     public function store_masuk(Request $request)
     {

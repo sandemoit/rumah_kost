@@ -16,7 +16,7 @@
                     <div class="col-sm-6 text-end">
                         <strong>Saldo</strong>
                         <h3 class="mb-0" id="saldoKontrakan">Loading...</h3>
-                        <span class="smallsaldo">Saldo 1 Tahun: <span id="totalSaldo">Loading...</span></span>
+                        {{-- <span class="smallsaldo">Saldo 1 Tahun: <span id="totalSaldo">Loading...</span></span> --}}
                     </div>
                 </div> <!--end::Row-->
             </div>

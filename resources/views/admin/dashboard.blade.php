@@ -1,3 +1,82 @@
+@push('load-css')
+    <style>
+        .kontrakan-card {
+            position: relative;
+            background-color: white;
+            border-radius: 23px;
+            margin: 15px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            /* Lighter shadow */
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .kontrakan-card:hover {
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            /* Darker shadow on hover */
+            transform: translateY(-5px);
+            /* Slight lift on hover */
+        }
+
+        .corner-accent {
+            height: 128px;
+            width: 128px;
+            z-index: 1;
+            position: absolute;
+            top: -75px;
+            right: -75px;
+            border-radius: 50%;
+            -webkit-transition: all .5s ease;
+            -o-transition: all .5s ease;
+            transition: all .5s ease;
+        }
+
+        .inner:hover,
+        .inner:hover {
+            text-decoration: none;
+            color: #FFF;
+        }
+
+        .inner:hover .corner-accent {
+            -webkit-transform: scale(10);
+            -ms-transform: scale(10);
+            transform: scale(10);
+        }
+
+        .kontrakan-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .kontrakan-left,
+        .kontrakan-right {
+            width: 48%;
+        }
+
+        .kontrakan-details {
+            font-size: 1.1rem;
+            margin: 5px 0;
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .kontrakan-heading {
+            overflow: hidden;
+            position: relative;
+            z-index: 2;
+        }
+
+        .kontrakan-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .inner {
+            padding: 30px 20px;
+        }
+    </style>
+@endpush
 @extends('layouts.app')
 @section('content')
     <main class="app-main"> <!--begin::App Content Header-->
@@ -5,36 +84,37 @@
 
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
-                <div class="row"> <!--begin::Col-->
+                <div class="row">
                     @foreach ($kontrakan as $index => $data)
-                        <div class="col-lg-3 col-6"> <!--begin::Small Box Widget 1-->
+                        <div class="col-lg-3 col-6 mb-4">
                             @php
                                 $colors = [
-                                    'text-bg-primary',
-                                    'text-bg-success',
-                                    'text-bg-warning',
-                                    'text-bg-danger',
-                                    'text-bg-info',
-                                    'text-bg-secondary',
-                                    'text-bg-white',
+                                    'bg-primary',
+                                    'bg-success',
+                                    'bg-warning',
+                                    'bg-danger',
+                                    'bg-info',
+                                    'bg-secondary',
+                                    'bg-light',
                                 ];
                             @endphp
-                            <div class="small-box {{ $colors[$index % count($colors)] }}">
+                            <div class="kontrakan-card">
                                 <div class="inner">
-                                    <h3>{{ $data['nama_kontrakan'] }}</h3>
-                                    <p>{{ $data['totalKamar'] }} Pintu</p>
-                                    <p>{{ $data['terisi'] }} Terisi</p>
-                                    <p>{{ $data['kosong'] }} Kosong</p>
-                                    <p>{{ $data['nunggak'] }} Nunggak</p>
+                                    <div class="corner-accent {{ $colors[$index % count($colors)] }}"></div>
+                                    <h3 class="kontrakan-heading">{{ $data['nama_kontrakan'] }}</h3>
+                                    <div class="kontrakan-info">
+                                        <div class="kontrakan-left">
+                                            <p class="kontrakan-details">{{ $data['totalKamar'] }} Pintu</p>
+                                            <p class="kontrakan-details">{{ $data['kosong'] }} Kosong</p>
+                                        </div>
+                                        <div class="kontrakan-right">
+                                            <p class="kontrakan-details">{{ $data['terisi'] }} Terisi</p>
+                                            <p class="kontrakan-details">{{ $data['nunggak'] }} Nunggak</p>
+                                        </div>
+                                    </div>
                                 </div>
-                                <svg class="small-box-icon" fill="currentColor" viewBox="0 0 24 24"
-                                    xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                                    <path
-                                        d="M3 13h1v7c0 1.103.897 2 2 2h12c1.103 0 2-.897 2-2v-7h1a1 1 0 0 0 .707-1.707l-9-9a.999.999 0 0 0-1.414 0l-9 9A1 1 0 0 0 3 13zm7 7v-5h4v5h-4zm2-15.586 6 6V15l.001 5H16v-5c0-1.103-.897-2-2-2h-4c-1.103 0-2 .897-2 2v5H6v-9.586l6-6z">
-                                    </path>
-                                </svg>
-                            </div> <!--end::Small Box Widget 1-->
-                        </div> <!--end::Col-->
+                            </div>
+                        </div>
                     @endforeach
                 </div> <!--end::Row--> <!--begin::Row-->
             </div> <!--end::Container-->
