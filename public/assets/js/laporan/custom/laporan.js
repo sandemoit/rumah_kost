@@ -1,7 +1,8 @@
 document.addEventListener('DOMContentLoaded', function () {
-    {// Inisialisasi datepicker dengan format 'dd-mm-yy'
-    $('#lap_tgl').datepicker({
-        dateFormat: 'dd-mm-yy', // Set the date format
+    {
+    // Inisialisasi datepicker dengan format 'dd-mm-yy'
+    $('#daterange').daterangepicker({
+        dateFormat: 'MM/DD/YYYY', // Set the date format
         onSelect: function (dateText) {
             // Update the input value with the selected date
             $(this).val(dateText);
@@ -24,7 +25,7 @@ document.addEventListener('DOMContentLoaded', function () {
             updateExIn(formattedDate, codeKontrakan);
         }
     });
-
+    
     const selectReport = document.getElementById('selectReport');
     const headingTitle = document.getElementById('headingTitle');
     const cardTitle = document.getElementById('cardTitle');
@@ -37,7 +38,7 @@ document.addEventListener('DOMContentLoaded', function () {
         headingTitle.textContent = selectedText;
         cardTitle.textContent = selectedText;
 
-        const date = document.querySelector('.datepicker').value;
+        const date = $('#daterange').val();
         const formattedDate = formatDate(date);
         window.history.pushState({}, '', `?book=${codeKontrakan}`);
         updateBukuKas(formattedDate, codeKontrakan);
@@ -132,16 +133,8 @@ document.addEventListener('DOMContentLoaded', function () {
         if (typeof date !== 'string') {
             return '';
         }
-        const [day, month, year] = date.split('-');
+        const [month, day, year] = date.split('/');
         return `${day}-${month}-${year}`;
-    };
-
-    const changedate = () => {
-        const date = document.querySelector('.datepicker').value;
-        const codeKontrakan = document.getElementById('selectReport').value;
-        const formattedDate = formatDate(date);
-        updateBukuKas(formattedDate, codeKontrakan);
-        updateExIn(formattedDate, codeKontrakan);
     };
 
     // Inisialisasi chart
@@ -177,7 +170,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     });
 
-    const todayDate = document.querySelector('.datepicker').value;
+    const todayDate = $('#daterange').val();
    
     updateBukuKas(todayDate);
     updateExIn(todayDate);}

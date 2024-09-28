@@ -4,7 +4,7 @@
             position: relative;
             background-color: white;
             border-radius: 23px;
-            margin: 15px;
+            margin-bottom: 2rem;
             box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
             /* Lighter shadow */
             transition: transform 0.3s ease, box-shadow 0.3s ease;
@@ -15,6 +15,18 @@
             /* Darker shadow on hover */
             transform: translateY(-5px);
             /* Slight lift on hover */
+        }
+
+        @media (max-width: 767px) {
+            .kontrakan-card {
+                margin: 15px:
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 991px) {
+            .kontrakan-card {
+                margin: 15px:
+            }
         }
 
         .corner-accent {
@@ -65,6 +77,7 @@
             overflow: hidden;
             position: relative;
             z-index: 2;
+            font-weight: 600
         }
 
         .kontrakan-card {
@@ -86,7 +99,7 @@
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row">
                     @foreach ($kontrakan as $index => $data)
-                        <div class="col-lg-3 col-6 mb-4">
+                        <div class="col-lg-3 col-sm-12 col-md-6">
                             @php
                                 $colors = [
                                     'bg-primary',
@@ -101,7 +114,8 @@
                             <div class="kontrakan-card">
                                 <div class="inner">
                                     <div class="corner-accent {{ $colors[$index % count($colors)] }}"></div>
-                                    <h3 class="kontrakan-heading">{{ $data['nama_kontrakan'] }}</h3>
+                                    <h3 class="kontrakan-heading"><i class="bi bi-door-closed"></i>
+                                        {{ $data['nama_kontrakan'] }}</h3>
                                     <div class="kontrakan-info">
                                         <div class="kontrakan-left">
                                             <p class="kontrakan-details">{{ $data['totalKamar'] }} Pintu</p>

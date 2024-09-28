@@ -69,7 +69,7 @@ document.addEventListener('DOMContentLoaded', function () {
             .catch(error => console.error('Error:', error));
     };
 
-    const updateExIn = (date, codeKontrakan = 'all') => {
+     const updateExIn = (date, codeKontrakan = 'all') => {
         fetch(`/tahunan/getAllExIn?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
@@ -81,29 +81,41 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 let totalPengeluaran = 0;
                 let totalPemasukan = 0;
+                
+                const kamarMap = {}; // Object untuk menyimpan total nominal per kamar
 
-                // Loop melalui setiap code_kontrakan di dalam data yang diterima
-                Object.values(data.data).forEach(transaksi => {
-                    // Menambah baris pemasukan untuk setiap kontrakan
-                    const pemasukanRow = document.createElement('tr');
-                    pemasukanRow.innerHTML = `
-                        <td>${transaksi.nama_kontrakan}</td>
-                        <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.total_masuk.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
-                    `;
-                    inexinElement.appendChild(pemasukanRow);
-                    totalPemasukan += transaksi.total_masuk;
-
-                    // Menambah baris pengeluaran untuk setiap kontrakan
-                    const pengeluaranRow = document.createElement('tr');
-                    pengeluaranRow.innerHTML = `
-                        <td>${transaksi.nama_kontrakan}</td>
-                        <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.total_keluar.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
-                    `;
-                    exinElement.appendChild(pengeluaranRow);
-                    totalPengeluaran += transaksi.total_keluar;
+                data.transaksiKeluar.forEach(transaksi => {
+                    transaksi.nama_kamar.forEach(kamar => {
+                        if (!kamarMap[kamar]) {
+                            kamarMap[kamar] = 0; // Jika kamar belum ada, inisialisasi dengan 0
+                        }
+                        kamarMap[kamar] += parseFloat(transaksi.total_nominal); // Tambahkan nominal
+                    });
                 });
+
+                // Setelah data tergabung, render ke dalam tabel
+                Object.keys(kamarMap).forEach(kamar => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${kamar}</td>
+                        <td class="right tdmatauang">Rp</td>
+                        <td class="right tduang">${kamarMap[kamar].toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>`;
+                    exinElement.appendChild(row);
+                });
+
+                data.transaksiMasuk.forEach(transaksi => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaksi.nama_kamar}</td>
+                        <td class="right tdmatauang">Rp</td>
+                        <td class="right tduang">${transaksi.total_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                    `;
+                    inexinElement.appendChild(row);
+                    
+                    // Pastikan total_nominal diubah menjadi number sebelum dijumlahkan
+                    totalPemasukan += parseFloat(transaksi.total_nominal);
+                });
+
 
                 // Menambahkan baris total pengeluaran
                 const totalPengeluaranRow = document.createElement('tr');
@@ -123,7 +135,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 `;
                 inexinElement.appendChild(totalPemasukanRow);
 
-                // Memperbarui chart dengan data baru (jika ada fungsi chart)
+                // Memperbarui chart dengan data baru
                 updateChart(totalPemasukan, totalPengeluaran);
             })
             .catch(error => console.error('Error:', error));

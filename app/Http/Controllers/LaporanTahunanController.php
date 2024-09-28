@@ -131,67 +131,61 @@ class LaporanTahunanController extends Controller
         // Pisahkan tahun dan Tahun dari parameter 'date'
         $year = Carbon::createFromFormat('Y', $date)->year;
 
-        $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
+        // Query transaksi masuk dengan groupBy kamar dan agregasi nominal
+        $transaksiMasukQuery = TransaksiList::select('code_kontrakan', 'id_kamar', DB::raw('SUM(nominal) as total_nominal'))
+            ->where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($year) {
                 $query->whereYear('tanggal_transaksi', $year);
-            });
+            })
+            ->groupBy('id_kamar', 'code_kontrakan');
 
-
-        $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
+        // Query transaksi keluar dengan groupBy kamar dan agregasi nominal
+        $transaksiKeluarQuery = TransaksiList::select('code_kontrakan', 'id_kamar', DB::raw('SUM(nominal) as total_nominal'))
+            ->where('tipe', 'keluar')
             ->whereHas('transaksiKeluar', function ($query) use ($year) {
                 $query->whereYear('tanggal_transaksi', $year);
-            });
+            })
+            ->groupBy('id_kamar', 'code_kontrakan');
 
+        // Filter berdasarkan code_kontrakan jika ada
         if ($code_kontrakan !== 'all') {
-            $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
             $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
+            $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
         }
 
-        $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
-        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
+        // Ambil hasil query transaksi masuk dan keluar
+        $transaksiMasuk = $transaksiMasukQuery->with('kamar')->get();
+        $transaksiKeluar = $transaksiKeluarQuery->with('kamar')->get();
 
-        // Mengelompokkan transaksi masuk berdasarkan code_kontrakan dan menghitung total pemasukan
-        $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
-            return [
-                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                'total_masuk' => $items->sum('nominal')
-            ];
-        });
-
-        // Mengelompokkan transaksi keluar berdasarkan code_kontrakan dan menghitung total pengeluaran
-        $groupedKeluar = $transaksiKeluar->groupBy('code_kontrakan')->map(function ($items) {
-            return [
-                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
-                'total_keluar' => $items->sum('nominal')
-            ];
-        });
-
-        // Persiapan data yang akan diparsing dan dikirimkan dalam response JSON
-        $result = [];
-
-        // Loop pertama: Proses data pemasukan dan pengeluaran
-        foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
-            $result[$code_kontrakan] = [
-                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
-                'total_masuk' => $dataMasuk['total_masuk'],
-                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
-            ];
-        }
-
-        // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
-        foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
-            if (!isset($result[$code_kontrakan])) {
-                $result[$code_kontrakan] = [
-                    'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
-                    'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0
-                    'total_keluar' => $dataKeluar['total_keluar']
-                ];
+        // Looping untuk transaksi masuk
+        foreach ($transaksiMasuk as $transaksi) {
+            $id_kamar = json_decode($transaksi->id_kamar, true);
+            if ($id_kamar) {
+                $kamar = Kamar::whereIn('id', $id_kamar)->get();
+                $transaksi->nama_kamar = $kamar->pluck('nama_kamar')->implode(', ') ?? 'Unknown';
             }
         }
 
-        // Mengembalikan data yang sudah dikelompokkan dalam bentuk JSON
+        // Looping untuk transaksi keluar
+        foreach ($transaksiKeluar as $transaksi) {
+            // Decode id_kamar JSON array
+            $id_kamar = json_decode($transaksi->id_kamar, true);
+
+            // Jika id_kamar ada, proses tiap elemen
+            if ($id_kamar) {
+                // Ambil semua nama kamar berdasarkan array id_kamar
+                $kamar = Kamar::whereIn('id', $id_kamar)->get();
+
+                // Ubah hasil menjadi array string nama kamar
+                $transaksi->nama_kamar = $kamar->pluck('nama_kamar')->toArray();
+            } else {
+                $transaksi->nama_kamar = ['Unknown'];
+            }
+        }
+
         return response()->json([
-            'data' => $result
+            'transaksiMasuk' => $transaksiMasuk,
+            'transaksiKeluar' => $transaksiKeluar,
         ]);
     }
 

@@ -29,14 +29,14 @@ function slidedetail(a) {
 document.addEventListener('DOMContentLoaded', function() {
     
     async function drawPage() {
-        let endpount = $('#endpoint').val();
+        let endpoint = $('#endpoint').val();
         let postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
             'date': $('#daterange').val(),
             'book': $('#selectReportActivity').val(),
         }
         
-        response = await fetch(`${endpount}/api/aktivitas/custom`, {
+        response = await fetch(`${endpoint}/api/aktivitas/custom`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

@@ -19,6 +19,11 @@ class Kamar extends Model
         'keterangan'
     ];
 
+    public function kontrakan(): BelongsTo
+    {
+        return $this->belongsTo(Kontrakan::class, 'id_kontrakan');
+    }
+
     public function penyewa()
     {
         return $this->hasMany(Penyewa::class, 'id_kamar');
@@ -27,10 +32,5 @@ class Kamar extends Model
     public function transaksiList()
     {
         return $this->hasMany(TransaksiList::class, 'id_kamar');
-    }
-
-    public function kontrakan(): BelongsTo
-    {
-        return $this->belongsTo(Kontrakan::class, 'id_kontrakan');
     }
 }

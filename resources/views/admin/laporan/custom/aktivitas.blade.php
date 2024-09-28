@@ -1,7 +1,6 @@
 @push('load-css')
     <link rel="stylesheet" href="{{ asset('assets/css/laporan.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/css/jquery-ui.min.css') }}">
-
     <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
 @endpush
 @extends('layouts.app')

@@ -25,25 +25,28 @@ class LaporanCustomController extends Controller
 
     public function getAllBukuKas(Request $request)
     {
-        // Mengambil parameter 'date' dan 'book' dari query string
-        $date = $request->query('date');
-        $code_kontrakan = $request->query('book', 'all');
-
         // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal Custom ini
-        if (!$date) {
-            $date = Carbon::now()->format('Y-m-d');
+        if (!empty($request->date)) {
+            $date = explode(' - ', $request->input('date'));
+            $dateStart = Carbon::createFromFormat('m/d/Y', $date[0])->startOfDay();
+            $dateEnd = Carbon::createFromFormat('m/d/Y', $date[1])->endOfDay();
         } else {
-            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
-            $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
+            $dateStart = Carbon::now()->startOfDay();
+            $dateEnd = Carbon::now()->endOfDay();
         }
+
+        // Mengambil parameter 'book' dari query string
+        $code_kontrakan = $request->query('book', 'all');
 
         // Menghitung saldo awal Custom
         $saldoAwalCustomQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
-            ->where(function ($query) use ($date) {
-                $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('tanggal_transaksi', '<', $date);
-                })->orWhereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->whereDate('tanggal_transaksi', '<', $date);
+            ->where(function ($query) use ($dateStart) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($dateStart) {
+                    // Mengubah penulisan whereDate yang benar
+                    $query->whereDate('tanggal_transaksi', '<', $dateStart);
+                })->orWhereHas('transaksiKeluar', function ($query) use ($dateStart) {
+                    // Mengubah penulisan whereDate yang benar
+                    $query->whereDate('tanggal_transaksi', '<', $dateStart);
                 });
             })
             ->groupBy('code_kontrakan');
@@ -56,17 +59,19 @@ class LaporanCustomController extends Controller
 
         // Menghitung semua pemasukan dan pengeluaran pada tanggal tertentu
         $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where(function ($query) use ($date, $code_kontrakan) {
-                $query->whereHas('transaksiMasuk', function ($query) use ($date) {
-                    $query->whereDate('tanggal_transaksi', '=', $date);
+            ->where(function ($query) use ($dateStart, $dateEnd, $code_kontrakan) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($dateStart, $dateEnd) {
+                    // Perbaikan whereDate untuk rentang tanggal
+                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
                 })
                     ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
                         $query->where('code_kontrakan', $code_kontrakan);
                     });
             })
-            ->orWhere(function ($query) use ($date, $code_kontrakan) {
-                $query->whereHas('transaksiKeluar', function ($query) use ($date) {
-                    $query->whereDate('tanggal_transaksi', '=', $date);
+            ->orWhere(function ($query) use ($dateStart, $dateEnd, $code_kontrakan) {
+                $query->whereHas('transaksiKeluar', function ($query) use ($dateStart, $dateEnd) {
+                    // Perbaikan whereDate untuk rentang tanggal
+                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
                 })
                     ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
                         $query->where('code_kontrakan', $code_kontrakan);
@@ -96,76 +101,72 @@ class LaporanCustomController extends Controller
     public function getAllExIn(Request $request)
     {
         // Mengambil parameter 'date' dan 'book' dari query string
-        $date = $request->query('date');
-        $code_kontrakan = $request->query('book', 'all');
-
-        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal hari ini
-        if (!$date) {
-            $date = Carbon::now()->format('Y-m-d');
+        if (!empty($request->date)) {
+            $date = explode(' - ', $request->input('date'));
+            $startDate = Carbon::createFromFormat('m/d/Y', $date[0])->startOfDay();
+            $endDate = Carbon::createFromFormat('m/d/Y', $date[1])->endOfDay();
         } else {
-            // Ubah format tanggal dari 'd-m-Y' ke 'Y-m-d'
-            try {
-                // Ubah format tanggal dari 'Y-m' ke 'Y-m'
-                $date = Carbon::createFromFormat('d-m-Y', $date)->format('Y-m-d');
-            } catch (\Exception $e) {
-                return response()->json(['error' => 'Invalid date format. Please use Y-m-d format.'], 400);
-            }
+            $startDate = Carbon::now()->startOfDay();
+            $endDate = Carbon::now()->endOfDay();
         }
 
+        $code_kontrakan = $request->query('book', 'all');
+
+        // Query transaksi masuk dan keluar
         $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
-            ->whereHas('transaksiMasuk', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
+            ->whereHas('transaksiMasuk', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
             });
 
         $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
-            ->whereHas('transaksiKeluar', function ($query) use ($date) {
-                $query->whereDate('tanggal_transaksi', $date);
+            ->whereHas('transaksiKeluar', function ($query) use ($startDate, $endDate) {
+                $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
             });
 
+        // Jika 'book' bukan 'all', filter berdasarkan 'code_kontrakan'
         if ($code_kontrakan !== 'all') {
             $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
             $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
         }
 
-        $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
+        // Ambil data dengan relasi dan optimasi query menggunakan 'with'
         $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
+        $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
 
-        // Mengelompokkan transaksi masuk berdasarkan code_kontrakan dan menghitung total pemasukan
+        // Mengelompokkan dan menghitung total pemasukan per code_kontrakan
         $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
+            $nama_kontrakan = Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown';
             return [
-                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                'nama_kontrakan' => $nama_kontrakan,
                 'total_masuk' => $items->sum('nominal')
             ];
         });
 
-        // Mengelompokkan transaksi keluar berdasarkan code_kontrakan dan menghitung total pengeluaran
+        // Mengelompokkan dan menghitung total pengeluaran per code_kontrakan
         $groupedKeluar = $transaksiKeluar->groupBy('code_kontrakan')->map(function ($items) {
+            $nama_kontrakan = Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown';
             return [
-                'nama_kontrakan' => Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
+                'nama_kontrakan' => $nama_kontrakan,
                 'total_keluar' => $items->sum('nominal')
             ];
         });
 
-        // Persiapan data yang akan diparsing dan dikirimkan dalam response JSON
+        // Gabungkan data pemasukan dan pengeluaran ke dalam satu result
         $result = [];
 
-        // Loop pertama: Proses data pemasukan dan pengeluaran
         foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
-            if ($dataMasuk['total_masuk'] > 0 || (isset($groupedKeluar[$code_kontrakan]) && $groupedKeluar[$code_kontrakan]['total_keluar'] > 0)) {
-                $result[$code_kontrakan] = [
-                    'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
-                    'total_masuk' => $dataMasuk['total_masuk'],
-                    'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Pastikan pengeluaran default ke 0
-                ];
-            }
+            $result[$code_kontrakan] = [
+                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
+                'total_masuk' => $dataMasuk['total_masuk'],
+                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Default pengeluaran 0 jika tidak ada
+            ];
         }
 
-        // Loop kedua: Proses kontrakan yang hanya punya pengeluaran
         foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
-            if (!isset($result[$code_kontrakan]) && $dataKeluar['total_keluar'] > 0) {
+            if (!isset($result[$code_kontrakan])) {
                 $result[$code_kontrakan] = [
                     'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
-                    'total_masuk' => $groupedMasuk[$code_kontrakan]['total_masuk'] ?? 0, // Pemasukan default ke 0
+                    'total_masuk' => 0, // Default pemasukan 0 jika tidak ada
                     'total_keluar' => $dataKeluar['total_keluar']
                 ];
             }

@@ -96,27 +96,27 @@ document.addEventListener('DOMContentLoaded', function () {
                 let totalPengeluaran = 0;
                 let totalPemasukan = 0;
 
-                // Loop melalui setiap code_kontrakan di dalam data yang diterima
-                Object.values(data.data).forEach(transaksi => {
-                    // Menambah baris pemasukan untuk setiap kontrakan
-                    const pemasukanRow = document.createElement('tr');
-                    pemasukanRow.innerHTML = `
-                        <td>${transaksi.nama_kontrakan}</td>
-                        <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.total_masuk.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
-                    `;
-                    inexinElement.appendChild(pemasukanRow);
-                    totalPemasukan += transaksi.total_masuk;
+                data.transaksiKeluar.forEach(transaksi => {
+                    transaksi.nama_kamar.forEach(kamar => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${kamar}</td>
+                            <td class="right tdmatauang">Rp</td>
+                            <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>`;
+                        exinElement.appendChild(row);
+                    });
+                    totalPengeluaran += transaksi.nominal;
+                });
 
-                    // Menambah baris pengeluaran untuk setiap kontrakan
-                    const pengeluaranRow = document.createElement('tr');
-                    pengeluaranRow.innerHTML = `
-                        <td>${transaksi.nama_kontrakan}</td>
+                data.transaksiMasuk.forEach(transaksi => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaksi.nama_kamar}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.total_keluar.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
                     `;
-                    exinElement.appendChild(pengeluaranRow);
-                    totalPengeluaran += transaksi.total_keluar;
+                    inexinElement.appendChild(row);
+                    totalPemasukan += transaksi.nominal;
                 });
 
                 // Menambahkan baris total pengeluaran
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPengeluaranRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
                 `;
                 exinElement.appendChild(totalPengeluaranRow);
 
@@ -133,16 +133,15 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPemasukanRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
                 `;
                 inexinElement.appendChild(totalPemasukanRow);
 
-                // Memperbarui chart dengan data baru (jika ada fungsi chart)
+                // Memperbarui chart dengan data baru
                 updateChart(totalPemasukan, totalPengeluaran);
             })
             .catch(error => console.error('Error:', error));
     };
-
 
     const updateChart = (pemasukan, pengeluaran) => {
         reportChart.data.datasets[0].data = [pemasukan, pengeluaran];

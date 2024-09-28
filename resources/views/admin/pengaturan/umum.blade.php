@@ -5,7 +5,7 @@
         <div class="app-content"> <!--begin::Container-->
             <div class="container-fluid"> <!--begin::Row-->
                 <div class="row g-4"> <!--begin::Col-->
-                    <div class="col-md-6"> <!--begin::Quick Example-->
+                    <div class="col-md-12 col-lg-6 col-sm-12"> <!--begin::Quick Example-->
                         <div class="card card-primary card-outline mb-4"> <!--begin::Header-->
                             <div class="card-header">
                                 <div class="card-title">Form Setting Aplikasi</div>
