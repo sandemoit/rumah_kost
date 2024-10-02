@@ -57,6 +57,7 @@
                                             <th>Tanggal Masuk</th>
                                             <th>Nomor WA</th>
                                             <th>Kamar</th>
+                                            <th>Harga Sewa</th>
                                             <th class="text-center">Status</th>
                                             <th>Aksi</th>
                                         </tr>
@@ -70,6 +71,7 @@
                                                     <td>{{ tanggal($key->tanggal_masuk) }}</td>
                                                     <td><a href="tel:{{ $key->nomor_wa }}">{{ $key->nomor_wa }}</a></td>
                                                     <td>{{ $key->kamar['nama_kamar'] }}</td>
+                                                    <td style="text-align: right">{{ rupiah($key->harga_sewa) }}</td>
                                                     <td class="text-center">
                                                         @if ($key->status == 'aktif')
                                                             <span class="badge bg-success">Aktif</span>

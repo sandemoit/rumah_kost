@@ -52,13 +52,13 @@
                             </p>
                         </a>
                         <ul class="nav nav-treeview">
-                            <li class="nav-item">
+                            {{-- <li class="nav-item">
                                 <a href="{{ route('laporan.harian') }}"
                                     class="nav-link {{ request()->segment(2) == 'harian' ? 'active' : '' }}">
                                     <i class="nav-icon bi bi-circle-fill"></i>
                                     <p>Harian</p>
                                 </a>
-                            </li>
+                            </li> --}}
                             <li class="nav-item">
                                 <a href="{{ route('laporan.bulanan') }}"
                                     class="nav-link {{ request()->segment(2) == 'bulanan' ? 'active' : '' }}">

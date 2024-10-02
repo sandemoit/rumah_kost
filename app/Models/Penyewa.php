@@ -19,7 +19,8 @@ class Penyewa extends Model
         'tanggal_masuk',
         'tanggal_keluar',
         'id_kontrakan',
-        'id_kamar'
+        'id_kamar',
+        'harga_sewa'
     ];
 
     public function kamar(): BelongsTo

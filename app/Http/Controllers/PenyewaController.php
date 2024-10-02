@@ -22,7 +22,8 @@ class PenyewaController extends Controller
         $kamar = Kamar::select('id', 'nama_kamar', 'id_kontrakan')->get();
         $penyewa = Penyewa::with(['kamar:id,nama_kamar,id_kontrakan'])
             ->select('id', 'nama_penyewa', 'status', 'nomor_wa', 'id_kamar', 'id_kontrakan', 'tanggal_masuk')
-            ->get();
+            ->get()
+            ->sortByDesc('kamar.nama_kamar');
 
         // Check which rooms are full
         $kamarTerisi = Penyewa::where('status', 'aktif')->pluck('id_kamar')->toArray();
@@ -88,6 +89,7 @@ class PenyewaController extends Controller
 
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
         $status = $tanggal_masuk->isFuture() ? 'tidak_aktif' : 'aktif';
+        $kamar = Kamar::findOrFail($request->id_kamar);
 
         // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
         $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
@@ -107,6 +109,7 @@ class PenyewaController extends Controller
                 'tanggal_masuk' => $tanggal_masuk,
                 'id_kontrakan' => $request->id_kontrakan,
                 'id_kamar' => $request->id_kamar,
+                'harga_sewa' => $kamar->harga_kamar,
             ]);
 
             return redirect()->back()->with('success', 'Penyewa berhasil ditambahkan.');
@@ -132,6 +135,7 @@ class PenyewaController extends Controller
 
         $tanggal_masuk = Carbon::parse($request->tanggal_masuk);
         $status = $tanggal_masuk->isFuture() ? 'tidak_aktif' : 'aktif';
+        $kamar = Kamar::findOrFail($request->id_kamar);
 
         // Cek apakah kamar sudah diisi oleh penyewa lain yang aktif
         $penyewaAktif = Penyewa::where('id_kontrakan', $request->id_kontrakan)
@@ -152,6 +156,7 @@ class PenyewaController extends Controller
                 'tanggal_masuk' => $request->tanggal_masuk,
                 'id_kontrakan' => $request->id_kontrakan,
                 'id_kamar' => $request->id_kamar,
+                'harga_sewa' => $kamar->harga_kamar,
             ]);
 
             // Redirect dengan pesan sukses
