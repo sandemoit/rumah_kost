@@ -1,35 +1,36 @@
 document.addEventListener('DOMContentLoaded', function () {
-    {
-    // Inisialisasi datepicker dengan format 'dd-mm-yy'
-    $('#daterange').daterangepicker({
-        dateFormat: 'MM/DD/YYYY', // Set the date format
-        onSelect: function (dateText) {
-            // Update the input value with the selected date
-            $(this).val(dateText);
-            // Trigger the onchange event
-            const fd = formatDate(dateText);
-            const ck = selectReport.value;
-            const cu = window.location.href;
-            const up = new URLSearchParams(window.location.search);
-            if (up.has('book')) {
-                up.set('book', ck);
-            }
-            if (up.has('date')) {
-                up.set('date', fd);
-            } else {
-                up.append('date', fd);
-            }
-            const newUrl = `${cu.split('?')[0]}?${up.toString()}`;
-            window.history.pushState({}, '', newUrl);
-            updateBukuKas(fd, ck);
-            updateExIn(fd, ck);
-        }
-    });
-    
     const selectReport = document.getElementById('selectReport');
     const headingTitle = document.getElementById('headingTitle');
     const cardTitle = document.getElementById('cardTitle');
 
+     // Inisialisasi Date Range Picker
+    $('#daterange').daterangepicker({
+        locale: {
+            format: 'MM/DD/YYYY' // Sesuaikan format
+        }
+    }, function(start, end) {
+        // Ketika tanggal dipilih, format dan kirim data
+        const dr = `${start.format('MM/DD/YYYY')} - ${end.format('MM/DD/YYYY')}`;
+        $('#daterange').val(dr);
+
+        // Memperbarui URL dan memicu pembaruan data
+        const ck = selectReport.value;
+        const cu = window.location.href;
+        const up = new URLSearchParams(window.location.search);
+
+        if (up.has('book')) {
+            up.set('book', ck);
+        }
+        up.set('date', dr); // Set rentang tanggal baru
+
+        const newUrl = `${cu.split('?')[0]}?${up.toString()}`;
+        window.history.pushState({}, '', newUrl);
+        
+        updateBukuKas(dr, ck);
+        updateExIn(dr, ck);
+    });
+
+    // Update ketika report dipilih
     selectReport.addEventListener('change', function () {
         const codeKontrakan = this.value;
         const selectedText = this.options[this.selectedIndex].text;
@@ -39,38 +40,41 @@ document.addEventListener('DOMContentLoaded', function () {
         cardTitle.textContent = selectedText;
 
         const date = $('#daterange').val();
-        const formattedDate = formatDate(date);
+        const formattedDate = date;
         window.history.pushState({}, '', `?book=${codeKontrakan}`);
         updateBukuKas(formattedDate, codeKontrakan);
         updateExIn(formattedDate, codeKontrakan);
     });
 
+     // Fungsi untuk memformat tanggal
+    const formatDate = (date) => {
+        if (typeof date !== 'string') {
+            return '';
+        }
+        const [month, day, year] = date.split('/');
+        return `${day}/${month}/${year}`; // Format: dd-mm-yyyy
+    };
+
+    // Fungsi untuk memperbarui buku kas
     const updateBukuKas = (date, codeKontrakan = 'all') => {
         fetch(`/custom/getAllBukuKas?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
-                // const saldoAwalCustom = document.querySelector('#saldo_awal_custom');
-                const semuaPemasukan = document.querySelector('#semua_pemasukan');
-                const semuaPengeluaran = document.querySelector('#semua_pengeluaran');
-                const akumulasi = document.querySelector('#akumulasi');
-                // const saldoAkhirCustom = document.querySelector('#saldo_akhir_custom');
-
-                // saldoAwalCustom.innerText = `${data.saldoAwalCustom}`;
-                semuaPemasukan.innerText = `${data.semuaPemasukan}`;
-                semuaPengeluaran.innerText = `${data.semuaPengeluaran}`;
-                akumulasi.innerText = `${data.akumulasi}`;
-                // saldoAkhirCustom.innerText = `${data.saldoAkhirCustom}`;
+                document.querySelector('#semua_pemasukan').innerText = `${data.semuaPemasukan}`;
+                document.querySelector('#semua_pengeluaran').innerText = `${data.semuaPengeluaran}`;
+                document.querySelector('#akumulasi').innerText = `${data.akumulasi}`;
             })
             .catch(error => console.error('Error:', error));
     };
 
+    // Fungsi untuk memperbarui pemasukan dan pengeluaran
     const updateExIn = (date, codeKontrakan = 'all') => {
         fetch(`/custom/getAllExIn?date=${date}&book=${codeKontrakan}`)
             .then(response => response.json())
             .then(data => {
                 const exinElement = document.querySelector('#ex_exin tbody');
                 const inexinElement = document.querySelector('#in_exin tbody');
-
+                
                 exinElement.innerHTML = '';
                 inexinElement.innerHTML = '';
 
@@ -78,111 +82,77 @@ document.addEventListener('DOMContentLoaded', function () {
                 let totalPemasukan = 0;
 
                 data.transaksiKeluar.forEach(transaksi => {
-                    if (Array.isArray(transaksi.nama_kamar)) {
-                        transaksi.nama_kamar.forEach(kamar => {
-                            const row = document.createElement('tr');
-                            row.innerHTML = `
-                                <td>${kamar}</td>
-                                <td class="right tdmatauang">Rp</td>
-                                <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
-                            exinElement.appendChild(row);
-                        });
-                    } else {
-                        const row = document.createElement('tr');
-                        row.innerHTML = `
-                            <td>${transaksi.nama_kamar}</td>
-                            <td class="right tdmatauang">Rp</td>
-                            <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
-                        exinElement.appendChild(row);
-                    }
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${transaksi.nama_kamar}</td>
+                        <td class="right tdmatauang">Rp</td>
+                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
+                    exinElement.appendChild(row);
                     totalPengeluaran += transaksi.nominal;
                 });
 
-                // Loop melalui setiap code_kontrakan di dalam data yang diterima
                 data.transaksiMasuk.forEach(transaksi => {
                     const row = document.createElement('tr');
                     row.innerHTML = `
                         <td>${transaksi.nama_kamar}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
-                    `;
+                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                     inexinElement.appendChild(row);
                     totalPemasukan += transaksi.nominal;
                 });
 
-                // Menambahkan baris total pengeluaran
+                // Total Pengeluaran
                 const totalPengeluaranRow = document.createElement('tr');
                 totalPengeluaranRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
-                `;
+                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                 exinElement.appendChild(totalPengeluaranRow);
 
-                // Menambahkan baris total pemasukan
+                // Total Pemasukan
                 const totalPemasukanRow = document.createElement('tr');
                 totalPemasukanRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
-                `;
+                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                 inexinElement.appendChild(totalPemasukanRow);
 
-                // Memperbarui chart dengan data baru
+                // Update chart
                 updateChart(totalPemasukan, totalPengeluaran);
             })
             .catch(error => console.error('Error:', error));
     };
 
+     // Fungsi untuk memperbarui chart
     const updateChart = (pemasukan, pengeluaran) => {
         reportChart.data.datasets[0].data = [pemasukan, pengeluaran];
         reportChart.update();
     };
 
-    const formatDate = (date) => {
-        if (typeof date !== 'string') {
-            return '';
-        }
-        const [month, day, year] = date.split('/');
-        return `${day}-${month}-${year}`;
-    };
-
     // Inisialisasi chart
-    var ctx = document.getElementById('reportChart').getContext('2d');
-    var reportChart = new Chart(ctx, {
+    const ctx = document.getElementById('reportChart').getContext('2d');
+    const reportChart = new Chart(ctx, {
         type: 'bar',
         data: {
             labels: ['Pemasukan', 'Pengeluaran'],
             datasets: [{
                 data: [0, 0],
-                backgroundColor: [
-                    'rgba(0, 128, 0, 0.2)',
-                    'rgba(255, 0, 0, 0.2)'
-                ],
-                borderColor: [
-                    'rgba(0, 128, 0, 1)',
-                    'rgba(255, 0, 0, 1)'
-                ],
+                backgroundColor: ['rgba(0, 128, 0, 0.2)', 'rgba(255, 0, 0, 0.2)'],
+                borderColor: ['rgba(0, 128, 0, 1)', 'rgba(255, 0, 0, 1)'],
                 borderWidth: 2
             }]
         },
         options: {
             plugins: {
-                legend: {
-                    display: false // Sembunyikan legend
-                }
+                legend: { display: false } // Sembunyikan legend
             },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
+            scales: { y: { beginAtZero: true } }
         }
     });
 
+    // Mengambil tanggal default pada saat halaman dimuat pertama kali
     const todayDate = $('#daterange').val();
-   
     updateBukuKas(todayDate);
-    updateExIn(todayDate);}
+    updateExIn(todayDate);
 });
 

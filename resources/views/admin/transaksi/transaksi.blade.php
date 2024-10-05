@@ -56,8 +56,7 @@
                                         style="max-width: 72px;">
                                         <?php
                                         $nowYear = request()->input('year', date('Y'));
-                                        $currentYear = date('Y');
-                                        for ($i = $currentYear - 5; $i <= $currentYear; $i++) {
+                                        for ($i = 2023; $i <= date('Y'); $i++) {
                                             echo '<option value="' . $i . '" ' . ($i == $nowYear ? 'selected' : '') . '>' . $i . '</option>';
                                         }
                                         ?>
