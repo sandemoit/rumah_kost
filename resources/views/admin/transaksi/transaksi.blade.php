@@ -145,8 +145,8 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            {{-- <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
-                                id="deleteButtonPemasukan">Hapus</a> --}}
+                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPemasukan">Hapus</a>
                         </div>
                     </form>
 
@@ -162,7 +162,7 @@
                         </div>
                         <div class="form-group">
                             <label for="kamarPengeluaran">Kamar:</label>
-                            <select class="form-select multiple" multiple id="kamarPengeluaran" name="kamarPengeluaran"
+                            <select class="form-select" name="kamarPengeluaran" id="kamarPengeluaran"
                                 data-placeholder="Pilih kamar...">
                                 <option value="all">All</option>
                                 @foreach ($kamar as $key)
@@ -185,8 +185,8 @@
                             <button type="button" class="btn btn-secondary"
                                 onclick="$('#formContainer').slideUp()">Batal</button>
                             <button type="submit" class="btn btn-success">Simpan</button>
-                            {{-- <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
-                                id="deleteButtonPengeluaran">Hapus</a> --}}
+                            <a href="#" onclick="confirmDelete(event, this)" class="btn btn-danger d-none"
+                                id="deleteButtonPengeluaran">Hapus</a>
                         </div>
                     </form>
                 </div>

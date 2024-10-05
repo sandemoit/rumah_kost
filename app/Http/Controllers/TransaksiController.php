@@ -21,7 +21,7 @@ class TransaksiController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function show(Request $request, $code_kontrakan)
+    public function show($code_kontrakan)
     {
         // Ambil data kontrakan berdasarkan code_kontrakan
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
@@ -77,22 +77,17 @@ class TransaksiController extends Controller
             return $penyewa->kamar;
         })->filter()->flatten()->unique('id');
 
-        // Mengambil bulan dan tahun dari URL
-        $month = request('month', now()->month);
-        $year = request('year', now()->year);
-
         // Mengambil transaksi masuk dan keluar berdasarkan code_kontrakan
         $keyword = request('search');
         $perPage = request('per_page', 25); // Default to 10 per page
 
-        // Mengambil transaksi berdasarkan bulan, tahun, dan keyword
+        $month = request('month', now()->month);
+        $year = request('year', now()->year);
+
         $transaksiList = TransaksiList::withTransactions($code_kontrakan, $month, $year, $keyword)
             ->paginate($perPage)
-            ->appends(['month' => $month, 'year' => $year, 'search' => $keyword, 'per_page' => $perPage])
+            ->appends(request()->except('page'))
             ->withQueryString();
-
-        // Inisialisasi saldo awal
-        // $saldo = 0;
 
         // Iterasi transaksi
         foreach ($transaksiList as $transaksi) {
@@ -375,7 +370,7 @@ class TransaksiController extends Controller
     {
         $validatedData = $request->validate([
             'tanggalPengeluaran' => 'required|date',
-            'kamarPengeluaran' => 'required|array',
+            'kamarPengeluaran' => 'required',
             'nominalPengeluaran' => 'required|numeric',
             'deskripsiPengeluaran' => 'required|string',
             'codeKontrakanKeluar' => 'required|string',
@@ -384,17 +379,17 @@ class TransaksiController extends Controller
         try {
             DB::transaction(function () use ($validatedData) {
                 // Cek apakah "all" dipilih, jika ya, ambil semua ID kamar berdasarkan code_kontrakan
-                if (in_array('all', $validatedData['kamarPengeluaran'])) {
+                if ($validatedData['kamarPengeluaran'] === 'all') {
                     // Mengambil semua ID kamar yang terkait dengan code_kontrakan
                     $id_kamar = Kamar::whereHas('kontrakan', function ($query) use ($validatedData) {
                         $query->where('code_kontrakan', $validatedData['codeKontrakanKeluar']);
                     })->pluck('id')->toArray();
                 } else {
-                    $id_kamar = $validatedData['kamarPengeluaran'];
+                    $id_kamar = array_map('strval', (array) $validatedData['kamarPengeluaran']);
                 }
 
                 // Mengubah array ID kamar menjadi JSON string
-                $id_kamar_json = json_encode(array_map('strval', $id_kamar));
+                $id_kamar_json = json_encode($id_kamar);
 
                 $code_keluar = random_int(1000, 9999);
 

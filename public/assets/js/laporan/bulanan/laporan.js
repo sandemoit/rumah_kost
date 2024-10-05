@@ -97,14 +97,23 @@ document.addEventListener('DOMContentLoaded', function () {
                 let totalPemasukan = 0;
 
                 data.transaksiKeluar.forEach(transaksi => {
-                    transaksi.nama_kamar.forEach(kamar => {
+                    if (Array.isArray(transaksi.nama_kamar)) {
+                        transaksi.nama_kamar.forEach(kamar => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${kamar}</td>
+                                <td class="right tdmatauang">Rp</td>
+                                <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
+                            exinElement.appendChild(row);
+                        });
+                    } else {
                         const row = document.createElement('tr');
                         row.innerHTML = `
-                            <td>${kamar}</td>
+                            <td>${transaksi.nama_kamar}</td>
                             <td class="right tdmatauang">Rp</td>
-                            <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>`;
+                            <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                         exinElement.appendChild(row);
-                    });
+                    }
                     totalPengeluaran += transaksi.nominal;
                 });
 
@@ -113,7 +122,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     row.innerHTML = `
                         <td>${transaksi.nama_kamar}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
+                        <td class="right tduang">${transaksi.nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                     `;
                     inexinElement.appendChild(row);
                     totalPemasukan += transaksi.nominal;
@@ -124,7 +133,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPengeluaranRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
+                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                 `;
                 exinElement.appendChild(totalPengeluaranRow);
 
@@ -133,7 +142,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPemasukanRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })},-</td>
+                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                 `;
                 inexinElement.appendChild(totalPemasukanRow);
 

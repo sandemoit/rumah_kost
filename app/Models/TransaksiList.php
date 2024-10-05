@@ -54,10 +54,14 @@ class TransaksiList extends Model
     public function scopeWithTransactions(Builder $query, $code_kontrakan, $month = false, $year = false, $keyword = false): void
     {
         $query->with(['transaksiMasuk', 'transaksiKeluar', 'kamar'])
-            ->when($keyword, function (Builder $query, $keyword) {
+            ->when($keyword, function (Builder $query) use ($keyword) {
                 $query->whereHas('kamar', function (Builder $query) use ($keyword) {
                     $query->where('nama_kamar', 'LIKE', "%$keyword%");
-                });
+                })->orWhereHas('transaksiMasuk', function (Builder $query) use ($keyword) {
+                    $query->where('deskripsi', 'LIKE', "%$keyword%");
+                })->orWhereHas('transaksiKeluar', function (Builder $query) use ($keyword) {
+                    $query->where('deskripsi', 'LIKE', "%$keyword%");
+                })->orWhere('nominal', 'LIKE', "%$keyword%");
             })
             ->where(function (Builder $query) use ($month, $year) {
                 if ($month == 'all') {

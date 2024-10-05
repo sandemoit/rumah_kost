@@ -340,10 +340,10 @@ function edit_exin(element) {
         $('#periodeDeskripsi').val(deskripsi);
         $('#nilaiSewa').val(nominal);
 
-        // $('#deleteButtonPemasukan')
-        //     .removeClass('d-none')
-        //     .attr('href', '/transaksi-masuk/delete/' + transaksiId)
-        //     .attr('onclick', 'confirmDelete(event, this)');
+        $('#deleteButtonPemasukan')
+            .removeClass('d-none')
+            .attr('href', '/transaksi-masuk/delete/' + transaksiId)
+            .attr('onclick', 'confirmDelete(event, this)');
     } else {
         $('#formPemasukan').slideUp();
         $('#formTunggakan').slideUp();
@@ -356,10 +356,10 @@ function edit_exin(element) {
         $('#deskripsiPengeluaran').val(deskripsi);
         $('#nominalPengeluaran').val(nominal);
         
-        // $('#deleteButtonPengeluaran')
-        //     .removeClass('d-none')
-        //     .attr('href', '/transaksi-keluar/delete/' + transaksiId)
-        //     .attr('onclick', 'confirmDelete(event, this)');
+        $('#deleteButtonPengeluaran')
+            .removeClass('d-none')
+            .attr('href', '/transaksi-keluar/delete/' + transaksiId)
+            .attr('onclick', 'confirmDelete(event, this)');
     }
 }
 
