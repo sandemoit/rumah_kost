@@ -85,12 +85,24 @@ document.addEventListener('DOMContentLoaded', function () {
                 const kamarMap = {}; // Object untuk menyimpan total nominal per kamar
 
                 data.transaksiKeluar.forEach(transaksi => {
-                    transaksi.nama_kamar.forEach(kamar => {
-                        if (!kamarMap[kamar]) {
-                            kamarMap[kamar] = 0; // Jika kamar belum ada, inisialisasi dengan 0
-                        }
-                        kamarMap[kamar] += parseFloat(transaksi.total_nominal); // Tambahkan nominal
-                    });
+                    if (Array.isArray(transaksi.nama_kamar)) {
+                        transaksi.nama_kamar.forEach(kamar => {
+                            const row = document.createElement('tr');
+                            row.innerHTML = `
+                                <td>${kamar}</td>
+                                <td class="right tdmatauang">Rp</td>
+                                <td class="right tduang">${parseFloat(transaksi.total_nominal)}</td>`;
+                            exinElement.appendChild(row);
+                        });
+                    } else {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${transaksi.nama_kamar}</td>
+                            <td class="right tdmatauang">Rp</td>
+                            <td class="right tduang">${parseFloat(transaksi.total_nominal)}</td>`;
+                        exinElement.appendChild(row);
+                    }
+                    totalPengeluaran += parseFloat(transaksi.total_nominal);
                 });
 
                 // Setelah data tergabung, render ke dalam tabel

@@ -157,6 +157,11 @@ class LaporanTahunanController extends Controller
         $transaksiMasuk = $transaksiMasukQuery->with('kamar')->get();
         $transaksiKeluar = $transaksiKeluarQuery->with('kamar')->get();
 
+        // Ambil semua kamar yang terkait dengan setiap kontrakan
+        $allKamarByKontrakan = Kamar::with('kontrakan')->get()->groupBy('id_kontrakan')->map(function ($kamar) {
+            return $kamar->pluck('id')->toArray();
+        });
+
         // Looping untuk transaksi masuk
         foreach ($transaksiMasuk as $transaksi) {
             $id_kamar = json_decode($transaksi->id_kamar, true);
@@ -173,11 +178,18 @@ class LaporanTahunanController extends Controller
 
             // Jika id_kamar ada, proses tiap elemen
             if ($id_kamar) {
-                // Ambil semua nama kamar berdasarkan array id_kamar
-                $kamar = Kamar::whereIn('id', $id_kamar)->get();
+                // Ambil data kontrakan dari relasi kamar
+                $kontrakan = Kamar::whereIn('id', $id_kamar)->with('kontrakan')->get()->first()->kontrakan;
+                $nama_kontrakan = $kontrakan->nama_kontrakan;
 
-                // Ubah hasil menjadi array string nama kamar
-                $transaksi->nama_kamar = $kamar->pluck('nama_kamar')->toArray();
+                // Jika semua kamar dari kontrakan tersebut dipilih
+                if ($allKamarByKontrakan->has($kontrakan->id) && $allKamarByKontrakan->get($kontrakan->id) == $id_kamar) {
+                    $transaksi->nama_kamar = "$nama_kontrakan (All)";
+                } else {
+                    // Jika hanya sebagian kamar dipilih, ambil nama kamar dan bagi nominal
+                    $kamar = Kamar::whereIn('id', $id_kamar)->get();
+                    $transaksi->nama_kamar = $kamar->pluck('nama_kamar')->toArray();
+                }
             } else {
                 $transaksi->nama_kamar = ['Unknown'];
             }
