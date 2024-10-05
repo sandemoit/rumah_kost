@@ -158,8 +158,12 @@ class LaporanBulananController extends Controller
         }
 
         // Ambil hasil query transaksi
-        $transaksiMasuk = $transaksiMasukQuery->with('kamar', 'transaksiMasuk')->get();
-        $transaksiKeluar = $transaksiKeluarQuery->with('kamar', 'transaksiKeluar')->get();
+        $transaksiMasuk = $transaksiMasukQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiMasuk'])->get();
+        $transaksiKeluar = $transaksiKeluarQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiKeluar'])->get();
 
         // Ambil semua kamar yang terkait dengan setiap kontrakan
         $allKamarByKontrakan = Kamar::with('kontrakan')->get()->groupBy('id_kontrakan')->map(function ($kamar) {

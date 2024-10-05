@@ -154,8 +154,12 @@ class LaporanTahunanController extends Controller
         }
 
         // Ambil hasil query transaksi masuk dan keluar
-        $transaksiMasuk = $transaksiMasukQuery->with('kamar')->get();
-        $transaksiKeluar = $transaksiKeluarQuery->with('kamar')->get();
+        $transaksiMasuk = $transaksiMasukQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiMasuk'])->get();
+        $transaksiKeluar = $transaksiKeluarQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiKeluar'])->get();
 
         // Ambil semua kamar yang terkait dengan setiap kontrakan
         $allKamarByKontrakan = Kamar::with('kontrakan')->get()->groupBy('id_kontrakan')->map(function ($kamar) {

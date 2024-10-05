@@ -124,8 +124,12 @@ class LaporanCustomController extends Controller
         }
 
         // Ambil data dengan eager loading (with)
-        $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
-        $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
+        $transaksiMasuk = $transaksiMasukQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiMasuk'])->get();
+        $transaksiKeluar = $transaksiKeluarQuery->with(['kamar' => function ($q) {
+            $q->orderBy('nama_kamar');
+        }, 'transaksiKeluar'])->get();
 
         // Ambil data kamar dengan kontrakan terkait, group berdasarkan 'id_kontrakan'
         $allKamarByKontrakan = Kamar::with('kontrakan')->get()->groupBy('id_kontrakan')->map(function ($kamar) {
