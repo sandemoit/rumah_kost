@@ -27,7 +27,7 @@ class TransaksiController extends Controller
         $kontrakan = Kontrakan::where('code_kontrakan', $code_kontrakan)->firstOrFail();
 
         // Ambil semua kamar yang terkait dengan kontrakan tersebut
-        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->select('id', 'nama_kamar')->get();
+        $kamar = Kamar::where('id_kontrakan', $kontrakan->id)->select('id', 'nama_kamar')->orderBy('nama_kamar')->get();
         $countKontrakan = $kamar->count();
 
         // Ambil data penyewa yang memiliki status putus_kontrak dan terkait dengan kamar yang terkait dengan kontrakan tersebut
