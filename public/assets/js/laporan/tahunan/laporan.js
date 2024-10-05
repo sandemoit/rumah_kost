@@ -83,15 +83,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 let totalPemasukan = 0;
                 
                 const kamarMap = {}; // Object untuk menyimpan total nominal per kamar
-
+                
                 data.transaksiKeluar.forEach(transaksi => {
+                    const nominal = parseInt(transaksi.total_nominal, 10);
+
                     if (Array.isArray(transaksi.nama_kamar)) {
                         transaksi.nama_kamar.forEach(kamar => {
                             const row = document.createElement('tr');
                             row.innerHTML = `
                                 <td>${kamar}</td>
                                 <td class="right tdmatauang">Rp</td>
-                                <td class="right tduang">${parseFloat(transaksi.total_nominal)}</td>`;
+                                <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>`;
                             exinElement.appendChild(row);
                         });
                     } else {
@@ -99,10 +101,10 @@ document.addEventListener('DOMContentLoaded', function () {
                         row.innerHTML = `
                             <td>${transaksi.nama_kamar}</td>
                             <td class="right tdmatauang">Rp</td>
-                            <td class="right tduang">${parseFloat(transaksi.total_nominal)}</td>`;
+                            <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>`;
                         exinElement.appendChild(row);
                     }
-                    totalPengeluaran += parseFloat(transaksi.total_nominal);
+                    totalPengeluaran += nominal;
                 });
 
                 // Setelah data tergabung, render ke dalam tabel
@@ -117,15 +119,17 @@ document.addEventListener('DOMContentLoaded', function () {
 
                 data.transaksiMasuk.forEach(transaksi => {
                     const row = document.createElement('tr');
+                    const nominal = parseInt(transaksi.total_nominal, 10);
+
                     row.innerHTML = `
                         <td>${transaksi.nama_kamar}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${transaksi.total_nominal.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                        <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
                     `;
                     inexinElement.appendChild(row);
                     
                     // Pastikan total_nominal diubah menjadi number sebelum dijumlahkan
-                    totalPemasukan += parseFloat(transaksi.total_nominal);
+                    totalPemasukan += nominal;
                 });
 
 
