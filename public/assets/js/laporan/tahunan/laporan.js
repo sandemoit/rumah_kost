@@ -93,7 +93,7 @@ document.addEventListener('DOMContentLoaded', function () {
                             row.innerHTML = `
                                 <td>${kamar}</td>
                                 <td class="right tdmatauang">Rp</td>
-                                <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>`;
+                                <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                             exinElement.appendChild(row);
                         });
                     } else {
@@ -101,7 +101,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         row.innerHTML = `
                             <td>${transaksi.nama_kamar}</td>
                             <td class="right tdmatauang">Rp</td>
-                            <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>`;
+                            <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>`;
                         exinElement.appendChild(row);
                     }
                     totalPengeluaran += nominal;
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     row.innerHTML = `
                         <td>${transaksi.nama_kamar}</td>
                         <td class="right tdmatauang">Rp</td>
-                        <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0, maximumFractionDigits: 0 })}</td>
+                        <td class="right tduang">${nominal.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                     `;
                     inexinElement.appendChild(row);
                     
@@ -138,7 +138,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPengeluaranRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                    <td class="right tduang line">${totalPengeluaran.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                 `;
                 exinElement.appendChild(totalPengeluaranRow);
 
@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 totalPemasukanRow.innerHTML = `
                     <td class="line">&nbsp;</td>
                     <td class="right tdmatauang line">Rp</td>
-                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 2 })}</td>
+                    <td class="right tduang line">${totalPemasukan.toLocaleString('id-ID', { minimumFractionDigits: 0 })}</td>
                 `;
                 inexinElement.appendChild(totalPemasukanRow);
 

@@ -25,7 +25,7 @@ class LaporanCustomController extends Controller
 
     public function getAllBukuKas(Request $request)
     {
-        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal Custom ini
+        // Jika tidak ada parameter 'date' yang diberikan, gunakan tanggal saat ini
         if (!empty($request->date)) {
             $date = explode(' - ', $request->input('date'));
             $dateStart = Carbon::createFromFormat('m/d/Y', $date[0])->startOfDay();
@@ -38,63 +38,54 @@ class LaporanCustomController extends Controller
         // Mengambil parameter 'book' dari query string
         $code_kontrakan = $request->query('book', 'all');
 
-        // Menghitung saldo awal Custom
+        // Menghitung saldo awal (sebelum tanggal $dateStart)
         $saldoAwalCustomQuery = TransaksiList::select('code_kontrakan', DB::raw('SUM(IF(tipe="masuk", nominal, -nominal)) as saldo_awal'))
             ->where(function ($query) use ($dateStart) {
                 $query->whereHas('transaksiMasuk', function ($query) use ($dateStart) {
-                    // Mengubah penulisan whereDate yang benar
                     $query->whereDate('tanggal_transaksi', '<', $dateStart);
                 })->orWhereHas('transaksiKeluar', function ($query) use ($dateStart) {
-                    // Mengubah penulisan whereDate yang benar
                     $query->whereDate('tanggal_transaksi', '<', $dateStart);
                 });
             })
             ->groupBy('code_kontrakan');
 
+        // Menghitung semua pemasukan dan pengeluaran pada rentang tanggal yang diberikan
+        $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->where(function ($query) use ($dateStart, $dateEnd) {
+                $query->whereHas('transaksiMasuk', function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
+                });
+            })
+            ->orWhere(function ($query) use ($dateStart, $dateEnd) {
+                $query->whereHas('transaksiKeluar', function ($query) use ($dateStart, $dateEnd) {
+                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
+                });
+            });
+
         if ($code_kontrakan !== 'all') {
             $saldoAwalCustomQuery->where('code_kontrakan', $code_kontrakan);
+            $transaksiListQuery->where('code_kontrakan', $code_kontrakan);
         }
-
-        $saldoAwalCustom = $saldoAwalCustomQuery->get()->sum('saldo_awal');
-
-        // Menghitung semua pemasukan dan pengeluaran pada tanggal tertentu
-        $transaksiListQuery = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
-            ->where(function ($query) use ($dateStart, $dateEnd, $code_kontrakan) {
-                $query->whereHas('transaksiMasuk', function ($query) use ($dateStart, $dateEnd) {
-                    // Perbaikan whereDate untuk rentang tanggal
-                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
-                })
-                    ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
-                        $query->where('code_kontrakan', $code_kontrakan);
-                    });
-            })
-            ->orWhere(function ($query) use ($dateStart, $dateEnd, $code_kontrakan) {
-                $query->whereHas('transaksiKeluar', function ($query) use ($dateStart, $dateEnd) {
-                    // Perbaikan whereDate untuk rentang tanggal
-                    $query->whereBetween('tanggal_transaksi', [$dateStart, $dateEnd]);
-                })
-                    ->when($code_kontrakan !== 'all', function ($query) use ($code_kontrakan) {
-                        $query->where('code_kontrakan', $code_kontrakan);
-                    });
-            });
 
         $transaksiList = $transaksiListQuery->get();
 
+        // Menghitung total pemasukan dan pengeluaran
         $semuaPemasukan = $transaksiList->where('tipe', 'masuk')->sum('nominal');
         $semuaPengeluaran = $transaksiList->where('tipe', 'keluar')->sum('nominal');
 
-        // Menghitung akumulasi dan saldo akhir Custom
+        // Menghitung akumulasi dan saldo akhir
         $akumulasi = $semuaPemasukan - $semuaPengeluaran;
-        $saldoAkhirCustom = $saldoAwalCustom + $akumulasi;
+        // $saldoAwalCustom = $saldoAwalCustomQuery->get()->sum('saldo_awal');
+        // $saldoAkhirCustom = $saldoAwalCustom + $akumulasi;
 
         // Mengembalikan data dalam format JSON
         return response()->json([
-            'date' => $date,
-            'saldoAwalCustom' => rupiah($saldoAwalCustom),
+            'date' => $request->date,
+            // 'saldoAwalCustom' => rupiah($saldoAwalCustom),
             'semuaPemasukan' => rupiah($semuaPemasukan),
             'semuaPengeluaran' => rupiah($semuaPengeluaran),
             'akumulasi' => rupiah($akumulasi),
-            'saldoAkhirCustom' => rupiah($saldoAkhirCustom),
+            // 'saldoAkhirCustom' => rupiah($saldoAkhirCustom),
         ]);
     }
 
@@ -112,69 +103,71 @@ class LaporanCustomController extends Controller
 
         $code_kontrakan = $request->query('book', 'all');
 
-        // Query transaksi masuk dan keluar
-        $transaksiMasukQuery = TransaksiList::where('tipe', 'masuk')
+        // Query transaksi masuk
+        $transaksiMasukQuery = TransaksiList::select('code_kontrakan', 'nominal', 'tipe', 'id_kamar', 'id_masuk')
+            ->where('tipe', 'masuk')
             ->whereHas('transaksiMasuk', function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
             });
 
-        $transaksiKeluarQuery = TransaksiList::where('tipe', 'keluar')
+        // Query transaksi keluar
+        $transaksiKeluarQuery = TransaksiList::select('code_kontrakan', 'nominal', 'tipe', 'id_kamar', 'id_keluar')
+            ->where('tipe', 'keluar')
             ->whereHas('transaksiKeluar', function ($query) use ($startDate, $endDate) {
                 $query->whereBetween('tanggal_transaksi', [$startDate, $endDate]);
             });
 
-        // Jika 'book' bukan 'all', filter berdasarkan 'code_kontrakan'
+        // Filter berdasarkan 'code_kontrakan' jika tidak 'all'
         if ($code_kontrakan !== 'all') {
             $transaksiMasukQuery->where('code_kontrakan', $code_kontrakan);
             $transaksiKeluarQuery->where('code_kontrakan', $code_kontrakan);
         }
 
-        // Ambil data dengan relasi dan optimasi query menggunakan 'with'
+        // Ambil data dengan eager loading (with)
         $transaksiMasuk = $transaksiMasukQuery->with('transaksiMasuk')->get();
         $transaksiKeluar = $transaksiKeluarQuery->with('transaksiKeluar')->get();
 
-        // Mengelompokkan dan menghitung total pemasukan per code_kontrakan
-        $groupedMasuk = $transaksiMasuk->groupBy('code_kontrakan')->map(function ($items) {
-            $nama_kontrakan = Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown';
-            return [
-                'nama_kontrakan' => $nama_kontrakan,
-                'total_masuk' => $items->sum('nominal')
-            ];
+        // Ambil data kamar dengan kontrakan terkait, group berdasarkan 'id_kontrakan'
+        $allKamarByKontrakan = Kamar::with('kontrakan')->get()->groupBy('id_kontrakan')->map(function ($kamar) {
+            return $kamar->pluck('id')->toArray();
         });
 
-        // Mengelompokkan dan menghitung total pengeluaran per code_kontrakan
-        $groupedKeluar = $transaksiKeluar->groupBy('code_kontrakan')->map(function ($items) {
-            $nama_kontrakan = Kontrakan::where('code_kontrakan', $items->first()->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown';
-            return [
-                'nama_kontrakan' => $nama_kontrakan,
-                'total_keluar' => $items->sum('nominal')
-            ];
-        });
-
-        // Gabungkan data pemasukan dan pengeluaran ke dalam satu result
-        $result = [];
-
-        foreach ($groupedMasuk as $code_kontrakan => $dataMasuk) {
-            $result[$code_kontrakan] = [
-                'nama_kontrakan' => $dataMasuk['nama_kontrakan'],
-                'total_masuk' => $dataMasuk['total_masuk'],
-                'total_keluar' => $groupedKeluar[$code_kontrakan]['total_keluar'] ?? 0 // Default pengeluaran 0 jika tidak ada
-            ];
-        }
-
-        foreach ($groupedKeluar as $code_kontrakan => $dataKeluar) {
-            if (!isset($result[$code_kontrakan])) {
-                $result[$code_kontrakan] = [
-                    'nama_kontrakan' => $dataKeluar['nama_kontrakan'],
-                    'total_masuk' => 0, // Default pemasukan 0 jika tidak ada
-                    'total_keluar' => $dataKeluar['total_keluar']
-                ];
+        // Proses transaksi masuk
+        foreach ($transaksiMasuk as $transaksi) {
+            $id_kamar = json_decode($transaksi->id_kamar, true);
+            if ($id_kamar) {
+                // Ambil nama kamar yang terkait
+                $kamar = Kamar::whereIn('id', $id_kamar)->pluck('nama_kamar');
+                $transaksi->nama_kamar = $kamar->implode(', ') ?: 'Unknown';
+            } else {
+                $transaksi->nama_kamar = 'Unknown';
             }
         }
 
-        // Mengembalikan data yang sudah dikelompokkan dalam bentuk JSON
+        // Proses transaksi keluar
+        foreach ($transaksiKeluar as $transaksi) {
+            $id_kamar = json_decode($transaksi->id_kamar, true);
+            if ($id_kamar) {
+                // Ambil data kontrakan
+                $kamar = Kamar::whereIn('id', $id_kamar)->with('kontrakan')->get();
+                $kontrakan = $kamar->first()->kontrakan;
+
+                // Jika semua kamar dari kontrakan tersebut dipilih
+                if ($allKamarByKontrakan->has($kontrakan->id) && $allKamarByKontrakan->get($kontrakan->id) == $id_kamar) {
+                    $transaksi->nama_kamar = "$kontrakan->nama_kontrakan (All)";
+                } else {
+                    // Jika sebagian kamar dipilih
+                    $transaksi->nama_kamar = $kamar->pluck('nama_kamar')->toArray();
+                }
+            } else {
+                $transaksi->nama_kamar = ['Unknown'];
+            }
+        }
+
+        // Return data sebagai JSON response
         return response()->json([
-            'data' => $result
+            'transaksiMasuk' => $transaksiMasuk,
+            'transaksiKeluar' => $transaksiKeluar,
         ]);
     }
 
