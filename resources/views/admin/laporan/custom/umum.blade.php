@@ -78,14 +78,14 @@
                             <div class="report-section">
                                 <div class="card">
                                     <div class="card-header">
-                                        <img src="{{ asset('assets/icon/list-keluar.png') }}" width="20" height="20"
-                                            alt="expense"> Pengeluaran
+                                        <img src="{{ asset('assets/icon/list-masuk.png') }}" width="20" height="20"
+                                            alt="income"> Pemasukan
                                     </div>
                                     <div class="card-body">
-                                        <div class="exin" id="ex_exin">
+                                        <div class="exin" id="in_exin">
                                             <table class="table table-bordered">
                                                 <tbody>
-                                                    <!-- Data pengeluaran akan diisi di sini oleh JavaScript -->
+                                                    <!-- Data pemasukan akan diisi di sini oleh JavaScript -->
                                                 </tbody>
                                             </table>
                                         </div>
@@ -97,14 +97,14 @@
                             <div class="report-section">
                                 <div class="card">
                                     <div class="card-header">
-                                        <img src="{{ asset('assets/icon/list-masuk.png') }}" width="20" height="20"
-                                            alt="income"> Pemasukan
+                                        <img src="{{ asset('assets/icon/list-keluar.png') }}" width="20" height="20"
+                                            alt="expense"> Pengeluaran
                                     </div>
                                     <div class="card-body">
-                                        <div class="exin" id="in_exin">
+                                        <div class="exin" id="ex_exin">
                                             <table class="table table-bordered">
                                                 <tbody>
-                                                    <!-- Data pemasukan akan diisi di sini oleh JavaScript -->
+                                                    <!-- Data pengeluaran akan diisi di sini oleh JavaScript -->
                                                 </tbody>
                                             </table>
                                         </div>
