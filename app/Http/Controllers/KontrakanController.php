@@ -43,6 +43,7 @@ class KontrakanController extends Controller
                         ->orWhere('keterangan', 'LIKE', "%$keyword%");
                 });
             })
+            ->orderBy('nama_kamar')
             ->paginate($perPage)
             ->appends(['search' => $keyword, 'per_page' => $perPage]);
 

@@ -21,23 +21,26 @@ class DashboardController extends Controller
 
             // Cek penyewa yang menunggak
             $nunggak = $item->penyewa->filter(function ($penyewa) {
+                // Ambil transaksi masuk terakhir dari TransaksiMasuk melalui TransaksiList
                 $lastTransaction = TransaksiList::where('id_penyewa', $penyewa->id)
-                    ->whereHas('transaksiMasuk', function ($query) {
-                        $query->orderBy('tanggal_transaksi', 'desc');
-                    })
                     ->with(['transaksiMasuk' => function ($query) {
                         $query->orderBy('tanggal_transaksi', 'desc');
                     }])
                     ->first();
 
-                if ($lastTransaction) {
-                    $dueDate = Carbon::parse($penyewa->tanggal_masuk)->addMonth();
+                if ($lastTransaction && $lastTransaction->transaksiMasuk) {
+                    $tanggalMasuk = Carbon::parse($penyewa->tanggal_masuk);
+                    $tanggalTransaksiTerakhir = Carbon::parse($lastTransaction->transaksiMasuk->tanggal_transaksi);
                     $currentDate = Carbon::now();
 
-                    // Jika tanggal transaksi terakhir sudah lebih dari satu bulan
-                    return $dueDate->lt($currentDate);
+                    // Tanggal jatuh tempo (1 bulan setelah tanggal transaksi terakhir)
+                    $dueDate = $tanggalTransaksiTerakhir->addMonth();
+
+                    // Jika tanggal saat ini melewati dueDate dan status penyewa aktif, maka dianggap menunggak
+                    return $currentDate->gt($dueDate) && $penyewa->status === 'aktif';
                 }
-                return false;
+
+                return false; // Jika tidak ada transaksi, penyewa tidak dianggap menunggak
             })->count();
 
             return [
@@ -45,7 +48,7 @@ class DashboardController extends Controller
                 'totalKamar' => $countKamar,
                 'terisi' => $terisi,
                 'kosong' => $kosong,
-                'nunggak' => $nunggak
+                'nunggak' => $nunggak // Jumlah kamar yang menunggak
             ];
         });
 
