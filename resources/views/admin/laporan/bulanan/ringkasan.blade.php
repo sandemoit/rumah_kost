@@ -25,7 +25,7 @@
                             <select class="form-select" id="selectReportActivity">
                                 <option value="all">Semua Buku Kas</option>
                                 @foreach ($kontrakan as $item)
-                                    <option value="{{ $item->code_kontrakan }}">{{ $item->nama_kontrakan }}</option>
+                                    <option value="{{ $item->id }}">{{ $item->nama_kontrakan }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Kontrakan;
+use App\Models\Penyewa;
 use App\Models\Setting;
 use Carbon\Carbon;
 
@@ -51,7 +52,7 @@ if (!function_exists('dateIndo')) {
         );
 
         $tahun = substr($tanggal, 0, 4);
-        $bulan = $nama_bulan[(int)substr($tanggal, 5, 2)];
+        $bulan = $nama_bulan[(int) substr($tanggal, 5, 2)];
         $tanggal = substr($tanggal, 8, 2);
         $text = '';
 
@@ -87,7 +88,7 @@ if (!function_exists('tanggal')) {
         );
 
         $tahun = substr($tanggal, 0, 4);
-        $bulan = $nama_bulan[(int)substr($tanggal, 5, 2)];
+        $bulan = $nama_bulan[(int) substr($tanggal, 5, 2)];
         $tanggal = substr($tanggal, 8, 2);
         $text = '';
 
@@ -227,5 +228,37 @@ if (!function_exists('applikasi')) {
 
         // Jika tidak ada parameter atau key tidak ditemukan, kembalikan semua data
         return $data;
+    }
+}
+
+if (!function_exists('kamarTerisi')) {
+
+    function kamarTerisi($id_kontrakan, $id_kamar, $bulan)
+    {
+        $penyewa_terakhir = Penyewa::where('id_kontrakan', $id_kontrakan)->where('id_kamar', $id_kamar)->latest()->first();
+
+        if ($penyewa_terakhir) {
+            if (Carbon::parse($bulan)->format('Y-m-d') >= $penyewa_terakhir->tanggal_masuk) {
+                if ($penyewa_terakhir->status == 'putus_kontrak') {
+                    return false;
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        
+        $daftar_penyewa_terakhir = Penyewa::where('id_kontrakan', $id_kontrakan)
+            ->where('id_kamar', $id_kamar)
+            ->where('status', 'putus_kontrak')
+            ->where('tanggal_masuk', '<=', Carbon::parse($bulan)->format('Y-m-d'))
+            ->where('tanggal_keluar', '>=', Carbon::parse($bulan)->format('Y-m-d'))
+            ->get();
+            if ($daftar_penyewa_terakhir->count() > 0) {
+                return true;
+            }
+            
+        return false;
+
     }
 }

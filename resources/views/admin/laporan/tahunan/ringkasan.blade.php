@@ -30,6 +30,16 @@
                             </select>
                         </div>
                     </div>
+                    
+                    <div class="col-md-6 text-end">
+                        <div class="bulannav">
+                            <a href="javascript:void(0)" class="bulan_nav_left" id="bulan_nav_left"
+                                title="Bulan sebelumnya">&nbsp;</a>
+                            <a href="javascript:void(0)" class="bulan_nav_right" id="bulan_nav_right"
+                                title="Bulan selanjutnya">&nbsp;</a>
+                            <div class="bulankas" id="bulankasreport"></div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Report Section -->
