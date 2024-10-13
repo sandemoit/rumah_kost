@@ -281,20 +281,28 @@ class LaporanTahunanController extends Controller
 
     public function get_ringkasan_tahunan(Request $request)
     {
-
+        $year = $request->input('date');
         $code_kontrakan = $request->input('book');
 
         $data['dates'] = [];
-        $data['type'] = 'Tahunan';
-        for ($i = 3; $i >= 0; $i--) {
-            $data['dates'][] = Carbon::now()->subYears($i)->format('Y');
+        $data['type'] = 'bulanan';
+        for ($i = 1; $i <= 12; $i++) {
+            $dt = strlen($i) == 1 ? '0' . $i : $i;
+            $data['dates'][] = "$year-$dt";
         }
 
         $transaksi = TransaksiList::with(['transaksiMasuk', 'transaksiKeluar'])
+            ->whereHas('transaksiMasuk', function ($query) use ($year) {
+                $query->where('tanggal_transaksi', 'like', $year . "%");
+            })
+            ->orWhereHas('transaksiKeluar', function ($query) use ($year) {
+                $query->where('tanggal_transaksi', 'like', $year . "%");
+            })
             ->get();
         if ($code_kontrakan !== 'all' && $code_kontrakan !== null) {
             $transaksi = $transaksi->where('code_kontrakan', $code_kontrakan);
         }
+
 
         $data['pengeluarans'] = $transaksi
             ->where('tipe', 'keluar')
@@ -313,7 +321,7 @@ class LaporanTahunanController extends Controller
                 return [
                     'nama_kontrakan' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->nama_kontrakan ?? 'Unknown',
                     'qty' => Kontrakan::where('code_kontrakan', $item[0]->code_kontrakan)->first()->kamar->count(),
-                    'total' => $item->sum('nominal'),
+                    'total' => collect($trx)->sum(),
                     'transaksi' => $trx,
                 ];
             })
@@ -331,6 +339,7 @@ class LaporanTahunanController extends Controller
             }
             $data['grandTotalPengeluarans'][$date] = $t->sum('nominal') ?? 0;
         }
+
 
         $data['pemasukans'] = $transaksi
             ->where('tipe', 'masuk')
@@ -371,6 +380,9 @@ class LaporanTahunanController extends Controller
             }
             $data['grandTotalPemasukans'][$date] = $t->sum('nominal') ?? 0;
         }
+
+
+
 
         $data['profits'] = $transaksi
             ->groupBy('code_kontrakan')
@@ -420,7 +432,7 @@ class LaporanTahunanController extends Controller
         }
 
 
-        $html = view('components.ringkasan', $data)->render();
+        $html = view('components.ringkasan_tahunan', $data)->render();
         return response()->json(['html' => $html]);
     }
 }

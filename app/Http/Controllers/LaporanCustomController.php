@@ -424,7 +424,7 @@ class LaporanCustomController extends Controller
         }
 
 
-        $html = view('components.ringkasan', $data)->render();
+        $html = view('components.ringkasan_tahunan', $data)->render();
         return response()->json(['html' => $html]);
     }
 }

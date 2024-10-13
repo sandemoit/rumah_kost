@@ -11,8 +11,7 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-
-                                    <th class="tdblue">{{ $type == 'bulanan' ? 'Kamar' : 'Kontrakan' }}</th>
+                                    <th class="tdblue">Kontrakan</th>
                                     @foreach ($dates as $date)
                                         @if ($type == 'harian')
                                             <th class="tdblue">
@@ -28,41 +27,16 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @php
-                                    $totalBulan = [];
-                                    foreach ($dates as $key => $value) {
-                                        $totalBulan[$value] = 0;
-                                    }
-                                    $totalBulan = collect($totalBulan);
-
-                                @endphp
-                                
                                 @foreach ($pemasukans as $pemasukan)
                                     <tr>
-                                        <td>{{ $pemasukan['kamar']['nama_kamar'] }}</td>
+                                        <td>{{ $pemasukan['nama_kontrakan'] }}</td>
                                         @php
                                             $totalPerKontrakan = 0;
                                         @endphp
-                                        @foreach ($pemasukan['transaksi'] as $key => $p)
-                                        @php
-                                            $kamarIsi = kamarTerisi($pemasukan['kamar']['id_kontrakan'], $pemasukan['kamar']['id'], $key);
-                                        @endphp
-                                            <td 
-                                            @if ($p == 0 && $key < Illuminate\Support\Carbon::now()->format('Y-m') )
-                                                class="bg-{{ $kamarIsi?'warning':'danger' }}"
-                                            @endif
-                                            >
-                                            
-                                                @if ($p == 0)
-                                                {{ $kamarIsi?'':'-' }}
-                                                @else
-                                                {{ rupiah($p) }}
-                                                @endif
-                                            </td>
+                                        @foreach ($pemasukan['transaksi'] as $p)
+                                            <td>{{ rupiah($p) }}</td>
                                             @php
                                                 $totalPerKontrakan += $p;
-                                                $totalBulan[$key] += $p;
-
                                             @endphp
                                         @endforeach
                                         <td>{{ rupiah($totalPerKontrakan) }}</td>
@@ -74,19 +48,13 @@
                                     @php
                                         $sumGrandTotalPemasukans = 0;
                                     @endphp
-                                    @foreach ($totalBulan as $grandTotal)
+                                    @foreach ($grandTotalPemasukans as $grandTotal)
                                         <td class="tdgray">{{ rupiah($grandTotal) }}</td>
                                         @php
                                             $sumGrandTotalPemasukans += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">
-                                        @if ($sumGrandTotalPemasukans == 0)
-                                        -
-                                        @else
-                                        {{ rupiah($sumGrandTotalPemasukans) }}
-                                        @endif
-                                    </td>
+                                    <td class="tdgray">{{ rupiah($sumGrandTotalPemasukans) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -94,8 +62,6 @@
                 </div>
             </div>
         </div>
-
-
         <div class="col-md-12 col-sm-12">
             <div class="report-section">
                 <div class="card">
@@ -107,8 +73,7 @@
                         <table class="table table-bordered">
                             <thead>
                                 <tr>
-                                    <th class="tdred">Kamar</th>
-                                    <th class="tdred">Keterangan</th>
+                                    <th class="tdred">Kontrakan</th>
                                     @foreach ($dates as $date)
                                         @if ($type == 'harian')
                                             <th class="tdred">
@@ -126,27 +91,12 @@
                             <tbody>
                                 @foreach ($pengeluarans as $pengeluaran)
                                     <tr>
-                                        <td>
-                                            <b>{{ $pengeluaran['nama_kontrakan'] }}</b>
-                                            <br>
-                                            <small>
-                                                {{ $pengeluaran['nama_kamar'] }}
-                                            </small>
-                                        </td>
-                                        <td>
-                                            {{ $pengeluaran['deskripsi'] }}
-                                        </td>
+                                        <td>{{ $pengeluaran['nama_kontrakan'] }}</td>
                                         @php
                                             $totalPerKontrakan = 0;
                                         @endphp
                                         @foreach ($pengeluaran['transaksi'] as $p)
-                                            <td>
-                                                @if ($p == 0)
-                                                    -
-                                                @else
-                                                    {{ rupiah($p) }}
-                                                @endif
-                                            </td>
+                                            <td>{{ rupiah($p) }}</td>
                                             @php
                                                 $totalPerKontrakan += $p;
                                             @endphp
@@ -166,13 +116,7 @@
                                             $sumGrandTotalPengeluarans += $grandTotal;
                                         @endphp
                                     @endforeach
-                                    <td class="tdgray">
-                                        @if ($sumGrandTotalPengeluarans == 0)
-                                            -
-                                        @else
-                                            {{ rupiah($sumGrandTotalPengeluarans) }}
-                                        @endif
-                                    </td>
+                                    <td class="tdgray">{{ rupiah($sumGrandTotalPengeluarans) }}</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -180,8 +124,7 @@
                 </div>
             </div>
         </div>
-
-        {{-- <div class="col-md-12 col-sm-12 d-none">
+        <div class="col-md-12 col-sm-12 d-none">
             <div class="report-section">
                 <div class="card">
                     <div class="card-header">
@@ -244,6 +187,6 @@
                     </div>
                 </div>
             </div>
-        </div> --}}
+        </div>
     </div>
 </div>

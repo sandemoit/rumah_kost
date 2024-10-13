@@ -1,7 +1,7 @@
 function slideOpen(a) {
     $("#trsub_" + a).fadeToggle(300),
         $("#divsub_" + a).slideToggle(300)
-}
+} 
 function slidedetail(a) {
     if ($.trim($("#divsub_" + a).html()).length)
         $("#trsub_" + a).fadeToggle(300);
@@ -24,16 +24,49 @@ function slidedetail(a) {
         })
     }
 }
-
 document.addEventListener('DOMContentLoaded', function () {
+    bulanNavLeft = document.getElementById('bulan_nav_left');
+    bulanNavRight = document.getElementById('bulan_nav_right');
+    bulanKasReport = document.getElementById('bulankasreport');
+    currentDate = new Date();
+
+    function updateBulanKasReport() {
+        year = currentDate.getFullYear();
+        bulanKasReport.textContent = `${year}`;
+        drawPage();
+
+
+    }
+
+    function changeMonth(delta) {
+        month = (currentDate.getFullYear() + delta );
+        currentDate.setMonth(currentDate.getMonth() + delta);
+        updateBulanKasReport();
+    }
+
+    bulanNavLeft.addEventListener('click', function (event) {
+        event.preventDefault();
+        changeMonth(-12);
+    });
+
+    bulanNavRight.addEventListener('click', function (event) {
+        event.preventDefault();
+        changeMonth(12);
+    });
+
+    updateBulanKasReport();
 
 
     async function drawPage() {
         endpount = $('#endpoint').val();
         postData = {
             '_token': $('meta[name="csrf-token"]').attr('content'),
+            'date': currentDate.getFullYear(),
             'book': $('#selectReportActivity').val(),
         }
+        // change export url 
+        url = `${endpount}/ringkasan/tahunan/export?date=${currentDate.getFullYear()}&book=${$('#selectReportActivity').val()}`
+        $('#export').attr("href", url)
         response = await fetch(`${endpount}/api/ringkasan/tahunan`, {
             method: 'POST',
             headers: {
@@ -63,3 +96,4 @@ document.addEventListener('DOMContentLoaded', function () {
         drawPage();
     });
 });
+
