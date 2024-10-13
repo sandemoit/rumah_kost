@@ -279,6 +279,7 @@ class LaporanBulananController extends Controller
 
     public function ringkasan()
     {
+        // dd(kamarTerisi('3', '16', '2024-02-01'));
         
         $kontrakan = Kontrakan::select('id', 'nama_kontrakan')->get();
 
