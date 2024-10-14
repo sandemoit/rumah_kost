@@ -124,6 +124,14 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @php
+                                    $totalBulan = [];
+                                    foreach ($dates as $key => $value) {
+                                        $totalBulan[$value] = 0;
+                                    }
+                                    $totalBulan = collect($totalBulan);
+                                @endphp
+
                                 @foreach ($pengeluarans as $pengeluaran)
                                     <tr>
                                         <td>
@@ -139,7 +147,7 @@
                                         @php
                                             $totalPerKontrakan = 0;
                                         @endphp
-                                        @foreach ($pengeluaran['transaksi'] as $p)
+                                        @foreach ($pengeluaran['transaksi'] as $key => $p)
                                             <td>
                                                 @if ($p == 0)
                                                     -
@@ -148,6 +156,7 @@
                                                 @endif
                                             </td>
                                             @php
+                                                $totalBulan[$key] += $p;
                                                 $totalPerKontrakan += $p;
                                             @endphp
                                         @endforeach
@@ -156,11 +165,11 @@
                                 @endforeach
                                 <!-- Add more rows as needed -->
                                 <tr class="total-row">
-                                    <td class="tdgray">TOTAL</td>
+                                    <td class="tdgray" colspan="2">TOTAL</td>
                                     @php
                                         $sumGrandTotalPengeluarans = 0;
                                     @endphp
-                                    @foreach ($grandTotalPengeluarans as $grandTotal)
+                                    @foreach ($totalBulan as $grandTotal)
                                         <td class="tdgray">{{ rupiah($grandTotal) }}</td>
                                         @php
                                             $sumGrandTotalPengeluarans += $grandTotal;

@@ -239,7 +239,7 @@ if (!function_exists('kamarTerisi')) {
 
         if ($penyewa_terakhir) {
             if (Carbon::parse($bulan)->format('Y-m-d') >= $penyewa_terakhir->tanggal_masuk) {
-                if ($penyewa_terakhir->status == 'putus_kontrak') {
+                if ($penyewa_terakhir->status == 'putus_kontrak' && $penyewa_terakhir->tanggal_keluar <= $bulan) {
                     return false;
                 } else {
                     return true;

@@ -122,15 +122,29 @@
                                                                     <td>
                                                                         {{ $detail->deskripsi }}<br><em><small>Kas:
                                                                                 @php
+                                                                                    $id_kamar =  $detail->transaksiList->id_kamar;
+                                                                                    $code_kontrakan =  $detail->transaksiList->code_kontrakan;
+
+                                                                                    $kontrakan = \App\Models\Kontrakan::where(
+                                                                                        'code_kontrakan',
+                                                                                        $code_kontrakan,
+                                                                                    )
+                                                                                        ->get()
+                                                                                        ->first();
                                                                                     $kamar = \App\Models\Kamar::whereIn(
                                                                                         'id',
-                                                                                        json_decode(
-                                                                                            $detail->transaksiList
-                                                                                                ->id_kamar,
-                                                                                        ),
-                                                                                    )
-                                                                                        ->pluck('nama_kamar')
-                                                                                        ->implode(', ');
+                                                                                        json_decode($id_kamar),
+                                                                                    )->get();
+                                                                                    if (
+                                                                                        $kontrakan->kamar->count() ==
+                                                                                        $kamar->count()
+                                                                                    ) {
+                                                                                        $kamar = '(all)';
+                                                                                    } else {
+                                                                                        $kamar = $kamar
+                                                                                            ->pluck('nama_kamar')
+                                                                                            ->join(', ');
+                                                                                    }
                                                                                 @endphp
                                                                                 {{ $kamar }}</small></em></td>
                                                                     <td class="right tdmatauang">Rp</td>
